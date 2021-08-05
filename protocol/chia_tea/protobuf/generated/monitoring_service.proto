@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package chia_tea.protobuf.generated.monitoring_service_pb2;
+
+import "google/protobuf/empty.proto";
+import "chia_tea/protobuf/generated/computer_info.proto";
+
+// Send this request to get the state of a machine
+message GetStateRequest {
+    int64 machine_id = 1;
+}
+
+// Send this request to update the monitoring server database from events
+message DataUpdateRequest {
+    int64 machine_id = 1;
+    string machine_name = 4;
+    double timestamp = 2;
+
+    repeated computer_info_pb2.UpdateEvent events = 3;
+}
+
+// Monitoring service description with methods
+service Monitoring {
+    // This method allows to poll the current or last known state of a machine in the form of
+    // a ComputerInfo. This is done after establishing a connection by every client so that 
+    // the clients can compute the correct updates for the database to this last known state. 
+    rpc GetMachineState(GetStateRequest) returns (computer_info_pb2.ComputerInfo);
+    // SendMonitoringUpdate allows the client to send an endless stream of data update requests
+    // which contain UpdateEvents to be stored in the database. The server can send empty messages
+    // to probe the connection status if desired (not implemented at the moment).
+    rpc SendMonitoringUpdate(stream DataUpdateRequest) returns (stream google.protobuf.Empty);
+}

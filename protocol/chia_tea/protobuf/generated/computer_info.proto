@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package chia_tea.protobuf.generated.computer_info_pb2;
+
+import "chia_tea/protobuf/generated/hardware.proto";
+import "chia_tea/protobuf/generated/chia.proto";
+
+message ComputerInfo {
+    // IMPORTANT:
+    // all 'repeated' messages must have
+    // an attribute 'id'
+
+    // This information is used to keep track
+    // of all information inserted into the 
+    // database
+    double timestamp = 1;
+    int64 machine_id  = 2;
+
+    // All kind of information about the hardware
+    hardware_pb2.CpuInfo cpu_info = 3;
+    hardware_pb2.RamInfo ram_info = 4;
+    repeated hardware_pb2.DiskInfo disks = 5;
+    
+    // plotting
+    chia_pb2.PlottingJob plotting_progress = 6;
+
+    // farmer
+    chia_pb2.FarmerInfo farmer_info = 7;
+    repeated chia_pb2.HarvesterViewedFromFarmer connected_harvesters = 8;
+
+    // harvester
+    chia_pb2.HarvesterInfo harvester_info = 9;
+    repeated chia_pb2.HarvesterPlot harvester_plots = 10;
+
+    // wallet
+    chia_pb2.WalletInfo wallet_info = 11;
+
+    // system processes relevant to chia
+    repeated chia_pb2.ProcessInfo chia_processes = 12;
+}
+
+// What type of update event happened
+// during monitoring:
+// - NONE: default value to have a null value, should never be encountered
+// - ADD: adding of a resources such as a new plot
+// - UPDATE: change of data e.g. reporting new CPU data
+// - DELETE: deletion of a resource such as a chia process crashing
+enum EventType {
+    NONE = 0;
+    ADD = 1;
+    UPDATE = 2;
+    DELETE = 3;
+}
+
+// Update Event describes the incremental change of ComputerInfo
+// 
+// Context:
+//   Since ComputerInfo represents the whole state, it is also quite
+//   heavy. It does not make sense to send the whole state of a computer
+//   containing possibly thousands of entries such as plots every few seconds.
+// 
+// Technical Details:
+//   The monitoring client collects a new ComputerInfo every few seconds depending 
+//   on the config. It then compares the old and new ComputerInfo and creates the 
+//   corresponding UpdateEvent in case of deviations. These events are then sent
+//   to the server. There is a throttle for data which always changes such as CPU 
+//   in the config. The names in the config under 'monitoring.client.send_data_every' 
+//   are the same names as found in 'event_data'.
+// 
+// Constraints:
+//   UpdateEvent must have the very same entries such as ComputerInfo but 
+//   without the attribute 'repeated'. Only the types need to match but not
+//   the names.
+message UpdateEvent {
+    EventType event_type = 3;
+    oneof event_data {
+        // hardware
+        hardware_pb2.CpuInfo cpu = 4;
+        hardware_pb2.RamInfo ram = 5;
+        hardware_pb2.DiskInfo disk = 6;
+        // chia
+        chia_pb2.FarmerInfo farmer = 7;
+        chia_pb2.HarvesterViewedFromFarmer connected_harvester = 8;
+        chia_pb2.HarvesterPlot harvester_plot = 13;
+        chia_pb2.HarvesterInfo harvester = 9;
+        chia_pb2.WalletInfo wallet = 10;
+        chia_pb2.ProcessInfo process = 11;
+        chia_pb2.PlottingJob plotting_job = 12;
+    }
+}

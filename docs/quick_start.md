@@ -1,0 +1,98 @@
+# Chia-Tea Quick Start
+
+This guide is for getting started using Chia-Tea.
+
+## Table of Contents
+
+- [What can I do with Chia-Tea?](#what-can-i-do-with-chia-tea)
+- [How to install Chia-Tea?](#how-to-install-chia-tea)
+- [How to configure Chia-Tea?](#how-to-configure-chia-tea)
+- [How to start the copy tool?](#how-to-start-the-copy-tool)
+- [How to monitor my farm?](#how-to-monitor-my-farm)
+
+## What can I do with Chia-Tea?
+
+There are currently three major use-cases:
+
+- Copy plots between drives
+- Monitoring of a single or multi-machine chia farm
+- Discord bot to give notifications and allow interaction
+
+## How to install Chia-Tea?
+
+Since we didn't make an official release yet, please install chia-tea through git:
+
+```bash
+git clone https://github.com/tnt-codie/chia-tea.git
+cd chia-tea
+python setup.py install
+```
+
+Once we made our first official release you can install chia-tea through pip by running:
+
+```bash
+python -m pip install chia-tea
+```
+
+## How to configure Chia-Tea?
+
+All configurations are stored in a `config.yml` file.
+All cli tools use this config and search by default for
+a file `config.yml` in the very same directory where they are started.
+Command line tools can also specify the path to the config by using the `--config` option.
+You can either take the [default config file](https://github.com/tnt-codie/chia-tea/blob/develop/config_default.yml)
+or generate the default config file by running
+
+```
+python -m chia_tea.config --generate True config.yml
+```
+
+Then you can for example start the copy tool with:
+
+```
+python -m chia_tea.copy_plots --config ./path/to/config.yml
+```
+
+## How to start the copy tool?
+
+You can start the copy tool with:
+
+```
+python -m chia_tea.copy_plots
+```
+
+It will then copy plots between the `copy.source_folders` drives to the `copy.target_folders` drives as specified in the `config.yml`.
+
+## How to monitor my farm?
+
+First, you need ssl certificates to secure the connection. You can create certificates with:
+
+```
+task certs -- localhost
+```
+
+or replace `localhost` by your servers name such as `my.webserver.com` or an ip address. Register these certificates in the `config.yml` under `monitoring.auth`. Once this is done, you can launch the monitoring server. As a note, the client only requires the `.crt` file and not `.key` file. The server receives all monitoring data and stores it in a file called `monitoring.db`, but this can be changed in the config under `monitoring.server.db_filepath`. You can start the server with:
+
+```
+python -m chia_tea.monitoring.server
+```
+
+After starting a server you can connect an arbitrary amount of clients to it. Clients are programs run on machines you want to monitor. A client collects data from the hardware, processes and chia and sends it to the server. You can control the the data collection frequency in the config under `monitoring.client` but the default should suffice for the beginning.
+
+Simply run the following command and Chia-Tea will collect and send all data automatically to the server:
+
+```
+python -m chia_tea.monitoring.client
+```
+
+We have a discord bot as a user interface to the database. It will notify you on any important events and provide commands to get further insights.
+
+Before you can run the bot you will need a [Discord Bot Token](https://www.writebots.com/discord-bot-token/) and also the id of your channel. Specify this once again in the `config.yml` under `discord`.
+
+You can run the bot then with:
+
+```
+python -m chia_tea.discord.bot
+```
+
+And here you go, you are all set up.

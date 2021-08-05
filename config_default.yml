@@ -1,0 +1,100 @@
+version: 0
+
+machine:
+  # this name will be used for display
+  name: machine_name_to_display
+
+logging:
+  # Allowed is: TRACE, DEBUG, INFO, WARNING, ERROR
+  loglevel: INFO
+  # Whether to print the statements in the console
+  log_to_console: True
+  # Uses the file logger
+  log_to_file: True
+  # These settings give control on the size of
+  # the logfiles.
+  max_logfiles: 10
+  max_logfile_size_mb: 15
+
+# This controls from where data is copied
+# with the CLI copy tool. The copy process
+# selects disks smartly. Also it can deal
+# with disconnects and other issues.
+copy:
+  source_folders:
+    - "/some/plotting/folder"
+    - "/another/plotting/folder"
+  target_folders:
+    - "/some/harvester/folder"
+    - "/another/harvester/folder"
+
+# General chia-related settings
+chia:
+  # Filepath at which the chia logfile resides.
+  logfile_filepath: ~/.chia/mainnet/log/debug.log
+
+discord:
+  token: YOUR_DISCORD_TOKEN
+  channel_id: 123456789
+
+monitoring:
+  auth:
+    cert_filepath: ./server.crt
+    key_filepath: ./server.key
+
+  # settings for the monitoring server receiving
+  # and storing monitoring data
+  server:
+    port: 43200
+    # filepath where the monitoring database will
+    # be stored on disk.
+    db_filepath: ./monitoring.db
+
+  # settings for the monitoring client, collecting
+  # and sending data
+  client:
+    # Address of the server to send data to.
+    # On the very same machine this is 127.0.0.1.
+    address: 127.0.0.1
+    port: 43200
+
+    # Depending on the system the data collection
+    # can be quite fast and may use too much cpu.
+    # This option throttles the general data
+    # collection. If the data collection takes
+    # longer than specified here the waiting time
+    # is ignored.
+    collect_data_every: 1.5 # seconds
+
+    # To not spam the database with too much data
+    # we can set a limit here to send updates no
+    # faster than specified.
+    # Note that if nothing changed such as disk space
+    # then no update is sent at all to keep stay
+    # efficient.
+    send_update_every:
+      # For hardware it is recommended to choose
+      # 1-5 minutes
+      cpu: 60 # seconds
+      ram: 60 # seconds
+      disk: 60 # seconds
+      process: 60 # seconds
+
+      # Chia data is not limited by default since
+      # we want to know asap if something is up.
+      # Note though that 'collect_data_every'
+      # applies and automatically rate limits
+      # chia data.
+
+      # farmer: 2
+      # connected_harvester: 2
+      # harvester: 2
+      # wallet: 2
+      # plotting_job: 2
+      # harvester_plot: 2
+
+# Enables development mode. This currently disables
+# encryption and also the discord bot does not send
+# send messages but they are printed to console.
+development:
+  testing: False

@@ -1,0 +1,229 @@
+
+from typing import Any, Dict, List
+
+import psutil
+
+from ...chia_watchdog.ChiaWatchdog import ChiaWatchdog
+from ...protobuf.generated.chia_pb2 import (FarmerInfo, HarvesterInfo,
+                                            HarvesterPlot,
+                                            HarvesterViewedFromFarmer,
+                                            ProcessInfo, WalletInfo)
+from ...utils.logger import log_runtime_async
+
+
+async def collect_connected_harvesters_to_farmer(
+    chia_dog: ChiaWatchdog
+) -> List[HarvesterViewedFromFarmer]:
+    """
+    """
+
+    harvesters_rpc = {
+        connected_harvester.node_id.hex(): connected_harvester
+        for connected_harvester in chia_dog.farmer_service.connections
+    }
+    harvesters_logfile = chia_dog.harvester_infos
+
+    # which harvesters do exist
+    all_harvester_ids = set(harvesters_rpc.keys()) | \
+        set(chia_dog.harvester_infos.keys())
+
+    connected_harvesters = []
+    for id in all_harvester_ids:
+
+        kwargs: Dict[str, Any] = dict(
+            id=id,
+        )
+
+        # get information from chia rpc
+        connected_harvester = harvesters_rpc.get(id)
+        if connected_harvester is not None:
+            kwargs["connection_time"] = connected_harvester.creation_time
+            kwargs["last_message_time"] = connected_harvester.last_message_time
+            kwargs["ip_address"] = connected_harvester.peer_host
+            kwargs["n_plots"] = connected_harvester.n_plots
+        else:
+            # there is no harvester process running anymore
+            # thus we omit the data further down from the
+            # logfile since we want a delete event in the db
+            continue
+
+        # get information written to logfile
+        harvester_info = harvesters_logfile.get(id)
+        if harvester_info:
+            # don't append harvester info if it is not connected
+            # anymore
+            if not harvester_info.is_connected:
+                continue
+            kwargs["n_timeouts"] = harvester_info.n_timeouts
+            kwargs["missed_challenges"] = harvester_info.n_overdue_responses
+
+        connected_harvesters.append(
+            HarvesterViewedFromFarmer(
+                **kwargs,
+            )
+        )
+
+    return connected_harvesters
+
+
+@log_runtime_async(__file__)
+async def collect_farmer_info(chia_dog: ChiaWatchdog) -> FarmerInfo:
+    """ Collects info about the farmer
+
+    Parameters
+    ----------
+    chia_dog : ChiaWatchdog
+        chia watchdog to take data from
+
+    Returns
+    -------
+    farmer_info : FarmerInfo
+        info about the farmer running on the system
+    """
+    return FarmerInfo(
+        is_running=chia_dog.farmer_service.is_running,
+        # connected_harvesters=,
+        # total_challenges=,
+    )
+
+
+@log_runtime_async(__file__)
+async def collect_harvester_info(
+    chia_dog: ChiaWatchdog
+) -> HarvesterInfo:
+    """ Collects info about the farmer
+
+    Parameters
+    ----------
+    chia_dog : ChiaWatchdog
+        chia watchdog to take data from
+
+    Returns
+    -------
+    info : HarvesterInfo
+        info about the harvester running on the system
+    plots : List[HarvesterPlot]
+        list of plots on the harvester
+    """
+
+    return HarvesterInfo(
+        is_running=chia_dog.harvester_service.is_running,
+        n_proofs=chia_dog.harvester_service.n_proofs,
+    )
+
+
+@log_runtime_async(__file__)
+async def collect_harvester_plots(
+    chia_dog: ChiaWatchdog
+) -> List[HarvesterPlot]:
+    """ Collects info about the harvester plots
+
+    Parameters
+    ----------
+    chia_dog : ChiaWatchdog
+        chia watchdog to take data from
+
+    Returns
+    -------
+    plots : List[HarvesterPlot]
+        list of plots on the harvester
+    """
+
+    plots: List[HarvesterPlot] = []
+    for plot_response in chia_dog.harvester_service.plots:
+        plots.append(
+            HarvesterPlot(
+                id=plot_response["plot_public_key"],
+                plot_seed=plot_response["plot-seed"],
+                filename=plot_response["filename"],
+                filesize=plot_response["file_size"],
+                pool_contract_puzzle_hash=plot_response["pool_contract_puzzle_hash"],
+                pool_public_key=plot_response["pool_public_key"],
+                size=plot_response["size"],
+                time_modified=plot_response["time_modified"],
+            )
+        )
+
+    return plots
+
+
+@log_runtime_async(__file__)
+async def collect_wallet_info(chia_dog: ChiaWatchdog) -> WalletInfo:
+    """ Collects info about the farmer
+
+    Parameters
+    ----------
+    chia_dog : ChiaWatchdog
+        chia watchdog to take data from
+
+    Returns
+    -------
+    wallet_info : WalletInfo
+        info about the wallet running on the system
+    """
+    return WalletInfo(
+        is_running=chia_dog.wallet_service.is_running,
+        is_synced=chia_dog.wallet_service.is_synced,
+    )
+
+
+@log_runtime_async(__file__)
+async def collect_process_info() -> List[ProcessInfo]:
+    """ Collect data about every chia related process
+    running on the machine
+
+    Returns
+    -------
+    processes : List[ProcessInfo]
+        List of processes
+    """
+
+    process_names_to_filter_for = (
+        "chia",
+        "chia_harvester",
+        "chia_farmer",
+        "chia_wallet",
+        "chia_daemon",
+        "chia_full_node",
+    )
+
+    processes: List[ProcessInfo] = []
+
+    for process in psutil.process_iter():
+        if not process.name() in process_names_to_filter_for:
+            continue
+
+        try:
+            meminfo = process.memory_info()
+
+            # network_connections = [
+            #     "{ip}:{port}".format(
+            #         ip=connection.raddr[0],
+            #         port=connection.raddr[0],
+            #     )
+            #     for connection in process.connections()
+            # ]
+
+            processes.append(
+                ProcessInfo(
+                    name=process.name(),
+                    executable=process.exe(),
+                    command="".join(process.cmdline()),
+                    create_time=process.create_time(),
+                    id=process.pid,
+                    cpu_usage=process.cpu_percent(),
+                    used_physical_ram=meminfo.rss,
+                    used_virtual_ram=meminfo.vms,
+                    opened_files=", ".join(
+                        file.path for file in process.open_files()),
+                    # network_connections=network_connections,
+                )
+            )
+        except (
+            psutil.NoSuchProcess,
+            psutil.PermissionError,
+            psutil.AccessDenied,
+        ):
+            pass
+
+    return processes

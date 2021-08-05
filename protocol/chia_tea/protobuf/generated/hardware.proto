@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package chia_tea.protobuf.generated.hardware_pb2;
+
+message CpuInfo {
+    string name = 1;
+    double clock_speed = 2;
+    double usage = 3;
+    double temperature = 4;
+    int32 n_vcores = 5;
+}
+
+message RamInfo {
+    int64 total_ram = 1;
+    int64 used_ram = 2; 
+    int64 total_swap = 3;
+    int64 used_swap = 4;
+}
+
+message DiskInfo {
+    string id = 1;
+    string name = 2;
+    double total_space = 3;
+    double used_space = 4;
+    string device = 12;
+    string mountpoint = 13;
+    string fstype = 14;
+    string mount_options = 15;
+    // TODO unused
+    double temperature = 5;
+    double read_activity = 6;
+    double write_activity = 7;
+    double read_speed = 8;
+    double write_speed = 9;
+    double read_total_tbw = 10;
+    double write_total_tbw = 11; 
+}

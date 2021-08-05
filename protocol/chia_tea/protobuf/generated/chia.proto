@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package chia_tea.protobuf.generated.chia_pb2;
+
+message ProcessInfo {
+    string name = 1;
+    string executable = 2;
+    string command = 3;
+    double create_time = 4;
+    // id = pid (process id)
+    int64 id = 5;
+    float cpu_usage = 6;
+    float used_physical_ram = 7;
+    float used_virtual_ram = 8;
+    // TODO assess if it makes sense to use it or when
+    // (maybe just plotting)
+    string opened_files = 9;
+    // TODO unused at the moment possibly remove it
+    string network_connections = 10;
+}
+
+
+message HarvesterPlot {
+    // id = plot public key as hex string
+    string id = 10; 
+    string filename = 3;
+    int64 filesize = 4;
+    string pool_contract_puzzle_hash = 6;
+    string pool_public_key = 7;
+    int64 size = 8;
+    double time_modified = 9;
+    string plot_seed = 1;  
+    // TODO unused
+    string disk_id = 2;
+}
+
+message HarvesterInfo {
+    bool is_running = 2;
+    int64 n_proofs = 3;
+}
+
+// The farmer sees harvesters possibly differently
+// thus it makes sense to store it's own view
+// differently to asses problems later on.
+message HarvesterViewedFromFarmer {
+    string id = 1;
+    double connection_time = 8;
+    double last_message_time = 9;
+    string ip_address = 10;
+    int64 n_timeouts = 11;
+    int64 missed_challenges = 6;
+    int64 n_plots = 2;
+}
+
+message FarmerInfo {
+    bool is_running = 1;
+    int64 total_challenges = 2;
+}
+
+message WalletInfo {
+    bool is_running = 1;
+    bool is_synced = 2;
+}
+
+// TODO not used yet, also data tracked is unclear
+message PlottingJob {
+    int64 n_plots_in_progress = 1;
+    int64 n_plots_completed_today = 2;
+}
+
+// TODO would be nice tracking copying of data

@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package chia_tea.protobuf.generated.config_pb2;
+
+enum LogLevel {
+    TRACE = 0;
+    DEBUG = 1;
+    INFO = 2;
+    WARNING = 3;
+    ERROR = 4;
+}
+
+message MachineConfig {
+    string name = 1;
+}
+
+message LoggingConfig {
+    LogLevel loglevel = 1;
+    bool log_to_console = 2;
+    bool log_to_file = 3;
+    int32 max_logfiles = 4;
+    int32 max_logfile_size_mb = 5;
+}
+
+message CopyConfig {
+    repeated string source_folders = 1;
+    repeated string target_folders = 2;
+}
+
+message ChiaConfig {
+    string logfile_filepath = 1;
+}
+
+message DiscordConfig {
+    string token = 1;
+    int64 channel_id = 2;
+}
+
+message MonitoringConfig {
+    AuthConfig auth = 1;
+    ServerConfig server = 2;
+    ClientConfig client = 3;
+
+    message AuthConfig {
+        string cert_filepath = 1;
+        string key_filepath = 2;
+    }
+
+    message ServerConfig {
+        int32 port = 1;
+        string db_filepath = 2;
+    }
+
+    message ClientConfig {
+        string address = 1;
+        int32 port = 2;
+        double collect_data_every = 3;
+        SendUpdateEvery send_update_every = 4;
+        
+        message SendUpdateEvery {
+            double cpu = 1;
+            double ram = 2;
+            double disk = 3;
+            double process = 4;
+            double farmer = 5;
+            double connected_harvester = 6;
+            double harvester = 7;
+            double wallet = 8;
+            double plotting_job = 9;
+            double harvester_plot = 10;
+        }
+    }
+}
+
+message DevelopmentConfig {
+    bool testing = 1;
+}
+
+message ChiaTeaConfig {
+    // provides config versioning
+    int32 version = 1;
+
+    MachineConfig machine = 8;
+    LoggingConfig logging = 2;
+    CopyConfig copy = 3;
+    ChiaConfig chia = 4;
+    DiscordConfig discord = 5;
+    MonitoringConfig monitoring = 6;
+    DevelopmentConfig development = 7;
+}

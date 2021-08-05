@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package chia_tea.protobuf.generated.machine_info_pb2;
+
+// Info about every machine being monitored.
+// Is updated on every UpdateEvent sent to the
+// server.
+message MachineInfo {
+    // id of the machine currently
+    // derived from the MAC address
+    int64 machine_id = 1;
+    // ip address of the monitored
+    // machine.
+    string ip_address = 2;
+    // Time of the last update request
+    // received by the server.
+    double time_last_msg = 3;
+    // name for display in chat or elsewhere
+    string name = 4;
+}

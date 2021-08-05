@@ -1,0 +1,62 @@
+
+
+class HarvesterConnectedToFarmer:
+    """ A connected machine to the farmer
+
+    schema of connections from example data
+    {
+        'bytes_read': 732920,
+        'bytes_written': 736979,
+        'creation_time': 1625781881.464225,
+        'last_message_time': 1625856666.3932514,
+        'local_port': 8447,
+        'node_id': b'1n\x0f\xc4J\xb5q8\xc4\x98\x0b\xe7\\\xac\xd1\x82u\xbd\xe4!\x00r\xe5\xf0f\xefqI\xf2\xee4\x15',
+        'peer_host': '127.0.0.1',
+        'peer_port': 51844,
+        'peer_server_port': 8448,
+        'type': 2
+    }
+    """
+
+    bytes_read: int
+    bytes_written: int
+    creation_time: float
+    last_message_time: float
+    local_port: int
+    node_id: bytes
+    peer_host: str
+    peer_port: int
+    peer_server_port: int
+    type: int
+    n_plots: int
+
+    def __init__(
+        self,
+        bytes_read: int,
+        bytes_written: int,
+        creation_time: float,
+        last_message_time: float,
+        local_port: int,
+        node_id: bytes,
+        peer_host: str,
+        peer_port: int,
+        peer_server_port: int,
+        type: int,
+        n_plots: int = 0,
+    ):
+        self.bytes_read = bytes_read
+        self.bytes_written = bytes_written
+        self.creation_time = creation_time
+        self.last_message_time = last_message_time
+        self.local_port = local_port
+        self.node_id = node_id
+        self.peer_host = peer_host
+        self.peer_port = peer_port
+        self.peer_server_port = peer_server_port
+        self.type = type
+        self.n_plots = n_plots
+
+    def copy(self) -> 'HarvesterConnectedToFarmer':
+        return HarvesterConnectedToFarmer(
+            **self.__dict__,
+        )

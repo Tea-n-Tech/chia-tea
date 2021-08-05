@@ -1,0 +1,59 @@
+version: "3"
+
+tasks:
+  generate:
+    desc: Generates code from the protobuf definitions.
+    cmds:
+      - python3 -m grpc.tools.protoc -I./protocol --python_out=. protocol/chia_tea/protobuf/generated/hardware.proto
+      - python3 -m grpc.tools.protoc -I./protocol --python_out=. protocol/chia_tea/protobuf/generated/chia.proto
+      - python3 -m grpc.tools.protoc -I./protocol --python_out=. protocol/chia_tea/protobuf/generated/computer_info.proto
+      - python3 -m grpc.tools.protoc -I./protocol --python_out=. protocol/chia_tea/protobuf/generated/machine_info.proto
+      - python3 -m grpc.tools.protoc -I./protocol --python_out=. protocol/chia_tea/protobuf/generated/config.proto
+      - python3 -m grpc.tools.protoc -I./protocol --python_out=. --grpc_python_out=. protocol/chia_tea/protobuf/generated/monitoring_service.proto
+
+  lint:
+    desc: Lints the code and reports on issues.
+    cmds:
+      - flake8 chia_tea --count --select=E9,F63,F7,F82 --show-source --statistics
+      - flake8 chia_tea --exclude ./chia_tea/protobuf/generated --count --max-complexity=10 --max-line-length=127
+
+  test:
+    desc: Runs the test suite.
+    cmds:
+      - python3 -m pytest
+
+  copy:
+    desc: Starts the copy cli tool.
+    cmds:
+      - python3 -m chia_tea.copy_plots
+
+  discord:
+    desc: Starts the discord bot.
+    cmds:
+      - python3 -m chia_tea.discord.bot
+
+  clean:
+    desc: Cleans up by deleting generated files including the database.
+    cmds:
+      - rm -rf chia_tea/protobuf/generated
+      - rm -f ./monitoring.db
+
+  server:
+    desc: Starts the monitoring main server collecting data from clients.
+    deps: [generate]
+    cmds:
+      - python3 -m chia_tea.monitoring.server
+
+  client:
+    desc: Starts a monitoring client collecting data and sending it to the server.
+    deps: [generate]
+    cmds:
+      - python3 -m chia_tea.monitoring.client
+
+  certs:
+    desc: Generates certificates for the monitoring
+    cmds:
+      - |
+        if [ ! -z "{{.CLI_ARGS}}" ]; then export SERVER_NAME="{{.CLI_ARGS}}"; else echo "Missing server name or ip as argument. Please run 'task certs -- <server name>'. If you are on a single machine run 'task certs -- localhost'."; exit 1; fi
+        echo Server name: $SERVER_NAME
+        openssl req -x509 -nodes -newkey rsa:4096 -keyout server.key -out server.crt -days 1095 -subj "/C=DE/O=chia-tea/OU=chia/CN=$SERVER_NAME"
