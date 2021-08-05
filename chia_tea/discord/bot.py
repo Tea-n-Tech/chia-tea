@@ -171,6 +171,63 @@ async def _farmer(ctx):
     )
 
 
+
+@bot.command(name="harvesters")
+async def _harvester(ctx):
+
+    # open the database read only
+    global db_filepath
+    connection = sqlite3.connect(
+        f"file:{db_filepath}?mode=ro",
+        uri=True,
+    )
+    cursor = connection.cursor()
+
+    machine_and_computer_info_dict = get_current_computer_and_machine_infos_from_db(
+        cursor
+    )
+
+    messages = []
+
+    for _, (machine, computer_info) in machine_and_computer_info_dict.items():
+        messages += [
+        f"\n🧑‍🌾 *{get_machine_info_name(machine)}*:"
+        ]
+
+        # list up connected harvesters
+        now_timestamp = datetime.now().timestamp()
+        for harvester in computer_info.connected_harvesters:
+            messages.append(
+                    """
+  Harvester *{harvester_id}*
+     🌐 ip address:  {ip_address}
+     📡 last answer: {last_answer} ago
+     🔌 Timeouts: {n_timeouts}
+     🚆 missed challenges: {missed_challenges}
+     🌾 plots: {n_plots}""".format(
+                        ip_address=harvester.ip_address,
+                        last_answer=format_timedelta_from_secs(
+                            now_timestamp - harvester.last_message_time),
+                        harvester_id=harvester.id[:8],
+                        n_timeouts=harvester.n_timeouts,
+                        missed_challenges=harvester.missed_challenges,
+                        n_plots=harvester.n_plots,
+                    )
+                )
+
+    if messages:
+        messages.insert(0, "**Harvesters:**")
+    else:
+        messages.append("No Harvesters 🧑‍🌾 around.")
+
+    await log_and_send_msg_if_any(
+        messages=messages,
+        logger=get_logger(__file__),
+        channel=ctx.channel,
+        is_testing=get_config().development.testing,
+    )
+
+
 def get_discord_channel_id() -> int:
     """ Get the discord channel id from the config
 
