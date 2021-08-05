@@ -170,6 +170,7 @@ async def _farmer(ctx):
         is_testing=get_config().development.testing,
     )
 
+
 @bot.command(name="harvesters")
 async def _harvester(ctx):
 
