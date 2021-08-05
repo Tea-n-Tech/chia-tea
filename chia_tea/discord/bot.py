@@ -170,8 +170,6 @@ async def _farmer(ctx):
         is_testing=get_config().development.testing,
     )
 
-
-
 @bot.command(name="harvesters")
 async def _harvester(ctx):
 
@@ -191,7 +189,7 @@ async def _harvester(ctx):
 
     for _, (machine, computer_info) in machine_and_computer_info_dict.items():
         messages += [
-        f"\n🧑‍🌾 *{get_machine_info_name(machine)}*:"
+            f"\n🧑‍🌾 *{get_machine_info_name(machine)}*:"
         ]
 
         # list up connected harvesters
