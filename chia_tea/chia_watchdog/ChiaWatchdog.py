@@ -1,6 +1,6 @@
 import asyncio
 from datetime import date
-from typing import Dict, List, Union
+from typing import Dict, List
 
 from ..utils.logger import get_logger
 from .api.FarmerAPI import FarmerAPI

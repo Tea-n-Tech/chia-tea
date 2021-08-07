@@ -1,7 +1,7 @@
 
 
 from datetime import datetime
-from typing import Callable, List
+from typing import List
 
 from sortedcontainers import SortedSet
 
