@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package chia_tea.protobuf.generated.hardware_pb2;
 
-message CpuInfo {
+message Cpu {
     string name = 1;
     double clock_speed = 2;
     double usage = 3;
@@ -10,14 +10,14 @@ message CpuInfo {
     int32 n_vcores = 5;
 }
 
-message RamInfo {
+message Ram {
     int64 total_ram = 1;
     int64 used_ram = 2; 
     int64 total_swap = 3;
     int64 used_swap = 4;
 }
 
-message DiskInfo {
+message Disk {
     string id = 1;
     string name = 2;
     double total_space = 3;

@@ -63,10 +63,10 @@ message MonitoringConfig {
             double disk = 3;
             double process = 4;
             double farmer = 5;
-            double connected_harvester = 6;
+            double farmer_harvester = 6;
             double harvester = 7;
             double wallet = 8;
-            double plotting_job = 9;
+            // double plotting_job = 9;
             double harvester_plot = 10;
         }
     }

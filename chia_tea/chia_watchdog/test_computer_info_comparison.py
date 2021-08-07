@@ -5,7 +5,7 @@ from ..protobuf.generated.chia_pb2 import HarvesterPlot
 from ..protobuf.generated.computer_info_pb2 import (_COMPUTERINFO, ADD, DELETE,
                                                     UPDATE, ComputerInfo,
                                                     UpdateEvent)
-from ..protobuf.generated.hardware_pb2 import CpuInfo
+from ..protobuf.generated.hardware_pb2 import Cpu
 from ..utils.testing import async_test
 from .computer_info_comparison import compare_computer_info
 
@@ -29,11 +29,11 @@ class MonitoringClientTest(unittest.TestCase):
     @async_test
     async def test_compare_computer_info_update_non_iterable(self):
 
-        event_data = CpuInfo(name="my_cpu")
+        event_data = Cpu(name="my_cpu")
 
         old_computer_info = ComputerInfo()
         new_computer_info = ComputerInfo(
-            cpu_info=event_data
+            cpu=event_data
         )
         events = [
             event

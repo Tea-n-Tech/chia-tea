@@ -16,7 +16,7 @@ class TestUpdateEventNotifications(unittest.TestCase):
         update_event = ParseDict(
             js_dict=dict(
                 event_type=ADD,
-                connected_harvester=dict(
+                farmer_harvester=dict(
                     id="harvester id",
                     ip_address="some ip",
                 )
@@ -35,7 +35,7 @@ class TestUpdateEventNotifications(unittest.TestCase):
         update_event = ParseDict(
             js_dict=dict(
                 event_type=DELETE,
-                connected_harvester=dict(
+                farmer_harvester=dict(
                     id="harvester id",
                     ip_address="some ip",
                 )
@@ -54,7 +54,7 @@ class TestUpdateEventNotifications(unittest.TestCase):
         update_event = ParseDict(
             js_dict=dict(
                 event_type=UPDATE,
-                connected_harvester=dict(
+                farmer_harvester=dict(
                     id="harvester id",
                     ip_address="some ip",
                 )

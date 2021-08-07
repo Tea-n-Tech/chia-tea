@@ -1,27 +1,29 @@
 from datetime import datetime, timedelta
 from typing import List, Union
 
-from ..utils.logger import get_logger
+from ...utils.logger import get_logger
 
 
-class HarvesterInfo:
+class FarmerHarvesterLogfile:
     """Class with compact information about harvesters"""
 
+    # General info
     harvester_id: str = ""
     ip_address: str = ""
+
+    # Tracking of connection status
     is_connected = False
 
+    # Signage point tracking
     time_of_incoming_messages: List[datetime]
     time_of_outgoing_messages: List[datetime]
 
     # Metrics
     n_responses = 0
     n_overdue_responses = 0
-    n_timeouts = 0
-    time_of_timeout: Union[datetime, None]
 
+    # Additional tracking
     last_update: datetime
-    timed_out: bool = False
 
     def __init__(
         self,
@@ -34,8 +36,6 @@ class HarvesterInfo:
         timed_out: bool = False,
         n_responses: int = 0,
         n_overdue_responses: int = 0,
-        n_timeouts: int = 0,
-        time_of_timeout: Union[datetime, None] = None,
     ):
         """Initializes the harvester info
 
@@ -71,8 +71,6 @@ class HarvesterInfo:
         self.timed_out = timed_out
         self.n_responses = n_responses
         self.n_overdue_responses = n_overdue_responses
-        self.n_timeouts = n_timeouts
-        self.time_of_timeout = time_of_timeout
 
     def copy(self):
         """ Get a copy of the HarvesterInfo
@@ -82,14 +80,12 @@ class HarvesterInfo:
         harvester_info : HarbesterInfo
             copy of this instance
         """
-        return HarvesterInfo(
+        return FarmerHarvesterLogfile(
             harvester_id=self.harvester_id,
             ip_address=self.ip_address,
             is_connected=self.is_connected,
             n_overdue_responses=self.n_overdue_responses,
             n_responses=self.n_responses,
-            n_timeouts=self.n_timeouts,
-            time_of_timeout=self.time_of_timeout,
             last_update=self.last_update,
             time_of_incoming_messages=list(self.time_of_incoming_messages),
             time_of_outgoing_messages=list(self.time_of_outgoing_messages),

@@ -1,18 +1,18 @@
 
 from typing import List
-from .HarvesterConnectedToFarmer import HarvesterConnectedToFarmer
+from .FarmerHarvesterAPI import FarmerHarvesterAPI
 
 
-class FarmerService:
+class FarmerAPI:
     is_ready: bool = False
     is_running: bool = False
-    connections: List[HarvesterConnectedToFarmer]
+    connections: List[FarmerHarvesterAPI]
 
     def __init__(self):
         self.connections = []
 
-    def copy(self) -> 'FarmerService':
-        new_farmer = FarmerService()
+    def copy(self) -> 'FarmerAPI':
+        new_farmer = FarmerAPI()
         new_farmer.is_ready = self.is_ready
         new_farmer.is_running = self.is_running
         new_farmer.connections = [

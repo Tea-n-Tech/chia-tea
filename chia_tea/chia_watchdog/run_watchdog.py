@@ -7,6 +7,7 @@ from .api.update_all import update_directly_from_chia
 from .ChiaWatchdog import ChiaWatchdog
 from .logfile.file_watching import watch_lines_infinitely
 from .logfile.line_checks import run_line_checks
+from .regular_checks import run_watchdog_checks
 
 
 async def __start_watchdog_self_checks(chia_dog: ChiaWatchdog):
@@ -15,7 +16,7 @@ async def __start_watchdog_self_checks(chia_dog: ChiaWatchdog):
     await chia_dog.ready()
 
     while True:
-        await chia_dog.run_self_checks()
+        await run_watchdog_checks(chia_dog)
         await asyncio.sleep(0.8)
 
 
