@@ -1,16 +1,14 @@
-from chia_tea.protobuf.generated.chia_pb2 import HarvesterViewedFromFarmer
 import unittest
-from datetime import datetime
 
 from google.protobuf.json_format import ParseDict
 
+from ...protobuf.generated.chia_pb2 import HarvesterViewedFromFarmer
 from ...protobuf.generated.computer_info_pb2 import ComputerInfo
 from ...protobuf.generated.machine_info_pb2 import MachineInfo
-from .computer_info_notifications import (HARVESTER_TIMOUT, get_msg_if_farmer_harvester_timed_out,
-                                          notify_on_harvester_reward_found,
-                                          notify_on_wallet_connection_change,
-                                          notify_on_wallet_sync_change,
-                                          notify_when_harvester_times_out)
+from .computer_info_notifications import (
+    HARVESTER_TIMOUT, get_msg_if_farmer_harvester_timed_out,
+    notify_on_harvester_reward_found, notify_on_wallet_connection_change,
+    notify_on_wallet_sync_change)
 
 
 class TestComputerInfoNotifications(unittest.TestCase):
