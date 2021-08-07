@@ -74,7 +74,7 @@ def get_msg_if_farmer_harvester_timed_out(
         return "{icon}  Harvester {machine_name} {status}.".format(
             icon="⚠️",
             machine_name=get_machine_info_name(machine),
-            status="timed out"
+            status=f"didn't respond for {HARVESTER_TIMOUT}s"
         )
     else:
         return ""
