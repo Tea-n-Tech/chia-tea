@@ -22,7 +22,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n/chia_tea/protobuf/generated/computer_info.proto\x12-chia_tea.protobuf.generated.computer_info_pb2\x1a*chia_tea/protobuf/generated/hardware.proto\x1a&chia_tea/protobuf/generated/chia.proto\"\xa3\x06\n\x0c\x43omputerInfo\x12\x11\n\ttimestamp\x18\x01 \x01(\x01\x12\x12\n\nmachine_id\x18\x02 \x01(\x03\x12\x43\n\x08\x63pu_info\x18\x03 \x01(\x0b\x32\x31.chia_tea.protobuf.generated.hardware_pb2.CpuInfo\x12\x43\n\x08ram_info\x18\x04 \x01(\x0b\x32\x31.chia_tea.protobuf.generated.hardware_pb2.RamInfo\x12\x41\n\x05\x64isks\x18\x05 \x03(\x0b\x32\x32.chia_tea.protobuf.generated.hardware_pb2.DiskInfo\x12L\n\x11plotting_progress\x18\x06 \x01(\x0b\x32\x31.chia_tea.protobuf.generated.chia_pb2.PlottingJob\x12\x45\n\x0b\x66\x61rmer_info\x18\x07 \x01(\x0b\x32\x30.chia_tea.protobuf.generated.chia_pb2.FarmerInfo\x12]\n\x14\x63onnected_harvesters\x18\x08 \x03(\x0b\x32?.chia_tea.protobuf.generated.chia_pb2.HarvesterViewedFromFarmer\x12K\n\x0eharvester_info\x18\t \x01(\x0b\x32\x33.chia_tea.protobuf.generated.chia_pb2.HarvesterInfo\x12L\n\x0fharvester_plots\x18\n \x03(\x0b\x32\x33.chia_tea.protobuf.generated.chia_pb2.HarvesterPlot\x12\x45\n\x0bwallet_info\x18\x0b \x01(\x0b\x32\x30.chia_tea.protobuf.generated.chia_pb2.WalletInfo\x12I\n\x0e\x63hia_processes\x18\x0c \x03(\x0b\x32\x31.chia_tea.protobuf.generated.chia_pb2.ProcessInfo\"\xc3\x06\n\x0bUpdateEvent\x12L\n\nevent_type\x18\x03 \x01(\x0e\x32\x38.chia_tea.protobuf.generated.computer_info_pb2.EventType\x12@\n\x03\x63pu\x18\x04 \x01(\x0b\x32\x31.chia_tea.protobuf.generated.hardware_pb2.CpuInfoH\x00\x12@\n\x03ram\x18\x05 \x01(\x0b\x32\x31.chia_tea.protobuf.generated.hardware_pb2.RamInfoH\x00\x12\x42\n\x04\x64isk\x18\x06 \x01(\x0b\x32\x32.chia_tea.protobuf.generated.hardware_pb2.DiskInfoH\x00\x12\x42\n\x06\x66\x61rmer\x18\x07 \x01(\x0b\x32\x30.chia_tea.protobuf.generated.chia_pb2.FarmerInfoH\x00\x12^\n\x13\x63onnected_harvester\x18\x08 \x01(\x0b\x32?.chia_tea.protobuf.generated.chia_pb2.HarvesterViewedFromFarmerH\x00\x12M\n\x0eharvester_plot\x18\r \x01(\x0b\x32\x33.chia_tea.protobuf.generated.chia_pb2.HarvesterPlotH\x00\x12H\n\tharvester\x18\t \x01(\x0b\x32\x33.chia_tea.protobuf.generated.chia_pb2.HarvesterInfoH\x00\x12\x42\n\x06wallet\x18\n \x01(\x0b\x32\x30.chia_tea.protobuf.generated.chia_pb2.WalletInfoH\x00\x12\x44\n\x07process\x18\x0b \x01(\x0b\x32\x31.chia_tea.protobuf.generated.chia_pb2.ProcessInfoH\x00\x12I\n\x0cplotting_job\x18\x0c \x01(\x0b\x32\x31.chia_tea.protobuf.generated.chia_pb2.PlottingJobH\x00\x42\x0c\n\nevent_data*6\n\tEventType\x12\x08\n\x04NONE\x10\x00\x12\x07\n\x03\x41\x44\x44\x10\x01\x12\n\n\x06UPDATE\x10\x02\x12\n\n\x06\x44\x45LETE\x10\x03\x62\x06proto3'
+  serialized_pb=b'\n/chia_tea/protobuf/generated/computer_info.proto\x12-chia_tea.protobuf.generated.computer_info_pb2\x1a*chia_tea/protobuf/generated/hardware.proto\x1a&chia_tea/protobuf/generated/chia.proto\"\x98\x05\n\x0c\x43omputerInfo\x12\x11\n\ttimestamp\x18\x01 \x01(\x01\x12\x12\n\nmachine_id\x18\x02 \x01(\x03\x12:\n\x03\x63pu\x18\x03 \x01(\x0b\x32-.chia_tea.protobuf.generated.hardware_pb2.Cpu\x12:\n\x03ram\x18\x04 \x01(\x0b\x32-.chia_tea.protobuf.generated.hardware_pb2.Ram\x12=\n\x05\x64isks\x18\x05 \x03(\x0b\x32..chia_tea.protobuf.generated.hardware_pb2.Disk\x12<\n\x06\x66\x61rmer\x18\x07 \x01(\x0b\x32,.chia_tea.protobuf.generated.chia_pb2.Farmer\x12Z\n\x11\x66\x61rmer_harvesters\x18\x08 \x03(\x0b\x32?.chia_tea.protobuf.generated.chia_pb2.HarvesterViewedFromFarmer\x12\x42\n\tharvester\x18\t \x01(\x0b\x32/.chia_tea.protobuf.generated.chia_pb2.Harvester\x12L\n\x0fharvester_plots\x18\n \x03(\x0b\x32\x33.chia_tea.protobuf.generated.chia_pb2.HarvesterPlot\x12<\n\x06wallet\x18\x0b \x01(\x0b\x32,.chia_tea.protobuf.generated.chia_pb2.Wallet\x12@\n\tprocesses\x18\x0c \x03(\x0b\x32-.chia_tea.protobuf.generated.chia_pb2.Process\"\xd9\x05\n\x0bUpdateEvent\x12L\n\nevent_type\x18\x03 \x01(\x0e\x32\x38.chia_tea.protobuf.generated.computer_info_pb2.EventType\x12<\n\x03\x63pu\x18\x04 \x01(\x0b\x32-.chia_tea.protobuf.generated.hardware_pb2.CpuH\x00\x12<\n\x03ram\x18\x05 \x01(\x0b\x32-.chia_tea.protobuf.generated.hardware_pb2.RamH\x00\x12>\n\x04\x64isk\x18\x06 \x01(\x0b\x32..chia_tea.protobuf.generated.hardware_pb2.DiskH\x00\x12>\n\x06\x66\x61rmer\x18\x07 \x01(\x0b\x32,.chia_tea.protobuf.generated.chia_pb2.FarmerH\x00\x12[\n\x10\x66\x61rmer_harvester\x18\x08 \x01(\x0b\x32?.chia_tea.protobuf.generated.chia_pb2.HarvesterViewedFromFarmerH\x00\x12M\n\x0eharvester_plot\x18\r \x01(\x0b\x32\x33.chia_tea.protobuf.generated.chia_pb2.HarvesterPlotH\x00\x12\x44\n\tharvester\x18\t \x01(\x0b\x32/.chia_tea.protobuf.generated.chia_pb2.HarvesterH\x00\x12>\n\x06wallet\x18\n \x01(\x0b\x32,.chia_tea.protobuf.generated.chia_pb2.WalletH\x00\x12@\n\x07process\x18\x0b \x01(\x0b\x32-.chia_tea.protobuf.generated.chia_pb2.ProcessH\x00\x42\x0c\n\nevent_data*6\n\tEventType\x12\x08\n\x04NONE\x10\x00\x12\x07\n\x03\x41\x44\x44\x10\x01\x12\n\n\x06UPDATE\x10\x02\x12\n\n\x06\x44\x45LETE\x10\x03\x62\x06proto3'
   ,
   dependencies=[chia__tea_dot_protobuf_dot_generated_dot_hardware__pb2.DESCRIPTOR,chia__tea_dot_protobuf_dot_generated_dot_chia__pb2.DESCRIPTOR,])
 
@@ -56,8 +56,8 @@ _EVENTTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1826,
-  serialized_end=1880,
+  serialized_start=1581,
+  serialized_end=1635,
 )
 _sym_db.RegisterEnumDescriptor(_EVENTTYPE)
 
@@ -92,14 +92,14 @@ _COMPUTERINFO = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='cpu_info', full_name='chia_tea.protobuf.generated.computer_info_pb2.ComputerInfo.cpu_info', index=2,
+      name='cpu', full_name='chia_tea.protobuf.generated.computer_info_pb2.ComputerInfo.cpu', index=2,
       number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='ram_info', full_name='chia_tea.protobuf.generated.computer_info_pb2.ComputerInfo.ram_info', index=3,
+      name='ram', full_name='chia_tea.protobuf.generated.computer_info_pb2.ComputerInfo.ram', index=3,
       number=4, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -113,49 +113,42 @@ _COMPUTERINFO = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='plotting_progress', full_name='chia_tea.protobuf.generated.computer_info_pb2.ComputerInfo.plotting_progress', index=5,
-      number=6, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='farmer_info', full_name='chia_tea.protobuf.generated.computer_info_pb2.ComputerInfo.farmer_info', index=6,
+      name='farmer', full_name='chia_tea.protobuf.generated.computer_info_pb2.ComputerInfo.farmer', index=5,
       number=7, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='connected_harvesters', full_name='chia_tea.protobuf.generated.computer_info_pb2.ComputerInfo.connected_harvesters', index=7,
+      name='farmer_harvesters', full_name='chia_tea.protobuf.generated.computer_info_pb2.ComputerInfo.farmer_harvesters', index=6,
       number=8, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='harvester_info', full_name='chia_tea.protobuf.generated.computer_info_pb2.ComputerInfo.harvester_info', index=8,
+      name='harvester', full_name='chia_tea.protobuf.generated.computer_info_pb2.ComputerInfo.harvester', index=7,
       number=9, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='harvester_plots', full_name='chia_tea.protobuf.generated.computer_info_pb2.ComputerInfo.harvester_plots', index=9,
+      name='harvester_plots', full_name='chia_tea.protobuf.generated.computer_info_pb2.ComputerInfo.harvester_plots', index=8,
       number=10, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='wallet_info', full_name='chia_tea.protobuf.generated.computer_info_pb2.ComputerInfo.wallet_info', index=10,
+      name='wallet', full_name='chia_tea.protobuf.generated.computer_info_pb2.ComputerInfo.wallet', index=9,
       number=11, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='chia_processes', full_name='chia_tea.protobuf.generated.computer_info_pb2.ComputerInfo.chia_processes', index=11,
+      name='processes', full_name='chia_tea.protobuf.generated.computer_info_pb2.ComputerInfo.processes', index=10,
       number=12, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -174,7 +167,7 @@ _COMPUTERINFO = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=183,
-  serialized_end=986,
+  serialized_end=847,
 )
 
 
@@ -222,7 +215,7 @@ _UPDATEEVENT = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='connected_harvester', full_name='chia_tea.protobuf.generated.computer_info_pb2.UpdateEvent.connected_harvester', index=5,
+      name='farmer_harvester', full_name='chia_tea.protobuf.generated.computer_info_pb2.UpdateEvent.farmer_harvester', index=5,
       number=8, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -256,13 +249,6 @@ _UPDATEEVENT = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='plotting_job', full_name='chia_tea.protobuf.generated.computer_info_pb2.UpdateEvent.plotting_job', index=10,
-      number=12, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -280,31 +266,29 @@ _UPDATEEVENT = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=989,
-  serialized_end=1824,
+  serialized_start=850,
+  serialized_end=1579,
 )
 
-_COMPUTERINFO.fields_by_name['cpu_info'].message_type = chia__tea_dot_protobuf_dot_generated_dot_hardware__pb2._CPUINFO
-_COMPUTERINFO.fields_by_name['ram_info'].message_type = chia__tea_dot_protobuf_dot_generated_dot_hardware__pb2._RAMINFO
-_COMPUTERINFO.fields_by_name['disks'].message_type = chia__tea_dot_protobuf_dot_generated_dot_hardware__pb2._DISKINFO
-_COMPUTERINFO.fields_by_name['plotting_progress'].message_type = chia__tea_dot_protobuf_dot_generated_dot_chia__pb2._PLOTTINGJOB
-_COMPUTERINFO.fields_by_name['farmer_info'].message_type = chia__tea_dot_protobuf_dot_generated_dot_chia__pb2._FARMERINFO
-_COMPUTERINFO.fields_by_name['connected_harvesters'].message_type = chia__tea_dot_protobuf_dot_generated_dot_chia__pb2._HARVESTERVIEWEDFROMFARMER
-_COMPUTERINFO.fields_by_name['harvester_info'].message_type = chia__tea_dot_protobuf_dot_generated_dot_chia__pb2._HARVESTERINFO
+_COMPUTERINFO.fields_by_name['cpu'].message_type = chia__tea_dot_protobuf_dot_generated_dot_hardware__pb2._CPU
+_COMPUTERINFO.fields_by_name['ram'].message_type = chia__tea_dot_protobuf_dot_generated_dot_hardware__pb2._RAM
+_COMPUTERINFO.fields_by_name['disks'].message_type = chia__tea_dot_protobuf_dot_generated_dot_hardware__pb2._DISK
+_COMPUTERINFO.fields_by_name['farmer'].message_type = chia__tea_dot_protobuf_dot_generated_dot_chia__pb2._FARMER
+_COMPUTERINFO.fields_by_name['farmer_harvesters'].message_type = chia__tea_dot_protobuf_dot_generated_dot_chia__pb2._HARVESTERVIEWEDFROMFARMER
+_COMPUTERINFO.fields_by_name['harvester'].message_type = chia__tea_dot_protobuf_dot_generated_dot_chia__pb2._HARVESTER
 _COMPUTERINFO.fields_by_name['harvester_plots'].message_type = chia__tea_dot_protobuf_dot_generated_dot_chia__pb2._HARVESTERPLOT
-_COMPUTERINFO.fields_by_name['wallet_info'].message_type = chia__tea_dot_protobuf_dot_generated_dot_chia__pb2._WALLETINFO
-_COMPUTERINFO.fields_by_name['chia_processes'].message_type = chia__tea_dot_protobuf_dot_generated_dot_chia__pb2._PROCESSINFO
+_COMPUTERINFO.fields_by_name['wallet'].message_type = chia__tea_dot_protobuf_dot_generated_dot_chia__pb2._WALLET
+_COMPUTERINFO.fields_by_name['processes'].message_type = chia__tea_dot_protobuf_dot_generated_dot_chia__pb2._PROCESS
 _UPDATEEVENT.fields_by_name['event_type'].enum_type = _EVENTTYPE
-_UPDATEEVENT.fields_by_name['cpu'].message_type = chia__tea_dot_protobuf_dot_generated_dot_hardware__pb2._CPUINFO
-_UPDATEEVENT.fields_by_name['ram'].message_type = chia__tea_dot_protobuf_dot_generated_dot_hardware__pb2._RAMINFO
-_UPDATEEVENT.fields_by_name['disk'].message_type = chia__tea_dot_protobuf_dot_generated_dot_hardware__pb2._DISKINFO
-_UPDATEEVENT.fields_by_name['farmer'].message_type = chia__tea_dot_protobuf_dot_generated_dot_chia__pb2._FARMERINFO
-_UPDATEEVENT.fields_by_name['connected_harvester'].message_type = chia__tea_dot_protobuf_dot_generated_dot_chia__pb2._HARVESTERVIEWEDFROMFARMER
+_UPDATEEVENT.fields_by_name['cpu'].message_type = chia__tea_dot_protobuf_dot_generated_dot_hardware__pb2._CPU
+_UPDATEEVENT.fields_by_name['ram'].message_type = chia__tea_dot_protobuf_dot_generated_dot_hardware__pb2._RAM
+_UPDATEEVENT.fields_by_name['disk'].message_type = chia__tea_dot_protobuf_dot_generated_dot_hardware__pb2._DISK
+_UPDATEEVENT.fields_by_name['farmer'].message_type = chia__tea_dot_protobuf_dot_generated_dot_chia__pb2._FARMER
+_UPDATEEVENT.fields_by_name['farmer_harvester'].message_type = chia__tea_dot_protobuf_dot_generated_dot_chia__pb2._HARVESTERVIEWEDFROMFARMER
 _UPDATEEVENT.fields_by_name['harvester_plot'].message_type = chia__tea_dot_protobuf_dot_generated_dot_chia__pb2._HARVESTERPLOT
-_UPDATEEVENT.fields_by_name['harvester'].message_type = chia__tea_dot_protobuf_dot_generated_dot_chia__pb2._HARVESTERINFO
-_UPDATEEVENT.fields_by_name['wallet'].message_type = chia__tea_dot_protobuf_dot_generated_dot_chia__pb2._WALLETINFO
-_UPDATEEVENT.fields_by_name['process'].message_type = chia__tea_dot_protobuf_dot_generated_dot_chia__pb2._PROCESSINFO
-_UPDATEEVENT.fields_by_name['plotting_job'].message_type = chia__tea_dot_protobuf_dot_generated_dot_chia__pb2._PLOTTINGJOB
+_UPDATEEVENT.fields_by_name['harvester'].message_type = chia__tea_dot_protobuf_dot_generated_dot_chia__pb2._HARVESTER
+_UPDATEEVENT.fields_by_name['wallet'].message_type = chia__tea_dot_protobuf_dot_generated_dot_chia__pb2._WALLET
+_UPDATEEVENT.fields_by_name['process'].message_type = chia__tea_dot_protobuf_dot_generated_dot_chia__pb2._PROCESS
 _UPDATEEVENT.oneofs_by_name['event_data'].fields.append(
   _UPDATEEVENT.fields_by_name['cpu'])
 _UPDATEEVENT.fields_by_name['cpu'].containing_oneof = _UPDATEEVENT.oneofs_by_name['event_data']
@@ -318,8 +302,8 @@ _UPDATEEVENT.oneofs_by_name['event_data'].fields.append(
   _UPDATEEVENT.fields_by_name['farmer'])
 _UPDATEEVENT.fields_by_name['farmer'].containing_oneof = _UPDATEEVENT.oneofs_by_name['event_data']
 _UPDATEEVENT.oneofs_by_name['event_data'].fields.append(
-  _UPDATEEVENT.fields_by_name['connected_harvester'])
-_UPDATEEVENT.fields_by_name['connected_harvester'].containing_oneof = _UPDATEEVENT.oneofs_by_name['event_data']
+  _UPDATEEVENT.fields_by_name['farmer_harvester'])
+_UPDATEEVENT.fields_by_name['farmer_harvester'].containing_oneof = _UPDATEEVENT.oneofs_by_name['event_data']
 _UPDATEEVENT.oneofs_by_name['event_data'].fields.append(
   _UPDATEEVENT.fields_by_name['harvester_plot'])
 _UPDATEEVENT.fields_by_name['harvester_plot'].containing_oneof = _UPDATEEVENT.oneofs_by_name['event_data']
@@ -332,9 +316,6 @@ _UPDATEEVENT.fields_by_name['wallet'].containing_oneof = _UPDATEEVENT.oneofs_by_
 _UPDATEEVENT.oneofs_by_name['event_data'].fields.append(
   _UPDATEEVENT.fields_by_name['process'])
 _UPDATEEVENT.fields_by_name['process'].containing_oneof = _UPDATEEVENT.oneofs_by_name['event_data']
-_UPDATEEVENT.oneofs_by_name['event_data'].fields.append(
-  _UPDATEEVENT.fields_by_name['plotting_job'])
-_UPDATEEVENT.fields_by_name['plotting_job'].containing_oneof = _UPDATEEVENT.oneofs_by_name['event_data']
 DESCRIPTOR.message_types_by_name['ComputerInfo'] = _COMPUTERINFO
 DESCRIPTOR.message_types_by_name['UpdateEvent'] = _UPDATEEVENT
 DESCRIPTOR.enum_types_by_name['EventType'] = _EVENTTYPE

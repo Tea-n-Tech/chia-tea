@@ -53,16 +53,16 @@ async def collect_computer_info(
     computer_info = ComputerInfo(
         timestamp=datetime.now().timestamp(),
         machine_id=machine_id,
-        cpu_info=cpu_info,
+        cpu=cpu_info,
         disks=disks,
-        ram_info=ram_info,
+        ram=ram_info,
         # plotting_progress=,
-        connected_harvesters=connected_harvesters,
-        farmer_info=farmer_info,
-        harvester_info=harvester_info,
+        farmer_harvesters=connected_harvesters,
+        farmer=farmer_info,
+        harvester=harvester_info,
         harvester_plots=harvester_plots,
-        wallet_info=wallet_info,
-        chia_processes=chia_processes,
+        wallet=wallet_info,
+        processes=chia_processes,
     )
 
     return computer_info

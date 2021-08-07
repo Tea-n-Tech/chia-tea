@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package chia_tea.protobuf.generated.chia_pb2;
 
-message ProcessInfo {
+message Process {
     string name = 1;
     string executable = 2;
     string command = 3;
@@ -34,7 +34,7 @@ message HarvesterPlot {
     string disk_id = 2;
 }
 
-message HarvesterInfo {
+message Harvester {
     bool is_running = 2;
     int64 n_proofs = 3;
 }
@@ -45,27 +45,27 @@ message HarvesterInfo {
 message HarvesterViewedFromFarmer {
     string id = 1;
     double connection_time = 8;
-    double last_message_time = 9;
+    double time_last_msg_received = 3;
+    double time_last_msg_sent = 9;
     string ip_address = 10;
-    int64 n_timeouts = 11;
     int64 missed_challenges = 6;
     int64 n_plots = 2;
 }
 
-message FarmerInfo {
+message Farmer {
     bool is_running = 1;
     int64 total_challenges = 2;
 }
 
-message WalletInfo {
+message Wallet {
     bool is_running = 1;
     bool is_synced = 2;
 }
 
 // TODO not used yet, also data tracked is unclear
-message PlottingJob {
-    int64 n_plots_in_progress = 1;
-    int64 n_plots_completed_today = 2;
-}
+// message PlottingJob {
+//     int64 n_plots_in_progress = 1;
+//     int64 n_plots_completed_today = 2;
+// }
 
 // TODO would be nice tracking copying of data

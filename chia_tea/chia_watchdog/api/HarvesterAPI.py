@@ -3,7 +3,7 @@ from copy import deepcopy
 from typing import Iterable, List
 
 
-class HarvesterService:
+class HarvesterAPI:
     # This helps us to check if an update happened
     is_ready: bool = False
 
@@ -30,8 +30,8 @@ class HarvesterService:
         self.failed_to_open_filenames = []
         self.not_found_filenames = []
 
-    def copy(self) -> 'HarvesterService':
-        new_harvester = HarvesterService()
+    def copy(self) -> 'HarvesterAPI':
+        new_harvester = HarvesterAPI()
         new_harvester.is_running = self.is_running
         new_harvester.is_ready = self.is_ready
         new_harvester.plots = deepcopy(self.plots)

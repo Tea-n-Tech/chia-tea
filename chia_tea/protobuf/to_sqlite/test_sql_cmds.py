@@ -24,7 +24,7 @@ class SqlCmdsTest(unittest.TestCase):
             update_event = ParseDict(
                 js_dict=dict(
                     event_type=ADD,
-                    connected_harvester=dict(
+                    farmer_harvester=dict(
                         id='some plot id 1',
                     )
                 ),

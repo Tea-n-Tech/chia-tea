@@ -17,26 +17,26 @@ message ComputerInfo {
     int64 machine_id  = 2;
 
     // All kind of information about the hardware
-    hardware_pb2.CpuInfo cpu_info = 3;
-    hardware_pb2.RamInfo ram_info = 4;
-    repeated hardware_pb2.DiskInfo disks = 5;
+    hardware_pb2.Cpu cpu = 3;
+    hardware_pb2.Ram ram = 4;
+    repeated hardware_pb2.Disk disks = 5;
     
     // plotting
-    chia_pb2.PlottingJob plotting_progress = 6;
+    // chia_pb2.PlottingJob plotting_progress = 6;
 
     // farmer
-    chia_pb2.FarmerInfo farmer_info = 7;
-    repeated chia_pb2.HarvesterViewedFromFarmer connected_harvesters = 8;
+    chia_pb2.Farmer farmer = 7;
+    repeated chia_pb2.HarvesterViewedFromFarmer farmer_harvesters = 8;
 
     // harvester
-    chia_pb2.HarvesterInfo harvester_info = 9;
+    chia_pb2.Harvester harvester = 9;
     repeated chia_pb2.HarvesterPlot harvester_plots = 10;
 
     // wallet
-    chia_pb2.WalletInfo wallet_info = 11;
+    chia_pb2.Wallet wallet = 11;
 
     // system processes relevant to chia
-    repeated chia_pb2.ProcessInfo chia_processes = 12;
+    repeated chia_pb2.Process processes = 12;
 }
 
 // What type of update event happened
@@ -75,16 +75,16 @@ message UpdateEvent {
     EventType event_type = 3;
     oneof event_data {
         // hardware
-        hardware_pb2.CpuInfo cpu = 4;
-        hardware_pb2.RamInfo ram = 5;
-        hardware_pb2.DiskInfo disk = 6;
+        hardware_pb2.Cpu cpu = 4;
+        hardware_pb2.Ram ram = 5;
+        hardware_pb2.Disk disk = 6;
         // chia
-        chia_pb2.FarmerInfo farmer = 7;
-        chia_pb2.HarvesterViewedFromFarmer connected_harvester = 8;
+        chia_pb2.Farmer farmer = 7;
+        chia_pb2.HarvesterViewedFromFarmer farmer_harvester = 8;
         chia_pb2.HarvesterPlot harvester_plot = 13;
-        chia_pb2.HarvesterInfo harvester = 9;
-        chia_pb2.WalletInfo wallet = 10;
-        chia_pb2.ProcessInfo process = 11;
-        chia_pb2.PlottingJob plotting_job = 12;
+        chia_pb2.Harvester harvester = 9;
+        chia_pb2.Wallet wallet = 10;
+        chia_pb2.Process process = 11;
+        // chia_pb2.PlottingJob plotting_job = 12;
     }
 }

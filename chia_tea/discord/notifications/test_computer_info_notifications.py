@@ -1,12 +1,15 @@
 import unittest
+from datetime import datetime
 
 from google.protobuf.json_format import ParseDict
 
 from ...protobuf.generated.computer_info_pb2 import ComputerInfo
 from ...protobuf.generated.machine_info_pb2 import MachineInfo
-from .computer_info_notifications import (notify_on_harvester_reward_found,
+from .computer_info_notifications import (HARVESTER_TIMOUT,
+                                          notify_on_harvester_reward_found,
                                           notify_on_wallet_connection_change,
-                                          notify_on_wallet_sync_change, notify_when_harvester_times_out)
+                                          notify_on_wallet_sync_change,
+                                          notify_when_harvester_times_out)
 
 
 class TestComputerInfoNotifications(unittest.TestCase):
@@ -17,13 +20,13 @@ class TestComputerInfoNotifications(unittest.TestCase):
 
         old_computer_info = ParseDict(
             js_dict={
-                "harvester_info": {"n_proofs": 0}
+                "harvester": {"n_proofs": 0}
             },
             message=ComputerInfo(),
         )
         new_computer_info = ParseDict(
             js_dict={
-                "harvester_info": {"n_proofs": 1}
+                "harvester": {"n_proofs": 1}
             },
             message=ComputerInfo(),
         )
@@ -46,7 +49,7 @@ class TestComputerInfoNotifications(unittest.TestCase):
         )
         new_computer_info = ParseDict(
             js_dict={
-                "harvester_info": {"n_proofs": 1}
+                "harvester": {"n_proofs": 1}
             },
             message=ComputerInfo(),
         )
@@ -65,13 +68,13 @@ class TestComputerInfoNotifications(unittest.TestCase):
 
         old_computer_info = ParseDict(
             js_dict={
-                "harvester_info": {"n_proofs": 0}
+                "harvester": {"n_proofs": 0}
             },
             message=ComputerInfo(),
         )
         new_computer_info = ParseDict(
             js_dict={
-                "harvester_info": {"n_proofs": 0}
+                "harvester": {"n_proofs": 0}
             },
             message=ComputerInfo(),
         )
@@ -90,13 +93,13 @@ class TestComputerInfoNotifications(unittest.TestCase):
 
         old_computer_info = ParseDict(
             js_dict={
-                "wallet_info": {"is_synced": True}
+                "wallet": {"is_synced": True}
             },
             message=ComputerInfo(),
         )
         new_computer_info = ParseDict(
             js_dict={
-                "wallet_info": {"is_synced": False}
+                "wallet": {"is_synced": False}
             },
             message=ComputerInfo(),
         )
@@ -115,13 +118,13 @@ class TestComputerInfoNotifications(unittest.TestCase):
 
         old_computer_info = ParseDict(
             js_dict={
-                "wallet_info": {"is_synced": False}
+                "wallet": {"is_synced": False}
             },
             message=ComputerInfo(),
         )
         new_computer_info = ParseDict(
             js_dict={
-                "wallet_info": {"is_synced": True}
+                "wallet": {"is_synced": True}
             },
             message=ComputerInfo(),
         )
@@ -140,13 +143,13 @@ class TestComputerInfoNotifications(unittest.TestCase):
 
         old_computer_info = ParseDict(
             js_dict={
-                "wallet_info": {"is_running": False}
+                "wallet": {"is_running": False}
             },
             message=ComputerInfo(),
         )
         new_computer_info = ParseDict(
             js_dict={
-                "wallet_info": {"is_running": True}
+                "wallet": {"is_running": True}
             },
             message=ComputerInfo(),
         )
@@ -165,13 +168,13 @@ class TestComputerInfoNotifications(unittest.TestCase):
 
         old_computer_info = ParseDict(
             js_dict={
-                "wallet_info": {"is_running": True}
+                "wallet": {"is_running": True}
             },
             message=ComputerInfo(),
         )
         new_computer_info = ParseDict(
             js_dict={
-                "wallet_info": {"is_running": False}
+                "wallet": {"is_running": False}
             },
             message=ComputerInfo(),
         )
@@ -188,15 +191,20 @@ class TestComputerInfoNotifications(unittest.TestCase):
 
         machine = MachineInfo()
 
+        now = datetime.now().timestamp()
         old_computer_info = ParseDict(
             js_dict={
-                "connected_harvesters": [{"n_timeouts": 0}]
+                "farmer_harvesters": [
+                    {"time_last_msg_received": now}
+                ]
             },
             message=ComputerInfo(),
         )
         new_computer_info = ParseDict(
             js_dict={
-                "connected_harvesters": [{"n_timeouts": 1}]
+                "farmer_harvesters": [
+                    {"time_last_msg_received": now - HARVESTER_TIMOUT - 1}
+                ]
             },
             message=ComputerInfo(),
         )
@@ -207,7 +215,7 @@ class TestComputerInfoNotifications(unittest.TestCase):
         )
         self.assertEqual(len(messages), 1)
 
-        # no message test
+        # no message tests
         messages = notify_when_harvester_times_out(
             machine,
             old_computer_info=old_computer_info,

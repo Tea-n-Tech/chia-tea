@@ -1,6 +1,6 @@
 
 
-class HarvesterConnectedToFarmer:
+class FarmerHarvesterAPI:
     """ A connected machine to the farmer
 
     schema of connections from example data
@@ -56,7 +56,7 @@ class HarvesterConnectedToFarmer:
         self.type = type
         self.n_plots = n_plots
 
-    def copy(self) -> 'HarvesterConnectedToFarmer':
-        return HarvesterConnectedToFarmer(
+    def copy(self) -> 'FarmerHarvesterAPI':
+        return FarmerHarvesterAPI(
             **self.__dict__,
         )

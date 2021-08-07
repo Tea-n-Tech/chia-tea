@@ -1,6 +1,7 @@
 
 
-from typing import List
+from datetime import datetime
+from typing import Callable, List
 
 from sortedcontainers import SortedSet
 
@@ -34,8 +35,8 @@ def notify_on_harvester_reward_found(
 
     messages = []
 
-    old_n_proofs = old_computer_info.harvester_info.n_proofs
-    new_n_proofs = new_computer_info.harvester_info.n_proofs
+    old_n_proofs = old_computer_info.harvester.n_proofs
+    new_n_proofs = new_computer_info.harvester.n_proofs
 
     if old_n_proofs < new_n_proofs:
         messages.append(
@@ -47,6 +48,10 @@ def notify_on_harvester_reward_found(
         )
 
     return messages
+
+
+HARVESTER_TIMOUT = 60  # seconds
+timestamp_last_check = 0.
 
 
 def notify_when_harvester_times_out(
@@ -70,30 +75,47 @@ def notify_when_harvester_times_out(
     messages : List[str]
         notification messages
     """
+
     messages = []
     old_harvesters = {
         harvester.id: harvester
-        for harvester in old_computer_info.connected_harvesters
+        for harvester in old_computer_info.farmer_harvesters
     }
     new_harvesters = {
         harvester.id: harvester
-        for harvester in new_computer_info.connected_harvesters
+        for harvester in new_computer_info.farmer_harvesters
     }
     all_ids = SortedSet(old_harvesters.keys()).union(
         SortedSet(new_harvesters.keys())
     )
+
+    global timestamp_last_check
+    now = datetime.now().timestamp()
+
     default_harvester = HarvesterViewedFromFarmer()
     for harvester_id in all_ids:
-        old_harvester = old_harvesters.get(harvester_id, default_harvester)
         new_harvester = new_harvesters.get(harvester_id, default_harvester)
-        if new_harvester.n_timeouts > old_harvester.n_timeouts:
+        new_harvester_timed_out = (now -
+                                   new_harvester.time_last_msg_received > HARVESTER_TIMOUT)
+        previously_notified = (
+            timestamp_last_check - new_harvester.time_last_msg_received > HARVESTER_TIMOUT
+            # we assume on startup that we already notified on a timeout
+            # otherwise we can a message all the time when we restart
+            # the bot.
+            if timestamp_last_check != 0.
+            else True
+        )
+
+        if new_harvester_timed_out and not previously_notified:
             messages.append(
-                "{icon}   Harvester {machine_name} {status}.".format(
-                    icon="👴🏻",
+                "{icon}  Harvester {machine_name} {status}.".format(
+                    icon="⚠️",
                     machine_name=get_machine_info_name(machine),
                     status="timed out"
                 )
             )
+
+    timestamp_last_check = now
 
     return messages
 
@@ -122,8 +144,8 @@ def notify_on_wallet_sync_change(
 
     messages = []
 
-    old_wallet_synced = old_computer_info.wallet_info.is_synced
-    new_wallet_synced = new_computer_info.wallet_info.is_synced
+    old_wallet_synced = old_computer_info.wallet.is_synced
+    new_wallet_synced = new_computer_info.wallet.is_synced
 
     if not old_wallet_synced and new_wallet_synced:
         messages.append(
@@ -165,8 +187,8 @@ def notify_on_wallet_connection_change(
 
     messages = []
 
-    old_wallet_connected = old_computer_info.wallet_info.is_running
-    new_wallet_connected = new_computer_info.wallet_info.is_running
+    old_wallet_connected = old_computer_info.wallet.is_running
+    new_wallet_connected = new_computer_info.wallet.is_running
 
     if not old_wallet_connected and new_wallet_connected:
         messages.append(

@@ -3,7 +3,7 @@ import unittest
 from datetime import datetime
 
 from ..ChiaWatchdog import ChiaWatchdog
-from ..HarvesterInfo import HarvesterInfo
+from .FarmerHarvesterLogfile import FarmerHarvesterLogfile
 from .line_checks import (ActionHarvesterConnected,
                           ActionHarvesterDisconnected,
                           ActionHarvesterFoundProof, MessageFromHarvester,
@@ -51,7 +51,7 @@ class LineActionTester(unittest.TestCase):
 
         # check in case harvester exists
         chia_dog.harvester_infos = {
-            node_id: HarvesterInfo(
+            node_id: FarmerHarvesterLogfile(
                 node_id,
                 ip_address,
                 timestamp,
@@ -113,7 +113,7 @@ class LineActionTester(unittest.TestCase):
 
         # check in case harvester exists
         chia_dog.harvester_infos = {
-            node_id: HarvesterInfo(
+            node_id: FarmerHarvesterLogfile(
                 node_id,
                 ip_address,
                 timestamp,
@@ -247,7 +247,7 @@ class LineActionTester(unittest.TestCase):
 
         chia_dog = ChiaWatchdog("")
         chia_dog.harvester_infos = {
-            node_id: HarvesterInfo(
+            node_id: FarmerHarvesterLogfile(
                 node_id,
                 ip_address,
                 True,
