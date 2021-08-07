@@ -40,7 +40,7 @@ def _get_harvester_connection_msg(
                          if is_connected
                          else "disconnected")
 
-    CONNECTION_MSG: str = "{icon} Farmer {farmer_id} connected to Harvester {harvester_id} ({ip}) {status}."
+    CONNECTION_MSG: str = "{icon} Farmer {farmer_id} {status} to Harvester {harvester_id} ({ip})."
     msg = CONNECTION_MSG.format(
         icon=icon,
         harvester_id=harvester_id[:10],
