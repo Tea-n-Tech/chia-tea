@@ -1,3 +1,4 @@
+from chia_tea.protobuf.generated.chia_pb2 import HarvesterViewedFromFarmer
 import unittest
 from datetime import datetime
 
@@ -5,7 +6,7 @@ from google.protobuf.json_format import ParseDict
 
 from ...protobuf.generated.computer_info_pb2 import ComputerInfo
 from ...protobuf.generated.machine_info_pb2 import MachineInfo
-from .computer_info_notifications import (HARVESTER_TIMOUT,
+from .computer_info_notifications import (HARVESTER_TIMOUT, get_msg_if_farmer_harvester_timed_out,
                                           notify_on_harvester_reward_found,
                                           notify_on_wallet_connection_change,
                                           notify_on_wallet_sync_change,
@@ -191,34 +192,44 @@ class TestComputerInfoNotifications(unittest.TestCase):
 
         machine = MachineInfo()
 
-        now = datetime.now().timestamp()
-        old_computer_info = ParseDict(
-            js_dict={
-                "farmer_harvesters": [
-                    {"time_last_msg_received": now}
-                ]
-            },
-            message=ComputerInfo(),
-        )
-        new_computer_info = ParseDict(
-            js_dict={
-                "farmer_harvesters": [
-                    {"time_last_msg_received": now - HARVESTER_TIMOUT - 1}
-                ]
-            },
-            message=ComputerInfo(),
-        )
-        messages = notify_when_harvester_times_out(
-            machine,
-            old_computer_info=old_computer_info,
-            new_computer_info=new_computer_info,
-        )
-        self.assertEqual(len(messages), 1)
+        # we dont perform a unittest on the notifier itself
+        # since it's timing logic is hard to test. Instead
+        # we test the internal wrapper function.
 
-        # no message tests
-        messages = notify_when_harvester_times_out(
-            machine,
-            old_computer_info=old_computer_info,
-            new_computer_info=old_computer_info,
+        # no msg case if all is good
+        barely_ok_farmer_harvester = ParseDict(
+            js_dict={"time_last_msg_received": 1},
+            message=HarvesterViewedFromFarmer(),
         )
-        self.assertEqual(len(messages), 0)
+        msg = get_msg_if_farmer_harvester_timed_out(
+            harvester=barely_ok_farmer_harvester,
+            last_timestamp=59,
+            new_timestamp=60,
+            machine=machine,
+        )
+        self.assertTrue(msg == "")
+
+        # on startup no message is given if a harvester
+        # is already timed out to avoid spamming the chat
+        # on restarts of the bot.
+        msg_timestamp = 1
+        timed_out_farmer_harvester = ParseDict(
+            js_dict={"time_last_msg_received": msg_timestamp},
+            message=HarvesterViewedFromFarmer(),
+        )
+        msg = get_msg_if_farmer_harvester_timed_out(
+            harvester=timed_out_farmer_harvester,
+            last_timestamp=0,
+            new_timestamp=msg_timestamp+HARVESTER_TIMOUT+2,
+            machine=machine,
+        )
+        self.assertTrue(msg == "")
+
+        # test general timeout notification mechanism
+        msg = get_msg_if_farmer_harvester_timed_out(
+            harvester=timed_out_farmer_harvester,
+            last_timestamp=msg_timestamp+HARVESTER_TIMOUT-1,
+            new_timestamp=msg_timestamp+HARVESTER_TIMOUT,
+            machine=machine,
+        )
+        self.assertTrue(len(msg) != 0)
