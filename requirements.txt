@@ -1,10 +1,10 @@
-grpcio
 grpcio-tools
+grpcio
 discord
 psutil
 pyyaml
 py-cpuinfo
-aiohttp
+aiohttp==3.7.4
 chia-blockchain
-sortedcontainers
-concurrent_log_handler
+sortedcontainers==2.3.0
+concurrent-log-handler
