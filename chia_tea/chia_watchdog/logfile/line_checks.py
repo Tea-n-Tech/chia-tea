@@ -123,7 +123,7 @@ class MessageToHarvester(AbstractLineAction):
             timestamp_dt)
         harvester_info.last_update = timestamp_dt
 
-        #harvester_info.is_connected = True  ## this meakes no sense ? 
+        # harvester_info.is_connected = True  --> this meakes no sense ?
         chia_dog.harvester_infos[harvester_id] = harvester_info
 
 

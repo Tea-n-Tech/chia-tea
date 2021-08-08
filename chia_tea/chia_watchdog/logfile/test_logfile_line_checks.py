@@ -337,10 +337,10 @@ class LineActionTester(unittest.TestCase):
         - send
         - disconnect XXX
         - send
-        - send 
+        - send
         - connect XXX
         - recieve
-        - recieve 
+        - recieve
         - send
         - recieve
 
