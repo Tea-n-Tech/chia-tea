@@ -152,3 +152,11 @@ class FarmerHarvesterLogfile:
 
     def reset(self):
         """Reset the instance by dropping the collected data"""
+
+    def reset_send_recieve_lists(self):
+        """Resets the send and recieve times used in the event of a disconnect"""
+        self.time_of_incoming_messages = []
+        self.time_of_outgoing_messages = []
+        get_logger(__file__).warn(
+                    "Farmer Harvester LogFile {} - times has be resetted.".format(self.harvester_id))
+

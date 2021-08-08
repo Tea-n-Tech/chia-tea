@@ -123,7 +123,7 @@ class MessageToHarvester(AbstractLineAction):
             timestamp_dt)
         harvester_info.last_update = timestamp_dt
 
-        harvester_info.is_connected = True
+        #harvester_info.is_connected = True  ## this meakes no sense ? 
         chia_dog.harvester_infos[harvester_id] = harvester_info
 
 
@@ -154,6 +154,7 @@ class ActionHarvesterConnected(AbstractLineAction):
             ip_address
         )
         harvester_info.is_connected = True
+        harvester_info.reset_send_recieve_lists()
         harvester_info.last_update = timestamp_dt
         chia_dog.harvester_infos[harvester_id] = harvester_info
 
@@ -189,6 +190,7 @@ class ActionHarvesterDisconnected(AbstractLineAction):
             ip_address
         )
         harvester_info.is_connected = False
+        harvester_info.reset_send_recieve_lists()
         harvester_info.last_update = timestamp_dt
         chia_dog.harvester_infos[harvester_id] = harvester_info
 
