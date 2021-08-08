@@ -344,26 +344,25 @@ class LineActionTester(unittest.TestCase):
         - send
         - recieve
 
-    
+
         """
         actionOut = MessageToHarvester()
         actionIn = MessageFromHarvester()
 
-        actionConnect= ActionHarvesterConnected()
+        actionConnect = ActionHarvesterConnected()
         actionDisconnect = ActionHarvesterDisconnected()
 
         node_id = "d46fb9aaaa01f3aa3fc04f3e43231d35c3a1ddd4"
         ip_address = "57.22.39.97"
-        timestamp1_str = "2021-05-26T09:38:39.872" #send
-        timestamp2_str = "2021-05-26T09:39:39.872" # disconnect
+        timestamp1_str = "2021-05-26T09:38:39.872"  # send
+        timestamp2_str = "2021-05-26T09:39:39.872"  # disconnect
 
+        timestamp3_str = "2021-05-26T09:40:39.872"  # send
+        timestamp4_str = "2021-05-26T09:42:39.872"  # connect
 
-        timestamp3_str = "2021-05-26T09:40:39.872" # send
-        timestamp4_str = "2021-05-26T09:42:39.872" # connect
-
-        timestamp5_str = "2021-05-26T09:43:39.872" #recieve
-        timestamp6_str = "2021-05-26T09:44:39.872" #send
-        timestamp7_str = "2021-05-26T09:45:39.872" #recieve
+        timestamp5_str = "2021-05-26T09:43:39.872"  # recieve
+        timestamp6_str = "2021-05-26T09:44:39.872"  # send
+        timestamp7_str = "2021-05-26T09:45:39.872"  # recieve
 
         timestamp = datetime.fromisoformat(timestamp1_str)
 
@@ -395,35 +394,33 @@ class LineActionTester(unittest.TestCase):
             + f"     Connection closed: {ip_address},"
             + f" node id: {node_id}"
         )
-        actionDisconnect.apply(lineDisconnect,chia_dog)
+        actionDisconnect.apply(lineDisconnect, chia_dog)
 
-        self.assertEqual(len(harvester_info.time_of_incoming_messages),0)
-        self.assertEqual(len(harvester_info.time_of_outgoing_messages),0)
+        self.assertEqual(len(harvester_info.time_of_incoming_messages), 0)
+        self.assertEqual(len(harvester_info.time_of_outgoing_messages), 0)
         self.assertTrue(not harvester_info.is_connected)
 
-        #send 
+        # send
         lineOut = (
             f"{timestamp3_str} farmer farmer_server           " +
             "   : DEBUG    -> new_signage_point_or_end_of_sub_slot to peer " +
             f"{ip_address} {node_id}"
         )
-        actionOut.apply(lineOut,chia_dog)
+        actionOut.apply(lineOut, chia_dog)
 
-
-        self.assertEqual(len(harvester_info.time_of_incoming_messages),0)
-        self.assertEqual(len(harvester_info.time_of_outgoing_messages),1)
+        self.assertEqual(len(harvester_info.time_of_incoming_messages), 0)
+        self.assertEqual(len(harvester_info.time_of_outgoing_messages), 1)
         self.assertTrue(not harvester_info.is_connected)
-
 
         # connect
         lineConnect = (
             f"{timestamp4_str} farmer farmer_server           " +
             f"   : DEBUG    -> harvester_handshake to peer {ip_address} " +
             node_id)
-        actionConnect.apply(lineConnect,chia_dog)
+        actionConnect.apply(lineConnect, chia_dog)
 
-        self.assertEqual(len(harvester_info.time_of_incoming_messages),0)
-        self.assertEqual(len(harvester_info.time_of_outgoing_messages),0)
+        self.assertEqual(len(harvester_info.time_of_incoming_messages), 0)
+        self.assertEqual(len(harvester_info.time_of_outgoing_messages), 0)
         self.assertTrue(harvester_info.is_connected)
 
         # recieve with no send
@@ -434,12 +431,12 @@ class LineActionTester(unittest.TestCase):
         )
 
         actionIn.apply(lineIn, chia_dog)
-        self.assertEqual(len(harvester_info.time_of_incoming_messages),0)
-        self.assertEqual(len(harvester_info.time_of_outgoing_messages),0)
+        self.assertEqual(len(harvester_info.time_of_incoming_messages), 0)
+        self.assertEqual(len(harvester_info.time_of_outgoing_messages), 0)
         self.assertTrue(harvester_info.is_connected)
 
         # send recieve
-        
+
         lineOut = (
             f"{timestamp6_str} farmer farmer_server           " +
             "   : DEBUG    -> new_signage_point_or_end_of_sub_slot to peer " +
@@ -454,7 +451,6 @@ class LineActionTester(unittest.TestCase):
         actionOut.apply(lineOut, chia_dog)
         actionIn.apply(lineIn, chia_dog)
 
-
         self.assertEqual(
             len(harvester_info.time_of_incoming_messages),
             1
@@ -463,5 +459,3 @@ class LineActionTester(unittest.TestCase):
             len(harvester_info.time_of_outgoing_messages),
             1
         )
-
-        
