@@ -236,7 +236,7 @@ class LineActionTester(unittest.TestCase):
         action_in = MessageFromHarvester()
         action_sgn = ActionFinishedSignagePoint()
 
-        harvester_id = befaebdf1129641d86bade79839d8616b584874c9a133e1f616633f3e6a2f9da
+        harvester_id = "befaebdf1129641d86bade79839d8616b584874c9a133e1f616633f3e6a2f9da"
 
         lineSignage = "2021-08-08T23:45:11.435 full_node chia.full_node.full_node: INFO    \
              :timer:  Finished signage point 19/64: CC:      \
