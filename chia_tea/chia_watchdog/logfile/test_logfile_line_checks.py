@@ -6,7 +6,7 @@ from ..ChiaWatchdog import ChiaWatchdog
 from .FarmerHarvesterLogfile import FarmerHarvesterLogfile
 from .line_checks import (ActionHarvesterConnected,
                           ActionHarvesterDisconnected,
-                          ActionHarvesterFoundProof, MessageFromHarvester, ActionFinishedSignagePoint
+                          ActionHarvesterFoundProof, MessageFromHarvester, ActionFinishedSignagePoint,
                           MessageToHarvester)
 
 
