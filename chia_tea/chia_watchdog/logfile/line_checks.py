@@ -79,12 +79,8 @@ class MessageFromHarvester(AbstractLineAction):
         )
 
         # First out then in
-        n_outgoing_msgs = len(harvester_info.time_of_outgoing_messages)
-        n_incoming_msgs = len(harvester_info.time_of_incoming_messages)
-        if n_outgoing_msgs > n_incoming_msgs:
-            harvester_info.time_of_incoming_messages.append(timestamp_dt)
-            harvester_info.last_update = timestamp_dt
-            harvester_info.check_if_last_response_was_in_time()
+        harvester_info.time_last_incoming_msg = timestamp_dt
+        harvester_info.last_update = timestamp_dt
         harvester_info.is_connected = True
         chia_dog.harvester_infos[harvester_id] = harvester_info
 
@@ -119,11 +115,42 @@ class MessageToHarvester(AbstractLineAction):
             ip_address
         )
 
-        harvester_info.time_of_outgoing_messages.append(
-            timestamp_dt)
+        harvester_info.time_last_outgoing_msg = timestamp_dt
         harvester_info.last_update = timestamp_dt
+        chia_dog.harvester_infos[harvester_id] = harvester_info
 
-        # harvester_info.is_connected = True  --> this meakes no sense ?
+
+class ActionFinishedSignagePoint(AbstractLineAction):
+
+    def is_match(self, line: str) -> bool:
+        codewords = ("full_node",
+                     "Finished signage point")
+        if all(word in line for word in codewords):
+            return True
+        else:
+            return False
+
+    def apply(
+        self,
+        line: str,
+        chia_dog: Any,
+    ):
+        fragments = line.split()
+
+        # extract data from line
+        timestamp = fragments[0]
+        timestamp_dt = datetime.fromisoformat(timestamp)
+        harvester_id = fragments[-3]
+
+        # update info of harvester
+        harvester_info = chia_dog.get_or_create_harvester_info(
+            harvester_id
+        )
+
+        harvester_info.time_of_end_of_last_sgn_point = timestamp_dt
+        harvester_info.last_update = timestamp_dt
+        harvester_info.check_if_last_response_as_in_time()
+
         chia_dog.harvester_infos[harvester_id] = harvester_info
 
 
@@ -154,7 +181,6 @@ class ActionHarvesterConnected(AbstractLineAction):
             ip_address
         )
         harvester_info.is_connected = True
-        harvester_info.reset_send_recieve_lists()
         harvester_info.last_update = timestamp_dt
         chia_dog.harvester_infos[harvester_id] = harvester_info
 
@@ -190,7 +216,6 @@ class ActionHarvesterDisconnected(AbstractLineAction):
             ip_address
         )
         harvester_info.is_connected = False
-        harvester_info.reset_send_recieve_lists()
         harvester_info.last_update = timestamp_dt
         chia_dog.harvester_infos[harvester_id] = harvester_info
 
@@ -273,6 +298,7 @@ async def run_line_checks(chia_dog: Any, line: str):
 ALL_LINE_ACTIONS = (
     MessageFromHarvester(),
     MessageToHarvester(),
+    ActionFinishedSignagePoint(),
     ActionHarvesterConnected(),
     ActionHarvesterDisconnected(),
     ActionHarvesterFoundProof()
