@@ -103,9 +103,16 @@ async def _bot_machines(ctx):
         seconds_since_last_contact = (datetime.now() - dt).total_seconds()
         is_connected = seconds_since_last_contact < 60
         icon = "🟢" if is_connected else "🟠"
+
         machine_name = get_machine_info_name(machine_info)
-        messages.append(
-            f"{icon} {machine_name} responded {seconds_since_last_contact:.1f} seconds ago")
+        messages += [
+            f"{icon} {machine_name} responded {seconds_since_last_contact:.1f} seconds ago",
+            """   CPU:
+                     name: {}
+                     cores: {}
+                     usage: {}
+                     clock speed: {}"""
+        ]
 
     # Heading in case there is anything to report
     if messages:
