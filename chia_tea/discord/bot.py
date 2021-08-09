@@ -2,6 +2,7 @@
 import os
 import sqlite3
 from datetime import datetime
+from typing import Tuple
 
 from discord.ext import commands
 
@@ -27,6 +28,26 @@ channel_id = ""
 db_filepath = ""
 
 
+def _open_database_read_only() -> Tuple[sqlite3.Connection, sqlite3.Cursor]:
+    """ Open a sqlite database read only
+
+    Returns
+    -------
+    connection : sqlite3.Connection
+        connection object
+    cursor : sqlite3.Cursor
+        sqlite cursor
+    """
+    global db_filepath
+    connection = sqlite3.connect(
+        f"file:{db_filepath}?mode=ro",
+        uri=True,
+    )
+    cursor = connection.cursor()
+
+    return connection, cursor
+
+
 @bot.command(name="hi")
 async def _bot_hi(ctx):
     await ctx.send("Hi!")
@@ -36,12 +57,7 @@ async def _bot_hi(ctx):
 async def _wallets(ctx):
 
     # open the database read only
-    global db_filepath
-    connection = sqlite3.connect(
-        f"file:{db_filepath}?mode=ro",
-        uri=True,
-    )
-    cursor = connection.cursor()
+    connection, cursor = _open_database_read_only()
 
     machine_and_computer_info_dict = get_current_computer_and_machine_infos_from_db(
         cursor
@@ -67,17 +83,14 @@ async def _wallets(ctx):
         is_testing=get_config().development.testing,
     )
 
+    connection.close()
+
 
 @bot.command(name="machines")
 async def _bot_machines(ctx):
 
     # open the database read only
-    global db_filepath
-    connection = sqlite3.connect(
-        f"file:{db_filepath}?mode=ro",
-        uri=True,
-    )
-    cursor = connection.cursor()
+    connection, cursor = _open_database_read_only()
 
     # get all machine infos from the database
     machine_infos, _ = get_machine_infos_from_db(cursor)
@@ -107,17 +120,14 @@ async def _bot_machines(ctx):
         is_testing=get_config().development.testing,
     )
 
+    connection.close()
+
 
 @bot.command(name="farmers")
 async def _farmer(ctx):
 
     # open the database read only
-    global db_filepath
-    connection = sqlite3.connect(
-        f"file:{db_filepath}?mode=ro",
-        uri=True,
-    )
-    cursor = connection.cursor()
+    connection, cursor = _open_database_read_only()
 
     machine_and_computer_info_dict = get_current_computer_and_machine_infos_from_db(
         cursor
@@ -170,17 +180,35 @@ async def _farmer(ctx):
         is_testing=get_config().development.testing,
     )
 
+    connection.close()
+
+
+def format_memory_size(n_bytes: float, suffix: str = 'B'):
+    """ Formats a memory size number
+
+    Parameters
+    ----------
+    n_bytes : float
+        bytes to format
+    suffix : string
+        suffix of the memory
+
+    Notes
+    -----
+        Thanks Fred @ Stackoverflow:
+        https://stackoverflow.com/questions/1094841/get-human-readable-version-of-file-size
+    """
+    for unit in ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi']:
+        if abs(n_bytes) < 1024.0:
+            return "%3.1f%s%s" % (n_bytes, unit, suffix)
+        n_bytes /= 1024.0
+    return "%.1f%s%s" % (n_bytes, 'Yi', suffix)
+
 
 @bot.command(name="harvesters")
 async def _harvester(ctx):
 
-    # open the database read only
-    global db_filepath
-    connection = sqlite3.connect(
-        f"file:{db_filepath}?mode=ro",
-        uri=True,
-    )
-    cursor = connection.cursor()
+    connection, cursor = _open_database_read_only()
 
     machine_and_computer_info_dict = get_current_computer_and_machine_infos_from_db(
         cursor
@@ -189,35 +217,44 @@ async def _harvester(ctx):
     messages = []
 
     for _, (machine, computer_info) in machine_and_computer_info_dict.items():
-        messages += [
-            f"\n🧑‍🌾 *{get_machine_info_name(machine)}*:"
-        ]
+        harvester = computer_info.harvester
+        plots = computer_info.harvester_plots
+        total_size = sum(plot.filesize for plot in plots)
 
-        # list up connected harvesters
-        now_timestamp = datetime.now().timestamp()
-        for harvester in computer_info.connected_harvesters:
-            messages.append(
-                    """
-  Harvester *{harvester_id}*
-     🌐 ip address:  {ip_address}
-     📡 last answer: {last_answer} ago
-     🔌 Timeouts: {n_timeouts}
-     🚆 missed challenges: {missed_challenges}
-     🌾 plots: {n_plots}""".format(
-                        ip_address=harvester.ip_address,
-                        last_answer=format_timedelta_from_secs(
-                            now_timestamp - harvester.last_message_time),
-                        harvester_id=harvester.id[:8],
-                        n_timeouts=harvester.n_timeouts,
-                        missed_challenges=harvester.missed_challenges,
-                        n_plots=harvester.n_plots,
-                    )
-                )
+        # disk messages
+        disk_msgs = []
+        for disk in computer_info.disks:
+            usage_percent = 0
+            try:
+                usage_percent = disk.used_space / disk.total_space * 100
+            except ZeroDivisionError:
+                pass
+            disk_msgs.append(
+                f"        {usage_percent:3.1f}% {disk.id}"
+            )
+
+        # full msg
+        messages.append(
+            """
+  🚜 Harvester {machine}
+     🍀 proofs: {n_proofs}
+     🌾 plots: {n_plots}
+     🌾 size of plots: {total_size}
+     💽 disks:
+{disk_msgs}
+     """.format(
+                machine=get_machine_info_name(machine),
+                n_plots=len(plots),
+                n_proofs=harvester.n_proofs,
+                total_size=format_memory_size(total_size),
+                disk_msgs="\n".join(disk_msgs)
+            )
+        )
 
     if messages:
         messages.insert(0, "**Harvesters:**")
     else:
-        messages.append("No Harvesters 🧑‍🌾 around.")
+        messages.append("No Harvesters 🚜 around.")
 
     await log_and_send_msg_if_any(
         messages=messages,
@@ -225,6 +262,8 @@ async def _harvester(ctx):
         channel=ctx.channel,
         is_testing=get_config().development.testing,
     )
+
+    connection.close()
 
 
 def get_discord_channel_id() -> int:
