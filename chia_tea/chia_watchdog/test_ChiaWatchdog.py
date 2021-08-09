@@ -3,7 +3,7 @@ import unittest
 from datetime import date, datetime, timedelta
 
 from .ChiaWatchdog import ChiaWatchdog
-from .HarvesterInfo import HarvesterInfo
+from .logfile.FarmerHarvesterLogfile import FarmerHarvesterLogfile
 from .logfile.line_checks import ActionFarmedUnfinishedBlock
 
 
@@ -14,7 +14,7 @@ class ChiaWatchdogTests(unittest.TestCase):
         watchdog = ChiaWatchdog("")
 
         # add a random harvester
-        harvester_info = HarvesterInfo(
+        harvester_info = FarmerHarvesterLogfile(
             harvester_id="my_id",
             ip_address="127.0.0.1",
             is_connected=True,
@@ -67,7 +67,7 @@ class ChiaWatchdogTests(unittest.TestCase):
 
         chia_dog = ChiaWatchdog("")
         chia_dog.harvester_infos = {
-            node_id: HarvesterInfo(
+            node_id: FarmerHarvesterLogfile(
                 node_id,
                 ip_address,
                 True,

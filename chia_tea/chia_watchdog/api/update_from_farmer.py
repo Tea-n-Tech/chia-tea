@@ -4,18 +4,18 @@ from typing import Any, Dict, List
 
 import aiohttp
 from chia.rpc.farmer_rpc_client import FarmerRpcClient
+from chia.server.outbound_message import NodeType
 from chia.util.config import load_config
 from chia.util.default_root import DEFAULT_ROOT_PATH
 from chia.util.ints import uint16
-from chia.server.outbound_message import NodeType
 
 from ..ChiaWatchdog import ChiaWatchdog
-from ..HarvesterConnectedToFarmer import HarvesterConnectedToFarmer
+from .FarmerHarvesterAPI import FarmerHarvesterAPI
 
 
 async def _get_farmer_harvesters(
     farmer_client: FarmerRpcClient,
-) -> List[HarvesterConnectedToFarmer]:
+) -> List[FarmerHarvesterAPI]:
 
     harvesters = []
 
@@ -36,7 +36,7 @@ async def _get_farmer_harvesters(
 
     for kwargs in harvester_kwargs.values():
         harvesters.append(
-            HarvesterConnectedToFarmer(
+            FarmerHarvesterAPI(
                 **kwargs
             )
         )

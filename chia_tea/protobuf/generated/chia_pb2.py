@@ -19,85 +19,85 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n&chia_tea/protobuf/generated/chia.proto\x12$chia_tea.protobuf.generated.chia_pb2\"\xdc\x01\n\x0bProcessInfo\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x12\n\nexecutable\x18\x02 \x01(\t\x12\x0f\n\x07\x63ommand\x18\x03 \x01(\t\x12\x13\n\x0b\x63reate_time\x18\x04 \x01(\x01\x12\n\n\x02id\x18\x05 \x01(\x03\x12\x11\n\tcpu_usage\x18\x06 \x01(\x02\x12\x19\n\x11used_physical_ram\x18\x07 \x01(\x02\x12\x18\n\x10used_virtual_ram\x18\x08 \x01(\x02\x12\x14\n\x0copened_files\x18\t \x01(\t\x12\x1b\n\x13network_connections\x18\n \x01(\t\"\xc4\x01\n\rHarvesterPlot\x12\n\n\x02id\x18\n \x01(\t\x12\x10\n\x08\x66ilename\x18\x03 \x01(\t\x12\x10\n\x08\x66ilesize\x18\x04 \x01(\x03\x12!\n\x19pool_contract_puzzle_hash\x18\x06 \x01(\t\x12\x17\n\x0fpool_public_key\x18\x07 \x01(\t\x12\x0c\n\x04size\x18\x08 \x01(\x03\x12\x15\n\rtime_modified\x18\t \x01(\x01\x12\x11\n\tplot_seed\x18\x01 \x01(\t\x12\x0f\n\x07\x64isk_id\x18\x02 \x01(\t\"5\n\rHarvesterInfo\x12\x12\n\nis_running\x18\x02 \x01(\x08\x12\x10\n\x08n_proofs\x18\x03 \x01(\x03\"\xaf\x01\n\x19HarvesterViewedFromFarmer\x12\n\n\x02id\x18\x01 \x01(\t\x12\x17\n\x0f\x63onnection_time\x18\x08 \x01(\x01\x12\x19\n\x11last_message_time\x18\t \x01(\x01\x12\x12\n\nip_address\x18\n \x01(\t\x12\x12\n\nn_timeouts\x18\x0b \x01(\x03\x12\x19\n\x11missed_challenges\x18\x06 \x01(\x03\x12\x0f\n\x07n_plots\x18\x02 \x01(\x03\":\n\nFarmerInfo\x12\x12\n\nis_running\x18\x01 \x01(\x08\x12\x18\n\x10total_challenges\x18\x02 \x01(\x03\"3\n\nWalletInfo\x12\x12\n\nis_running\x18\x01 \x01(\x08\x12\x11\n\tis_synced\x18\x02 \x01(\x08\"K\n\x0bPlottingJob\x12\x1b\n\x13n_plots_in_progress\x18\x01 \x01(\x03\x12\x1f\n\x17n_plots_completed_today\x18\x02 \x01(\x03\x62\x06proto3'
+  serialized_pb=b'\n&chia_tea/protobuf/generated/chia.proto\x12$chia_tea.protobuf.generated.chia_pb2\"\xd8\x01\n\x07Process\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x12\n\nexecutable\x18\x02 \x01(\t\x12\x0f\n\x07\x63ommand\x18\x03 \x01(\t\x12\x13\n\x0b\x63reate_time\x18\x04 \x01(\x01\x12\n\n\x02id\x18\x05 \x01(\x03\x12\x11\n\tcpu_usage\x18\x06 \x01(\x02\x12\x19\n\x11used_physical_ram\x18\x07 \x01(\x02\x12\x18\n\x10used_virtual_ram\x18\x08 \x01(\x02\x12\x14\n\x0copened_files\x18\t \x01(\t\x12\x1b\n\x13network_connections\x18\n \x01(\t\"\xc4\x01\n\rHarvesterPlot\x12\n\n\x02id\x18\n \x01(\t\x12\x10\n\x08\x66ilename\x18\x03 \x01(\t\x12\x10\n\x08\x66ilesize\x18\x04 \x01(\x03\x12!\n\x19pool_contract_puzzle_hash\x18\x06 \x01(\t\x12\x17\n\x0fpool_public_key\x18\x07 \x01(\t\x12\x0c\n\x04size\x18\x08 \x01(\x03\x12\x15\n\rtime_modified\x18\t \x01(\x01\x12\x11\n\tplot_seed\x18\x01 \x01(\t\x12\x0f\n\x07\x64isk_id\x18\x02 \x01(\t\"1\n\tHarvester\x12\x12\n\nis_running\x18\x02 \x01(\x08\x12\x10\n\x08n_proofs\x18\x03 \x01(\x03\"\xbc\x01\n\x19HarvesterViewedFromFarmer\x12\n\n\x02id\x18\x01 \x01(\t\x12\x17\n\x0f\x63onnection_time\x18\x08 \x01(\x01\x12\x1e\n\x16time_last_msg_received\x18\x03 \x01(\x01\x12\x1a\n\x12time_last_msg_sent\x18\t \x01(\x01\x12\x12\n\nip_address\x18\n \x01(\t\x12\x19\n\x11missed_challenges\x18\x06 \x01(\x03\x12\x0f\n\x07n_plots\x18\x02 \x01(\x03\"6\n\x06\x46\x61rmer\x12\x12\n\nis_running\x18\x01 \x01(\x08\x12\x18\n\x10total_challenges\x18\x02 \x01(\x03\"/\n\x06Wallet\x12\x12\n\nis_running\x18\x01 \x01(\x08\x12\x11\n\tis_synced\x18\x02 \x01(\x08\x62\x06proto3'
 )
 
 
 
 
-_PROCESSINFO = _descriptor.Descriptor(
-  name='ProcessInfo',
-  full_name='chia_tea.protobuf.generated.chia_pb2.ProcessInfo',
+_PROCESS = _descriptor.Descriptor(
+  name='Process',
+  full_name='chia_tea.protobuf.generated.chia_pb2.Process',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='name', full_name='chia_tea.protobuf.generated.chia_pb2.ProcessInfo.name', index=0,
+      name='name', full_name='chia_tea.protobuf.generated.chia_pb2.Process.name', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='executable', full_name='chia_tea.protobuf.generated.chia_pb2.ProcessInfo.executable', index=1,
+      name='executable', full_name='chia_tea.protobuf.generated.chia_pb2.Process.executable', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='command', full_name='chia_tea.protobuf.generated.chia_pb2.ProcessInfo.command', index=2,
+      name='command', full_name='chia_tea.protobuf.generated.chia_pb2.Process.command', index=2,
       number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='create_time', full_name='chia_tea.protobuf.generated.chia_pb2.ProcessInfo.create_time', index=3,
+      name='create_time', full_name='chia_tea.protobuf.generated.chia_pb2.Process.create_time', index=3,
       number=4, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='id', full_name='chia_tea.protobuf.generated.chia_pb2.ProcessInfo.id', index=4,
+      name='id', full_name='chia_tea.protobuf.generated.chia_pb2.Process.id', index=4,
       number=5, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='cpu_usage', full_name='chia_tea.protobuf.generated.chia_pb2.ProcessInfo.cpu_usage', index=5,
+      name='cpu_usage', full_name='chia_tea.protobuf.generated.chia_pb2.Process.cpu_usage', index=5,
       number=6, type=2, cpp_type=6, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='used_physical_ram', full_name='chia_tea.protobuf.generated.chia_pb2.ProcessInfo.used_physical_ram', index=6,
+      name='used_physical_ram', full_name='chia_tea.protobuf.generated.chia_pb2.Process.used_physical_ram', index=6,
       number=7, type=2, cpp_type=6, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='used_virtual_ram', full_name='chia_tea.protobuf.generated.chia_pb2.ProcessInfo.used_virtual_ram', index=7,
+      name='used_virtual_ram', full_name='chia_tea.protobuf.generated.chia_pb2.Process.used_virtual_ram', index=7,
       number=8, type=2, cpp_type=6, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='opened_files', full_name='chia_tea.protobuf.generated.chia_pb2.ProcessInfo.opened_files', index=8,
+      name='opened_files', full_name='chia_tea.protobuf.generated.chia_pb2.Process.opened_files', index=8,
       number=9, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='network_connections', full_name='chia_tea.protobuf.generated.chia_pb2.ProcessInfo.network_connections', index=9,
+      name='network_connections', full_name='chia_tea.protobuf.generated.chia_pb2.Process.network_connections', index=9,
       number=10, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -116,7 +116,7 @@ _PROCESSINFO = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=81,
-  serialized_end=301,
+  serialized_end=297,
 )
 
 
@@ -203,28 +203,28 @@ _HARVESTERPLOT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=304,
-  serialized_end=500,
+  serialized_start=300,
+  serialized_end=496,
 )
 
 
-_HARVESTERINFO = _descriptor.Descriptor(
-  name='HarvesterInfo',
-  full_name='chia_tea.protobuf.generated.chia_pb2.HarvesterInfo',
+_HARVESTER = _descriptor.Descriptor(
+  name='Harvester',
+  full_name='chia_tea.protobuf.generated.chia_pb2.Harvester',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='is_running', full_name='chia_tea.protobuf.generated.chia_pb2.HarvesterInfo.is_running', index=0,
+      name='is_running', full_name='chia_tea.protobuf.generated.chia_pb2.Harvester.is_running', index=0,
       number=2, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='n_proofs', full_name='chia_tea.protobuf.generated.chia_pb2.HarvesterInfo.n_proofs', index=1,
+      name='n_proofs', full_name='chia_tea.protobuf.generated.chia_pb2.Harvester.n_proofs', index=1,
       number=3, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -242,8 +242,8 @@ _HARVESTERINFO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=502,
-  serialized_end=555,
+  serialized_start=498,
+  serialized_end=547,
 )
 
 
@@ -270,23 +270,23 @@ _HARVESTERVIEWEDFROMFARMER = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='last_message_time', full_name='chia_tea.protobuf.generated.chia_pb2.HarvesterViewedFromFarmer.last_message_time', index=2,
+      name='time_last_msg_received', full_name='chia_tea.protobuf.generated.chia_pb2.HarvesterViewedFromFarmer.time_last_msg_received', index=2,
+      number=3, type=1, cpp_type=5, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='time_last_msg_sent', full_name='chia_tea.protobuf.generated.chia_pb2.HarvesterViewedFromFarmer.time_last_msg_sent', index=3,
       number=9, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='ip_address', full_name='chia_tea.protobuf.generated.chia_pb2.HarvesterViewedFromFarmer.ip_address', index=3,
+      name='ip_address', full_name='chia_tea.protobuf.generated.chia_pb2.HarvesterViewedFromFarmer.ip_address', index=4,
       number=10, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='n_timeouts', full_name='chia_tea.protobuf.generated.chia_pb2.HarvesterViewedFromFarmer.n_timeouts', index=4,
-      number=11, type=3, cpp_type=2, label=1,
-      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -316,28 +316,28 @@ _HARVESTERVIEWEDFROMFARMER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=558,
-  serialized_end=733,
+  serialized_start=550,
+  serialized_end=738,
 )
 
 
-_FARMERINFO = _descriptor.Descriptor(
-  name='FarmerInfo',
-  full_name='chia_tea.protobuf.generated.chia_pb2.FarmerInfo',
+_FARMER = _descriptor.Descriptor(
+  name='Farmer',
+  full_name='chia_tea.protobuf.generated.chia_pb2.Farmer',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='is_running', full_name='chia_tea.protobuf.generated.chia_pb2.FarmerInfo.is_running', index=0,
+      name='is_running', full_name='chia_tea.protobuf.generated.chia_pb2.Farmer.is_running', index=0,
       number=1, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='total_challenges', full_name='chia_tea.protobuf.generated.chia_pb2.FarmerInfo.total_challenges', index=1,
+      name='total_challenges', full_name='chia_tea.protobuf.generated.chia_pb2.Farmer.total_challenges', index=1,
       number=2, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -355,28 +355,28 @@ _FARMERINFO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=735,
-  serialized_end=793,
+  serialized_start=740,
+  serialized_end=794,
 )
 
 
-_WALLETINFO = _descriptor.Descriptor(
-  name='WalletInfo',
-  full_name='chia_tea.protobuf.generated.chia_pb2.WalletInfo',
+_WALLET = _descriptor.Descriptor(
+  name='Wallet',
+  full_name='chia_tea.protobuf.generated.chia_pb2.Wallet',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='is_running', full_name='chia_tea.protobuf.generated.chia_pb2.WalletInfo.is_running', index=0,
+      name='is_running', full_name='chia_tea.protobuf.generated.chia_pb2.Wallet.is_running', index=0,
       number=1, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='is_synced', full_name='chia_tea.protobuf.generated.chia_pb2.WalletInfo.is_synced', index=1,
+      name='is_synced', full_name='chia_tea.protobuf.generated.chia_pb2.Wallet.is_synced', index=1,
       number=2, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
@@ -394,64 +394,24 @@ _WALLETINFO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=795,
-  serialized_end=846,
+  serialized_start=796,
+  serialized_end=843,
 )
 
-
-_PLOTTINGJOB = _descriptor.Descriptor(
-  name='PlottingJob',
-  full_name='chia_tea.protobuf.generated.chia_pb2.PlottingJob',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='n_plots_in_progress', full_name='chia_tea.protobuf.generated.chia_pb2.PlottingJob.n_plots_in_progress', index=0,
-      number=1, type=3, cpp_type=2, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='n_plots_completed_today', full_name='chia_tea.protobuf.generated.chia_pb2.PlottingJob.n_plots_completed_today', index=1,
-      number=2, type=3, cpp_type=2, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=848,
-  serialized_end=923,
-)
-
-DESCRIPTOR.message_types_by_name['ProcessInfo'] = _PROCESSINFO
+DESCRIPTOR.message_types_by_name['Process'] = _PROCESS
 DESCRIPTOR.message_types_by_name['HarvesterPlot'] = _HARVESTERPLOT
-DESCRIPTOR.message_types_by_name['HarvesterInfo'] = _HARVESTERINFO
+DESCRIPTOR.message_types_by_name['Harvester'] = _HARVESTER
 DESCRIPTOR.message_types_by_name['HarvesterViewedFromFarmer'] = _HARVESTERVIEWEDFROMFARMER
-DESCRIPTOR.message_types_by_name['FarmerInfo'] = _FARMERINFO
-DESCRIPTOR.message_types_by_name['WalletInfo'] = _WALLETINFO
-DESCRIPTOR.message_types_by_name['PlottingJob'] = _PLOTTINGJOB
+DESCRIPTOR.message_types_by_name['Farmer'] = _FARMER
+DESCRIPTOR.message_types_by_name['Wallet'] = _WALLET
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
-ProcessInfo = _reflection.GeneratedProtocolMessageType('ProcessInfo', (_message.Message,), {
-  'DESCRIPTOR' : _PROCESSINFO,
+Process = _reflection.GeneratedProtocolMessageType('Process', (_message.Message,), {
+  'DESCRIPTOR' : _PROCESS,
   '__module__' : 'chia_tea.protobuf.generated.chia_pb2'
-  # @@protoc_insertion_point(class_scope:chia_tea.protobuf.generated.chia_pb2.ProcessInfo)
+  # @@protoc_insertion_point(class_scope:chia_tea.protobuf.generated.chia_pb2.Process)
   })
-_sym_db.RegisterMessage(ProcessInfo)
+_sym_db.RegisterMessage(Process)
 
 HarvesterPlot = _reflection.GeneratedProtocolMessageType('HarvesterPlot', (_message.Message,), {
   'DESCRIPTOR' : _HARVESTERPLOT,
@@ -460,12 +420,12 @@ HarvesterPlot = _reflection.GeneratedProtocolMessageType('HarvesterPlot', (_mess
   })
 _sym_db.RegisterMessage(HarvesterPlot)
 
-HarvesterInfo = _reflection.GeneratedProtocolMessageType('HarvesterInfo', (_message.Message,), {
-  'DESCRIPTOR' : _HARVESTERINFO,
+Harvester = _reflection.GeneratedProtocolMessageType('Harvester', (_message.Message,), {
+  'DESCRIPTOR' : _HARVESTER,
   '__module__' : 'chia_tea.protobuf.generated.chia_pb2'
-  # @@protoc_insertion_point(class_scope:chia_tea.protobuf.generated.chia_pb2.HarvesterInfo)
+  # @@protoc_insertion_point(class_scope:chia_tea.protobuf.generated.chia_pb2.Harvester)
   })
-_sym_db.RegisterMessage(HarvesterInfo)
+_sym_db.RegisterMessage(Harvester)
 
 HarvesterViewedFromFarmer = _reflection.GeneratedProtocolMessageType('HarvesterViewedFromFarmer', (_message.Message,), {
   'DESCRIPTOR' : _HARVESTERVIEWEDFROMFARMER,
@@ -474,26 +434,19 @@ HarvesterViewedFromFarmer = _reflection.GeneratedProtocolMessageType('HarvesterV
   })
 _sym_db.RegisterMessage(HarvesterViewedFromFarmer)
 
-FarmerInfo = _reflection.GeneratedProtocolMessageType('FarmerInfo', (_message.Message,), {
-  'DESCRIPTOR' : _FARMERINFO,
+Farmer = _reflection.GeneratedProtocolMessageType('Farmer', (_message.Message,), {
+  'DESCRIPTOR' : _FARMER,
   '__module__' : 'chia_tea.protobuf.generated.chia_pb2'
-  # @@protoc_insertion_point(class_scope:chia_tea.protobuf.generated.chia_pb2.FarmerInfo)
+  # @@protoc_insertion_point(class_scope:chia_tea.protobuf.generated.chia_pb2.Farmer)
   })
-_sym_db.RegisterMessage(FarmerInfo)
+_sym_db.RegisterMessage(Farmer)
 
-WalletInfo = _reflection.GeneratedProtocolMessageType('WalletInfo', (_message.Message,), {
-  'DESCRIPTOR' : _WALLETINFO,
+Wallet = _reflection.GeneratedProtocolMessageType('Wallet', (_message.Message,), {
+  'DESCRIPTOR' : _WALLET,
   '__module__' : 'chia_tea.protobuf.generated.chia_pb2'
-  # @@protoc_insertion_point(class_scope:chia_tea.protobuf.generated.chia_pb2.WalletInfo)
+  # @@protoc_insertion_point(class_scope:chia_tea.protobuf.generated.chia_pb2.Wallet)
   })
-_sym_db.RegisterMessage(WalletInfo)
-
-PlottingJob = _reflection.GeneratedProtocolMessageType('PlottingJob', (_message.Message,), {
-  'DESCRIPTOR' : _PLOTTINGJOB,
-  '__module__' : 'chia_tea.protobuf.generated.chia_pb2'
-  # @@protoc_insertion_point(class_scope:chia_tea.protobuf.generated.chia_pb2.PlottingJob)
-  })
-_sym_db.RegisterMessage(PlottingJob)
+_sym_db.RegisterMessage(Wallet)
 
 
 # @@protoc_insertion_point(module_scope)

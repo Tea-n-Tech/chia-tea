@@ -19,50 +19,50 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n*chia_tea/protobuf/generated/hardware.proto\x12(chia_tea.protobuf.generated.hardware_pb2\"b\n\x07\x43puInfo\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x13\n\x0b\x63lock_speed\x18\x02 \x01(\x01\x12\r\n\x05usage\x18\x03 \x01(\x01\x12\x13\n\x0btemperature\x18\x04 \x01(\x01\x12\x10\n\x08n_vcores\x18\x05 \x01(\x05\"U\n\x07RamInfo\x12\x11\n\ttotal_ram\x18\x01 \x01(\x03\x12\x10\n\x08used_ram\x18\x02 \x01(\x03\x12\x12\n\ntotal_swap\x18\x03 \x01(\x03\x12\x11\n\tused_swap\x18\x04 \x01(\x03\"\xb6\x02\n\x08\x44iskInfo\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x13\n\x0btotal_space\x18\x03 \x01(\x01\x12\x12\n\nused_space\x18\x04 \x01(\x01\x12\x0e\n\x06\x64\x65vice\x18\x0c \x01(\t\x12\x12\n\nmountpoint\x18\r \x01(\t\x12\x0e\n\x06\x66stype\x18\x0e \x01(\t\x12\x15\n\rmount_options\x18\x0f \x01(\t\x12\x13\n\x0btemperature\x18\x05 \x01(\x01\x12\x15\n\rread_activity\x18\x06 \x01(\x01\x12\x16\n\x0ewrite_activity\x18\x07 \x01(\x01\x12\x12\n\nread_speed\x18\x08 \x01(\x01\x12\x13\n\x0bwrite_speed\x18\t \x01(\x01\x12\x16\n\x0eread_total_tbw\x18\n \x01(\x01\x12\x17\n\x0fwrite_total_tbw\x18\x0b \x01(\x01\x62\x06proto3'
+  serialized_pb=b'\n*chia_tea/protobuf/generated/hardware.proto\x12(chia_tea.protobuf.generated.hardware_pb2\"^\n\x03\x43pu\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x13\n\x0b\x63lock_speed\x18\x02 \x01(\x01\x12\r\n\x05usage\x18\x03 \x01(\x01\x12\x13\n\x0btemperature\x18\x04 \x01(\x01\x12\x10\n\x08n_vcores\x18\x05 \x01(\x05\"Q\n\x03Ram\x12\x11\n\ttotal_ram\x18\x01 \x01(\x03\x12\x10\n\x08used_ram\x18\x02 \x01(\x03\x12\x12\n\ntotal_swap\x18\x03 \x01(\x03\x12\x11\n\tused_swap\x18\x04 \x01(\x03\"\xb2\x02\n\x04\x44isk\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x13\n\x0btotal_space\x18\x03 \x01(\x01\x12\x12\n\nused_space\x18\x04 \x01(\x01\x12\x0e\n\x06\x64\x65vice\x18\x0c \x01(\t\x12\x12\n\nmountpoint\x18\r \x01(\t\x12\x0e\n\x06\x66stype\x18\x0e \x01(\t\x12\x15\n\rmount_options\x18\x0f \x01(\t\x12\x13\n\x0btemperature\x18\x05 \x01(\x01\x12\x15\n\rread_activity\x18\x06 \x01(\x01\x12\x16\n\x0ewrite_activity\x18\x07 \x01(\x01\x12\x12\n\nread_speed\x18\x08 \x01(\x01\x12\x13\n\x0bwrite_speed\x18\t \x01(\x01\x12\x16\n\x0eread_total_tbw\x18\n \x01(\x01\x12\x17\n\x0fwrite_total_tbw\x18\x0b \x01(\x01\x62\x06proto3'
 )
 
 
 
 
-_CPUINFO = _descriptor.Descriptor(
-  name='CpuInfo',
-  full_name='chia_tea.protobuf.generated.hardware_pb2.CpuInfo',
+_CPU = _descriptor.Descriptor(
+  name='Cpu',
+  full_name='chia_tea.protobuf.generated.hardware_pb2.Cpu',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='name', full_name='chia_tea.protobuf.generated.hardware_pb2.CpuInfo.name', index=0,
+      name='name', full_name='chia_tea.protobuf.generated.hardware_pb2.Cpu.name', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='clock_speed', full_name='chia_tea.protobuf.generated.hardware_pb2.CpuInfo.clock_speed', index=1,
+      name='clock_speed', full_name='chia_tea.protobuf.generated.hardware_pb2.Cpu.clock_speed', index=1,
       number=2, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='usage', full_name='chia_tea.protobuf.generated.hardware_pb2.CpuInfo.usage', index=2,
+      name='usage', full_name='chia_tea.protobuf.generated.hardware_pb2.Cpu.usage', index=2,
       number=3, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='temperature', full_name='chia_tea.protobuf.generated.hardware_pb2.CpuInfo.temperature', index=3,
+      name='temperature', full_name='chia_tea.protobuf.generated.hardware_pb2.Cpu.temperature', index=3,
       number=4, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='n_vcores', full_name='chia_tea.protobuf.generated.hardware_pb2.CpuInfo.n_vcores', index=4,
+      name='n_vcores', full_name='chia_tea.protobuf.generated.hardware_pb2.Cpu.n_vcores', index=4,
       number=5, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -81,41 +81,41 @@ _CPUINFO = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=88,
-  serialized_end=186,
+  serialized_end=182,
 )
 
 
-_RAMINFO = _descriptor.Descriptor(
-  name='RamInfo',
-  full_name='chia_tea.protobuf.generated.hardware_pb2.RamInfo',
+_RAM = _descriptor.Descriptor(
+  name='Ram',
+  full_name='chia_tea.protobuf.generated.hardware_pb2.Ram',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='total_ram', full_name='chia_tea.protobuf.generated.hardware_pb2.RamInfo.total_ram', index=0,
+      name='total_ram', full_name='chia_tea.protobuf.generated.hardware_pb2.Ram.total_ram', index=0,
       number=1, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='used_ram', full_name='chia_tea.protobuf.generated.hardware_pb2.RamInfo.used_ram', index=1,
+      name='used_ram', full_name='chia_tea.protobuf.generated.hardware_pb2.Ram.used_ram', index=1,
       number=2, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='total_swap', full_name='chia_tea.protobuf.generated.hardware_pb2.RamInfo.total_swap', index=2,
+      name='total_swap', full_name='chia_tea.protobuf.generated.hardware_pb2.Ram.total_swap', index=2,
       number=3, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='used_swap', full_name='chia_tea.protobuf.generated.hardware_pb2.RamInfo.used_swap', index=3,
+      name='used_swap', full_name='chia_tea.protobuf.generated.hardware_pb2.Ram.used_swap', index=3,
       number=4, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -133,119 +133,119 @@ _RAMINFO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=188,
-  serialized_end=273,
+  serialized_start=184,
+  serialized_end=265,
 )
 
 
-_DISKINFO = _descriptor.Descriptor(
-  name='DiskInfo',
-  full_name='chia_tea.protobuf.generated.hardware_pb2.DiskInfo',
+_DISK = _descriptor.Descriptor(
+  name='Disk',
+  full_name='chia_tea.protobuf.generated.hardware_pb2.Disk',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='id', full_name='chia_tea.protobuf.generated.hardware_pb2.DiskInfo.id', index=0,
+      name='id', full_name='chia_tea.protobuf.generated.hardware_pb2.Disk.id', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='name', full_name='chia_tea.protobuf.generated.hardware_pb2.DiskInfo.name', index=1,
+      name='name', full_name='chia_tea.protobuf.generated.hardware_pb2.Disk.name', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='total_space', full_name='chia_tea.protobuf.generated.hardware_pb2.DiskInfo.total_space', index=2,
+      name='total_space', full_name='chia_tea.protobuf.generated.hardware_pb2.Disk.total_space', index=2,
       number=3, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='used_space', full_name='chia_tea.protobuf.generated.hardware_pb2.DiskInfo.used_space', index=3,
+      name='used_space', full_name='chia_tea.protobuf.generated.hardware_pb2.Disk.used_space', index=3,
       number=4, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='device', full_name='chia_tea.protobuf.generated.hardware_pb2.DiskInfo.device', index=4,
+      name='device', full_name='chia_tea.protobuf.generated.hardware_pb2.Disk.device', index=4,
       number=12, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='mountpoint', full_name='chia_tea.protobuf.generated.hardware_pb2.DiskInfo.mountpoint', index=5,
+      name='mountpoint', full_name='chia_tea.protobuf.generated.hardware_pb2.Disk.mountpoint', index=5,
       number=13, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='fstype', full_name='chia_tea.protobuf.generated.hardware_pb2.DiskInfo.fstype', index=6,
+      name='fstype', full_name='chia_tea.protobuf.generated.hardware_pb2.Disk.fstype', index=6,
       number=14, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='mount_options', full_name='chia_tea.protobuf.generated.hardware_pb2.DiskInfo.mount_options', index=7,
+      name='mount_options', full_name='chia_tea.protobuf.generated.hardware_pb2.Disk.mount_options', index=7,
       number=15, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='temperature', full_name='chia_tea.protobuf.generated.hardware_pb2.DiskInfo.temperature', index=8,
+      name='temperature', full_name='chia_tea.protobuf.generated.hardware_pb2.Disk.temperature', index=8,
       number=5, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='read_activity', full_name='chia_tea.protobuf.generated.hardware_pb2.DiskInfo.read_activity', index=9,
+      name='read_activity', full_name='chia_tea.protobuf.generated.hardware_pb2.Disk.read_activity', index=9,
       number=6, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='write_activity', full_name='chia_tea.protobuf.generated.hardware_pb2.DiskInfo.write_activity', index=10,
+      name='write_activity', full_name='chia_tea.protobuf.generated.hardware_pb2.Disk.write_activity', index=10,
       number=7, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='read_speed', full_name='chia_tea.protobuf.generated.hardware_pb2.DiskInfo.read_speed', index=11,
+      name='read_speed', full_name='chia_tea.protobuf.generated.hardware_pb2.Disk.read_speed', index=11,
       number=8, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='write_speed', full_name='chia_tea.protobuf.generated.hardware_pb2.DiskInfo.write_speed', index=12,
+      name='write_speed', full_name='chia_tea.protobuf.generated.hardware_pb2.Disk.write_speed', index=12,
       number=9, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='read_total_tbw', full_name='chia_tea.protobuf.generated.hardware_pb2.DiskInfo.read_total_tbw', index=13,
+      name='read_total_tbw', full_name='chia_tea.protobuf.generated.hardware_pb2.Disk.read_total_tbw', index=13,
       number=10, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='write_total_tbw', full_name='chia_tea.protobuf.generated.hardware_pb2.DiskInfo.write_total_tbw', index=14,
+      name='write_total_tbw', full_name='chia_tea.protobuf.generated.hardware_pb2.Disk.write_total_tbw', index=14,
       number=11, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
@@ -263,35 +263,35 @@ _DISKINFO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=276,
-  serialized_end=586,
+  serialized_start=268,
+  serialized_end=574,
 )
 
-DESCRIPTOR.message_types_by_name['CpuInfo'] = _CPUINFO
-DESCRIPTOR.message_types_by_name['RamInfo'] = _RAMINFO
-DESCRIPTOR.message_types_by_name['DiskInfo'] = _DISKINFO
+DESCRIPTOR.message_types_by_name['Cpu'] = _CPU
+DESCRIPTOR.message_types_by_name['Ram'] = _RAM
+DESCRIPTOR.message_types_by_name['Disk'] = _DISK
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
-CpuInfo = _reflection.GeneratedProtocolMessageType('CpuInfo', (_message.Message,), {
-  'DESCRIPTOR' : _CPUINFO,
+Cpu = _reflection.GeneratedProtocolMessageType('Cpu', (_message.Message,), {
+  'DESCRIPTOR' : _CPU,
   '__module__' : 'chia_tea.protobuf.generated.hardware_pb2'
-  # @@protoc_insertion_point(class_scope:chia_tea.protobuf.generated.hardware_pb2.CpuInfo)
+  # @@protoc_insertion_point(class_scope:chia_tea.protobuf.generated.hardware_pb2.Cpu)
   })
-_sym_db.RegisterMessage(CpuInfo)
+_sym_db.RegisterMessage(Cpu)
 
-RamInfo = _reflection.GeneratedProtocolMessageType('RamInfo', (_message.Message,), {
-  'DESCRIPTOR' : _RAMINFO,
+Ram = _reflection.GeneratedProtocolMessageType('Ram', (_message.Message,), {
+  'DESCRIPTOR' : _RAM,
   '__module__' : 'chia_tea.protobuf.generated.hardware_pb2'
-  # @@protoc_insertion_point(class_scope:chia_tea.protobuf.generated.hardware_pb2.RamInfo)
+  # @@protoc_insertion_point(class_scope:chia_tea.protobuf.generated.hardware_pb2.Ram)
   })
-_sym_db.RegisterMessage(RamInfo)
+_sym_db.RegisterMessage(Ram)
 
-DiskInfo = _reflection.GeneratedProtocolMessageType('DiskInfo', (_message.Message,), {
-  'DESCRIPTOR' : _DISKINFO,
+Disk = _reflection.GeneratedProtocolMessageType('Disk', (_message.Message,), {
+  'DESCRIPTOR' : _DISK,
   '__module__' : 'chia_tea.protobuf.generated.hardware_pb2'
-  # @@protoc_insertion_point(class_scope:chia_tea.protobuf.generated.hardware_pb2.DiskInfo)
+  # @@protoc_insertion_point(class_scope:chia_tea.protobuf.generated.hardware_pb2.Disk)
   })
-_sym_db.RegisterMessage(DiskInfo)
+_sym_db.RegisterMessage(Disk)
 
 
 # @@protoc_insertion_point(module_scope)

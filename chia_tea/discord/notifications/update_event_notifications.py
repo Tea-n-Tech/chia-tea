@@ -2,13 +2,15 @@
 
 from typing import Callable, List
 
-from ...protobuf.generated.chia_pb2 import HarvesterPlot, HarvesterViewedFromFarmer
+from ...protobuf.generated.chia_pb2 import (HarvesterPlot,
+                                            HarvesterViewedFromFarmer)
 from ...protobuf.generated.computer_info_pb2 import ADD, DELETE, UpdateEvent
-from ...protobuf.generated.hardware_pb2 import DiskInfo, RamInfo
+from ...protobuf.generated.hardware_pb2 import Disk, Ram
 from ...protobuf.to_sqlite.custom import get_update_even_data
 
 
 def _get_harvester_connection_msg(
+    farmer_id: str,
     harvester_id: str,
     ip_address: str,
     is_connected: bool,
@@ -17,8 +19,14 @@ def _get_harvester_connection_msg(
 
     Parameters
     ----------
-    harvester_info : HarvesterInfo
-        harvester info to format
+    farmer_id : str
+        id of the farmer
+    harvester_id : str
+        id of the harvester
+    ip_address : str
+        harvester ip address
+    is_connected: bool
+        connection status
 
     Returns
     -------
@@ -32,12 +40,13 @@ def _get_harvester_connection_msg(
                          if is_connected
                          else "disconnected")
 
-    CONNECTION_MSG: str = "{icon} Harvester {harvester_id} ({ip}) {status}."
+    CONNECTION_MSG: str = "{icon} Farmer {farmer_id} {status} to Harvester {harvester_id} ({ip})."
     msg = CONNECTION_MSG.format(
         icon=icon,
         harvester_id=harvester_id[:10],
         ip=ip_address,
-        status=connection_status
+        status=connection_status,
+        farmer_id=farmer_id,
     )
 
     return msg
@@ -64,13 +73,13 @@ def notify_when_farmer_connects_or_disconnects_to_harvester(
     messages = []
 
     for event in update_events:
-        if event.event_type in (ADD, DELETE):
-            is_connected = event.event_type == ADD
-            print("is connected", is_connected, event.event_type)
-            _, pb_msg = get_update_even_data(event)
-            if isinstance(pb_msg, HarvesterViewedFromFarmer):
+        _, pb_msg = get_update_even_data(event)
+        if isinstance(pb_msg, HarvesterViewedFromFarmer):
+            if event.event_type in (ADD, DELETE):
+                is_connected = event.event_type == ADD
                 messages.append(
                     _get_harvester_connection_msg(
+                        farmer_id=str(machine_id)[:10],
                         harvester_id=pb_msg.id,
                         ip_address=pb_msg.ip_address,
                         is_connected=is_connected,
@@ -104,7 +113,7 @@ def notify_on_full_ram(
     # check for messages
     for event in update_events:
         _, pb_msg = get_update_even_data(event)
-        if isinstance(pb_msg, RamInfo):
+        if isinstance(pb_msg, Ram):
             ram_usage = pb_msg.used_ram / pb_msg.total_ram
             if ram_usage > 0.95:
                 messages.append("⚠️ Machine {machine_id} uses {usage:.1f}% of RAM".format(
@@ -137,7 +146,7 @@ def notify_if_a_disk_is_lost(
     messages = []
     for event in update_events:
         _, pb_msg = get_update_even_data(event)
-        if isinstance(pb_msg, DiskInfo):
+        if isinstance(pb_msg, Disk):
             if event.event_type == DELETE:
                 messages.append(
                     "⚠️ Machine {machine_id} lost disk {mountpoint}".format(

@@ -1,13 +1,12 @@
 import asyncio
 from datetime import date
-from typing import Dict, List, Union
+from typing import Dict, List
 
 from ..utils.logger import get_logger
-from .FarmerService import FarmerService
-from .harvester_checks import ALL_HARVESTER_CHECKS
-from .HarvesterInfo import HarvesterInfo
-from .HarvesterService import HarvesterService
-from .WalletService import WalletService
+from .api.FarmerAPI import FarmerAPI
+from .api.HarvesterAPI import HarvesterAPI
+from .api.WalletAPI import WalletAPI
+from .logfile.FarmerHarvesterLogfile import FarmerHarvesterLogfile
 
 
 class ChiaWatchdog:
@@ -17,13 +16,14 @@ class ChiaWatchdog:
     __logfile_watching_ready: bool
 
     # members related to logfile checking
-    harvester_infos: Dict[str, HarvesterInfo]
+    harvester_infos: Dict[str, FarmerHarvesterLogfile]
 
     # members for contacting chia directly
-    farmer_service: FarmerService
-    wallet_service: WalletService
-    harvester_service: HarvesterService
+    farmer_service: FarmerAPI
+    wallet_service: WalletAPI
+    harvester_service: HarvesterAPI
 
+    # TODO check if we still need this
     farmed_blocks: List[str]
 
     def __init__(self, logfile_filepath: str):
@@ -38,9 +38,9 @@ class ChiaWatchdog:
         self.harvester_infos = {}
         self.date_last_reset = date.today()
         self.__logfile_watching_ready = False
-        self.farmer_service = FarmerService()
-        self.wallet_service = WalletService()
-        self.harvester_service = HarvesterService()
+        self.farmer_service = FarmerAPI()
+        self.wallet_service = WalletAPI()
+        self.harvester_service = HarvesterAPI()
         self.farmed_blocks = []
 
     def copy(self) -> 'ChiaWatchdog':
@@ -80,13 +80,6 @@ class ChiaWatchdog:
     def set_as_ready(self):
         self.__logfile_watching_ready = True
 
-    async def run_self_checks(self):
-        """ Runs checks on itself and it's members
-        """
-        for check_func in ALL_HARVESTER_CHECKS:
-            for harvester_info in self.harvester_infos.values():
-                check_func(harvester_info)
-
     def is_reset_time(self) -> bool:
         """If it is already midnight we need to reset to prevent data overflow"""
         # TODO change to FIFO queue
@@ -107,7 +100,7 @@ class ChiaWatchdog:
         self,
         id: str,
         ip_address: str,
-    ) -> HarvesterInfo:
+    ) -> FarmerHarvesterLogfile:
         """ Get or create a harvester info
 
         Parameters
@@ -119,7 +112,7 @@ class ChiaWatchdog:
 
         Returns
         -------
-        harvester_info : HarvesterInfo
+        harvester_info : FarmerHarvesterLogfile
             existing or newly created harvester info
         """
 
@@ -127,7 +120,7 @@ class ChiaWatchdog:
 
         #  does not exist yet
         if harvester_info is None:
-            harvester_info = HarvesterInfo(
+            harvester_info = FarmerHarvesterLogfile(
                 harvester_id=id,
                 ip_address=ip_address,
             )
@@ -137,22 +130,3 @@ class ChiaWatchdog:
             harvester_info.ip_address = ip_address
 
         return harvester_info
-
-    def get_harvester_from_partial_id(self, partial_harvester_id: str) -> Union[HarvesterInfo, None]:
-        """ Get harvester Info on matching partial Id - necessary cause log does not always give full id
-
-        Parameters
-        ----------
-        partial_harvester_id : str
-            partial id of the harvester to return
-
-        Returns
-        -------
-        harvester_info : HarvesterInfo
-            existing harvester info or None if not found
-        """
-        for harvester_info_key, harvester_info in self.harvester_infos.items():
-            if harvester_info_key.startswith(partial_harvester_id):
-                return harvester_info
-
-        return None

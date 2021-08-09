@@ -1,8 +1,7 @@
 
 
+from datetime import datetime
 from typing import List
-
-from sortedcontainers import SortedSet
 
 from ...protobuf.generated.chia_pb2 import HarvesterViewedFromFarmer
 from ...protobuf.generated.computer_info_pb2 import ComputerInfo
@@ -34,8 +33,8 @@ def notify_on_harvester_reward_found(
 
     messages = []
 
-    old_n_proofs = old_computer_info.harvester_info.n_proofs
-    new_n_proofs = new_computer_info.harvester_info.n_proofs
+    old_n_proofs = old_computer_info.harvester.n_proofs
+    new_n_proofs = new_computer_info.harvester.n_proofs
 
     if old_n_proofs < new_n_proofs:
         messages.append(
@@ -47,6 +46,38 @@ def notify_on_harvester_reward_found(
         )
 
     return messages
+
+
+HARVESTER_TIMOUT = 60  # seconds
+timestamp_of_last_timeout_check = 0.
+
+
+def get_msg_if_farmer_harvester_timed_out(
+    machine: MachineInfo,
+    last_timestamp: float,
+    new_timestamp: float,
+    harvester: HarvesterViewedFromFarmer
+) -> str:
+
+    new_harvester_timed_out = (new_timestamp -
+                               harvester.time_last_msg_received >= HARVESTER_TIMOUT)
+    previously_notified = (
+        last_timestamp - harvester.time_last_msg_received >= HARVESTER_TIMOUT
+        # we assume on startup that we already notified on a timeout
+        # otherwise we can a message all the time when we restart
+        # the bot.
+        if last_timestamp != 0.
+        else True
+    )
+
+    if new_harvester_timed_out and not previously_notified:
+        return "{icon}  Harvester {machine_name} {status}.".format(
+            icon="⚠️",
+            machine_name=get_machine_info_name(machine),
+            status=f"didn't respond for {HARVESTER_TIMOUT}s"
+        )
+    else:
+        return ""
 
 
 def notify_when_harvester_times_out(
@@ -70,30 +101,23 @@ def notify_when_harvester_times_out(
     messages : List[str]
         notification messages
     """
+
     messages = []
-    old_harvesters = {
-        harvester.id: harvester
-        for harvester in old_computer_info.connected_harvesters
-    }
-    new_harvesters = {
-        harvester.id: harvester
-        for harvester in new_computer_info.connected_harvesters
-    }
-    all_ids = SortedSet(old_harvesters.keys()).union(
-        SortedSet(new_harvesters.keys())
-    )
-    default_harvester = HarvesterViewedFromFarmer()
-    for harvester_id in all_ids:
-        old_harvester = old_harvesters.get(harvester_id, default_harvester)
-        new_harvester = new_harvesters.get(harvester_id, default_harvester)
-        if new_harvester.n_timeouts > old_harvester.n_timeouts:
-            messages.append(
-                "{icon}   Harvester {machine_name} {status}.".format(
-                    icon="👴🏻",
-                    machine_name=get_machine_info_name(machine),
-                    status="timed out"
-                )
-            )
+
+    global timestamp_of_last_timeout_check
+    now = datetime.now().timestamp()
+
+    for harvester in new_computer_info.farmer_harvesters:
+        msg = get_msg_if_farmer_harvester_timed_out(
+            machine,
+            last_timestamp=timestamp_of_last_timeout_check,
+            new_timestamp=now,
+            harvester=harvester,
+        )
+        if msg:
+            messages.append(msg)
+
+    timestamp_of_last_timeout_check = now
 
     return messages
 
@@ -122,8 +146,8 @@ def notify_on_wallet_sync_change(
 
     messages = []
 
-    old_wallet_synced = old_computer_info.wallet_info.is_synced
-    new_wallet_synced = new_computer_info.wallet_info.is_synced
+    old_wallet_synced = old_computer_info.wallet.is_synced
+    new_wallet_synced = new_computer_info.wallet.is_synced
 
     if not old_wallet_synced and new_wallet_synced:
         messages.append(
@@ -165,8 +189,8 @@ def notify_on_wallet_connection_change(
 
     messages = []
 
-    old_wallet_connected = old_computer_info.wallet_info.is_running
-    new_wallet_connected = new_computer_info.wallet_info.is_running
+    old_wallet_connected = old_computer_info.wallet.is_running
+    new_wallet_connected = new_computer_info.wallet.is_running
 
     if not old_wallet_connected and new_wallet_connected:
         messages.append(
