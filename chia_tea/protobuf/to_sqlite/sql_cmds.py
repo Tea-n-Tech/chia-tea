@@ -2,6 +2,7 @@
 
 from ..generated.computer_info_pb2 import (_UPDATEEVENT, ComputerInfo,
                                            UpdateEvent)
+from ..generated.hardware_pb2 import Cpu, Ram
 from ..generated.machine_info_pb2 import _MACHINEINFO, MachineInfo
 from .custom import (SqliteType,
                      get_event_table_insertion_cmds_for_nested_messages,
@@ -43,6 +44,21 @@ get_machine_infos_from_db = get_function_to_retrieve_pb2_from_sqlite_db(
     key_names_and_ops=[],
 )
 
+get_cpu_for_machine_from_db = get_function_to_retrieve_pb2_from_sqlite_db(
+    table_suffix="",
+    pb_class=Cpu,
+    key_names_and_ops=[
+        ("machine_id", "==")
+    ],
+)
+
+get_ram_for_machine_from_db = get_function_to_retrieve_pb2_from_sqlite_db(
+    table_suffix="",
+    pb_class=Ram,
+    key_names_and_ops=[
+        ("machine_id", "==")
+    ],
+)
 
 insert_machine_info_in_db = sqlite_insert_into_table_fun_from_pb2(
     table_name=_MACHINEINFO.name,

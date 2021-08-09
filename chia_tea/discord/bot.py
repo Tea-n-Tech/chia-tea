@@ -6,7 +6,11 @@ from typing import Tuple
 
 from discord.ext import commands
 
-from ..protobuf.to_sqlite.sql_cmds import get_machine_infos_from_db
+from ..protobuf.to_sqlite.sql_cmds import (
+    get_machine_infos_from_db,
+    get_cpu_for_machine_from_db,
+    get_ram_for_machine_from_db,
+)
 from ..utils.cli import parse_args
 from ..utils.config import get_config, read_config
 from ..utils.logger import get_logger
@@ -103,9 +107,60 @@ async def _bot_machines(ctx):
         seconds_since_last_contact = (datetime.now() - dt).total_seconds()
         is_connected = seconds_since_last_contact < 60
         icon = "🟢" if is_connected else "🟠"
+
+        cpus, _ = get_cpu_for_machine_from_db(
+            cursor,
+            machine_info.machine_id,
+        )
+        cpu_msgs = [
+            """   __CPU__
+      name:  {name}
+      cores: {cores}
+      usage: {usage:.1f}%
+      temp:  {temperature:.0f} deg
+      clock: {speed:.0f} Mhz""".format(
+                name=cpu.name,
+                cores=cpu.n_vcores,
+                usage=cpu.usage,
+                temperature=cpu.temperature,
+                speed=cpu.clock_speed,
+            )
+            for cpu in cpus
+        ]
+
+        rams, _ = get_ram_for_machine_from_db(
+            cursor,
+            machine_info.machine_id,
+        )
+        ram_msgs = []
+        for ram in rams:
+            used_percent = 0.
+            try:
+                used_percent = ram.used_ram / ram.total_ram * 100
+            except ZeroDivisionError:
+                pass
+            swap_percent = 0.
+            try:
+                swap_percent = ram.used_swap / ram.total_swap * 100
+            except ZeroDivisionError:
+                pass
+
+            ram_msgs.append(
+                """   __RAM__
+      total: {total}
+      used:  {used:.1f}%
+      swap:  {swap:.1f}%
+      """.format(
+                    total=format_memory_size(ram.total_ram),
+                    used=used_percent,
+                    swap=swap_percent,
+                )
+            )
+
         machine_name = get_machine_info_name(machine_info)
-        messages.append(
-            f"{icon} {machine_name} responded {seconds_since_last_contact:.1f} seconds ago")
+        messages += [
+            f"{icon} {machine_name} responded {seconds_since_last_contact:.1f} seconds ago",
+        ] + cpu_msgs + ram_msgs
 
     # Heading in case there is anything to report
     if messages:
@@ -123,7 +178,7 @@ async def _bot_machines(ctx):
     connection.close()
 
 
-@bot.command(name="farmers")
+@ bot.command(name="farmers")
 async def _farmer(ctx):
 
     # open the database read only
@@ -205,7 +260,7 @@ def format_memory_size(n_bytes: float, suffix: str = 'B'):
     return "%.1f%s%s" % (n_bytes, 'Yi', suffix)
 
 
-@bot.command(name="harvesters")
+@ bot.command(name="harvesters")
 async def _harvester(ctx):
 
     connection, cursor = _open_database_read_only()
@@ -296,7 +351,7 @@ def get_discord_channel_id() -> int:
     return channel_id
 
 
-@bot.event
+@ bot.event
 async def on_ready():
     get_logger(module_name).info("Bot started.")
 
