@@ -235,7 +235,7 @@ class LineActionTester(unittest.TestCase):
         timestamp3_str = "2021-05-26T09:30:20.872"  # signage - not timed out
 
         timestamp4_str = "2021-05-26T09:30:21.872"  # send
-        timestamp5_str = "2021-05-26T09:30:51.872"  # signage - timeout
+        timestamp5_str = "2021-05-26T09:31:51.872"  # signage - timeout
 
         timestamp6_str = "2021-05-26T09:44:52.872"  # recieve - (connect)
 

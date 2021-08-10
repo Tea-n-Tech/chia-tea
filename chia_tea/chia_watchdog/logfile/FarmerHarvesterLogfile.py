@@ -1,6 +1,8 @@
 from datetime import datetime
 from typing import Union
 
+from ...utils.logger import get_logger
+
 
 class FarmerHarvesterLogfile:
     """Class with compact information about harvesters"""
@@ -90,12 +92,16 @@ class FarmerHarvesterLogfile:
         )
 
     def check_for_timeout(self, current_time: datetime) -> None:
+        HARVESTER_TIMOUT = 60  # seconds
         if not self.timed_out:
             if self.time_last_incoming_msg is not None and self.time_last_outgoing_msg is not None:
                 delta_seconds = (
                     current_time-self.time_last_incoming_msg).total_seconds()
                 if delta_seconds > 25:
                     self.n_overdue_responses += 1
+                    get_logger(__name__).warn(
+                        "Harvester: " + self.harvester_id + " has one more missed challenge")
+                if delta_seconds > HARVESTER_TIMOUT:
                     self.timed_out = True
 
     def reset_times(self):
