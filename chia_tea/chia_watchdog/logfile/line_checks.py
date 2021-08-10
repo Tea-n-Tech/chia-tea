@@ -2,7 +2,6 @@
 import traceback
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import Any
 
 from ...utils.logger import get_logger
 from ..ChiaWatchdog import ChiaWatchdog
@@ -121,7 +120,7 @@ class ActionMessageToHarvester(AbstractLineAction):
 
 class ActionFinishedSignagePoint(AbstractLineAction):
     """
-    Action is currently used as check if a Harvester is timed out. 
+    Action is currently used as check if a Harvester is timed out.
     Might be used for SignPoint Metrics at a later stage
     """
 

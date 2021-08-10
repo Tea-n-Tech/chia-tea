@@ -1,8 +1,6 @@
 from datetime import datetime
 from typing import Union
 
-from ...utils.logger import get_logger
-
 
 class FarmerHarvesterLogfile:
     """Class with compact information about harvesters"""
