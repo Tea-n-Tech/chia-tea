@@ -100,7 +100,8 @@ async def collect_disk_info() -> List[Disk]:
 
     disk_partitions = psutil.disk_partitions()
     for partition in disk_partitions:
-        if partition.device.startswith("/dev/loop"):
+        if (partition.device.startswith("/dev/loop") or
+                partition.mountpoint.startswith("/boot")):
             continue
 
         disk_usage = psutil.disk_usage(partition.mountpoint)

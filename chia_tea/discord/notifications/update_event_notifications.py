@@ -149,7 +149,7 @@ def notify_if_a_disk_is_lost(
         if isinstance(pb_msg, Disk):
             if event.event_type == DELETE:
                 messages.append(
-                    "⚠️ Machine {machine_id} lost disk {mountpoint}".format(
+                    "⚠️   Machine {machine_id} lost disk {mountpoint}".format(
                         machine_id=machine_id,
                         mountpoint=pb_msg.mountpoint
                     )
