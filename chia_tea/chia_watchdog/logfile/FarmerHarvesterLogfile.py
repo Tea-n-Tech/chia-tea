@@ -1,7 +1,5 @@
-from datetime import datetime, timedelta
-from typing import List, Union
-
-from ...utils.logger import get_logger
+from datetime import datetime
+from typing import Union
 
 
 class FarmerHarvesterLogfile:

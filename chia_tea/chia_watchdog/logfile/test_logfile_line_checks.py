@@ -1,13 +1,13 @@
 import unittest
 from datetime import datetime
-from typing import List
-
 
 from ..ChiaWatchdog import ChiaWatchdog
 from .FarmerHarvesterLogfile import FarmerHarvesterLogfile
-from .line_checks import (run_line_checks, AbstractLineAction, ActionHarvesterConnected,
+from .line_checks import (ActionHarvesterConnected,
                           ActionHarvesterDisconnected,
-                          ActionHarvesterFoundProof, ActionMessageFromHarvester, ActionFinishedSignagePoint,
+                          ActionHarvesterFoundProof,
+                          ActionMessageFromHarvester,
+                          ActionFinishedSignagePoint,
                           ActionMessageToHarvester)
 
 
@@ -348,19 +348,26 @@ class LineActionTester(unittest.TestCase):
 
 
 def msg_to_harvester(timestamp_str: str, ip_address: str, node_id: str) -> str:
-    line = f"{timestamp_str} farmer farmer_server              : DEBUG    -> new_signage_point_harvester to peer {ip_address} {node_id}"
+    line = (
+        f"{timestamp_str} farmer farmer_server              : DEBUG" +
+        f"    -> new_signage_point_harvester to peer {ip_address} {node_id}"
+    )
     return line
 
 
 def msg_from_harvester(timestamp_str: str, ip_address: str, node_id: str) -> str:
-    line = f"{timestamp_str} farmer farmer_server              : DEBUG    <- farming_info from peer {node_id} {ip_address}"
+    line = (
+        f"{timestamp_str} farmer farmer_server              : DEBUG"
+        + f"    <- farming_info from peer {node_id} {ip_address}"
+    )
     return line
 
 
 def msg_signage_point(timestamp_str: str) -> str:
-    line = f"{timestamp_str} full_node chia.full_node.full_node: INFO    \
-             :timer:  Finished signage point 19/64: CC:      \
-                 RC: 7f11efb57cc2c97105c4e13099c$"
+    line = (
+        f"{timestamp_str} full_node chia.full_node.full_node: INFO"
+        + f":timer:  Finished signage point 19/64: CC: RC:"
+    )
     return line
 
 
