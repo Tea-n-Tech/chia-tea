@@ -47,7 +47,7 @@ class AbstractLineAction(ABC):
         raise NotImplementedError()
 
 
-class MessageFromHarvester(AbstractLineAction):
+class ActionMessageFromHarvester(AbstractLineAction):
 
     def is_match(self, line: str) -> bool:
         codewords = ("farmer farmer_server",
@@ -82,10 +82,11 @@ class MessageFromHarvester(AbstractLineAction):
         harvester_info.time_last_incoming_msg = timestamp_dt
         harvester_info.last_update = timestamp_dt
         harvester_info.is_connected = True
+        harvester_info.timed_out = False
         chia_dog.harvester_infos[harvester_id] = harvester_info
 
 
-class MessageToHarvester(AbstractLineAction):
+class ActionMessageToHarvester(AbstractLineAction):
 
     def is_match(self, line: str) -> bool:
         codewords = ("farmer farmer_server",
@@ -121,6 +122,10 @@ class MessageToHarvester(AbstractLineAction):
 
 
 class ActionFinishedSignagePoint(AbstractLineAction):
+    """
+    Action is currently used as checking in more or less constant time deltas
+    if a Harvester is timed out. Might be used for SignPoint Metrics at a later stage
+    """
 
     def is_match(self, line: str) -> bool:
         codewords = ("full_node",
@@ -140,18 +145,11 @@ class ActionFinishedSignagePoint(AbstractLineAction):
         # extract data from line
         timestamp = fragments[0]
         timestamp_dt = datetime.fromisoformat(timestamp)
-        harvester_id = fragments[-3]
 
-        # update info of harvester
-        harvester_info = chia_dog.get_or_create_harvester_info(
-            harvester_id
-        )
-
-        harvester_info.time_of_end_of_last_sgn_point = timestamp_dt
-        harvester_info.last_update = timestamp_dt
-        harvester_info.check_if_last_response_as_in_time()
-
-        chia_dog.harvester_infos[harvester_id] = harvester_info
+        # Harvester Time out Check
+        for farmerHarvesterLogfile in chia_dog.harvester_infos.values():
+            if farmerHarvesterLogfile.is_connected:
+                farmerHarvesterLogfile.check_for_timeout(timestamp_dt)
 
 
 class ActionHarvesterConnected(AbstractLineAction):
@@ -181,6 +179,7 @@ class ActionHarvesterConnected(AbstractLineAction):
             ip_address
         )
         harvester_info.is_connected = True
+        harvester_info.timed_out = False
         harvester_info.last_update = timestamp_dt
         chia_dog.harvester_infos[harvester_id] = harvester_info
 
@@ -296,8 +295,8 @@ async def run_line_checks(chia_dog: Any, line: str):
         get_logger(__name__).error(err_msg.format(line, trace))
 
 ALL_LINE_ACTIONS = (
-    MessageFromHarvester(),
-    MessageToHarvester(),
+    ActionMessageFromHarvester(),
+    ActionMessageToHarvester(),
     ActionFinishedSignagePoint(),
     ActionHarvesterConnected(),
     ActionHarvesterDisconnected(),
