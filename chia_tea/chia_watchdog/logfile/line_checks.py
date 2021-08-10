@@ -5,9 +5,7 @@ from datetime import datetime
 from typing import Any
 
 from ...utils.logger import get_logger
-
-# Don't import since it would be circular
-# from .ChiaWatchdog import ChiaWatchdog
+from ..ChiaWatchdog import ChiaWatchdog
 
 
 class AbstractLineAction(ABC):
@@ -33,7 +31,7 @@ class AbstractLineAction(ABC):
     def apply(
             self: str,
             line: str,
-            chia_dog: Any,
+            chia_dog: 'ChiaWatchdog',
     ):
         """ Apply the line action
 
@@ -61,7 +59,7 @@ class ActionMessageFromHarvester(AbstractLineAction):
     def apply(
         self,
         line: str,
-        chia_dog: Any,
+        chia_dog: 'ChiaWatchdog',
     ):
 
         fragments = line.split()
@@ -100,7 +98,7 @@ class ActionMessageToHarvester(AbstractLineAction):
     def apply(
         self,
         line: str,
-        chia_dog: Any,
+        chia_dog: 'ChiaWatchdog',
     ):
         fragments = line.split()
 
@@ -123,8 +121,8 @@ class ActionMessageToHarvester(AbstractLineAction):
 
 class ActionFinishedSignagePoint(AbstractLineAction):
     """
-    Action is currently used as checking in more or less constant time deltas
-    if a Harvester is timed out. Might be used for SignPoint Metrics at a later stage
+    Action is currently used as check if a Harvester is timed out. 
+    Might be used for SignPoint Metrics at a later stage
     """
 
     def is_match(self, line: str) -> bool:
@@ -138,7 +136,7 @@ class ActionFinishedSignagePoint(AbstractLineAction):
     def apply(
         self,
         line: str,
-        chia_dog: Any,
+        chia_dog: 'ChiaWatchdog',
     ):
         fragments = line.split()
 
@@ -147,9 +145,9 @@ class ActionFinishedSignagePoint(AbstractLineAction):
         timestamp_dt = datetime.fromisoformat(timestamp)
 
         # Harvester Time out Check
-        for farmerHarvesterLogfile in chia_dog.harvester_infos.values():
-            if farmerHarvesterLogfile.is_connected:
-                farmerHarvesterLogfile.check_for_timeout(timestamp_dt)
+        for farmer_harvester_logfile in chia_dog.harvester_infos.values():
+            if farmer_harvester_logfile.is_connected:
+                farmer_harvester_logfile.check_for_timeout(timestamp_dt)
 
 
 class ActionHarvesterConnected(AbstractLineAction):
@@ -164,7 +162,7 @@ class ActionHarvesterConnected(AbstractLineAction):
     def apply(
         self,
         line: str,
-        chia_dog: Any,
+        chia_dog: 'ChiaWatchdog',
     ):
         fragments = line.split()
 
@@ -196,7 +194,7 @@ class ActionHarvesterDisconnected(AbstractLineAction):
     def apply(
         self,
         line: str,
-        chia_dog: Any,
+        chia_dog: 'ChiaWatchdog',
     ):
         fragments = line.split()
 
@@ -238,7 +236,7 @@ class ActionHarvesterFoundProof(AbstractLineAction):
     def apply(
         self,
         line: str,
-        chia_dog: Any,
+        chia_dog: 'ChiaWatchdog',
     ):
         fragments = line.split()
 
@@ -262,7 +260,7 @@ class ActionFarmedUnfinishedBlock(AbstractLineAction):
     def apply(
         self,
         line: str,
-        chia_dog: Any,
+        chia_dog: 'ChiaWatchdog',
     ):
         fragments = line.split()
 
@@ -272,7 +270,7 @@ class ActionFarmedUnfinishedBlock(AbstractLineAction):
             chia_dog.farmed_blocks.append(block_id)
 
 
-async def run_line_checks(chia_dog: Any, line: str):
+async def run_line_checks(chia_dog: 'ChiaWatchdog', line: str):
     """ Processes a line from the logfile
 
     Parameters
