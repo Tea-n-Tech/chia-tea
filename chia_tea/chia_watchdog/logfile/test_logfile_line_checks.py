@@ -366,7 +366,7 @@ def msg_from_harvester(timestamp_str: str, ip_address: str, node_id: str) -> str
 def msg_signage_point(timestamp_str: str) -> str:
     line = (
         f"{timestamp_str} full_node chia.full_node.full_node: INFO"
-        + f":timer:  Finished signage point 19/64: CC: RC:"
+        + ":timer:  Finished signage point 19/64: CC: RC:"
     )
     return line
 
