@@ -80,6 +80,36 @@ def get_msg_if_farmer_harvester_timed_out(
         return ""
 
 
+MACHINE_TIMEOUT = 60  # seconds
+
+
+def get_msg_if_machine_timed_out(
+    machine: MachineInfo,
+    last_timestamp: float,
+    new_timestamp: float,
+) -> str:
+
+    new_machine_timed_out = (new_timestamp -
+                             machine.time_last_msg >= MACHINE_TIMEOUT)
+    previously_notified = (
+        last_timestamp - machine.time_last_msg >= MACHINE_TIMEOUT
+        # we assume on startup that we already notified on a timeout
+        # otherwise we get a message all the time when we restart
+        # the bot.
+        if last_timestamp != 0.
+        else True
+    )
+
+    if new_machine_timed_out and not previously_notified:
+        return "{icon} {machine_name} {status}.".format(
+            icon="⚠️",
+            machine_name=get_machine_info_name(machine),
+            status=f"didn't respond for {HARVESTER_TIMOUT}s"
+        )
+    else:
+        return ""
+
+
 def notify_when_harvester_times_out(
     machine: MachineInfo,
     old_computer_info: ComputerInfo,
@@ -120,6 +150,37 @@ def notify_when_harvester_times_out(
     timestamp_of_last_timeout_check = now
 
     return messages
+
+
+def notify_when_machine_times_out(
+    machine: MachineInfo,
+) -> List[str]:
+    """ notify when a machine times out
+
+    Parameters
+    ----------
+    machine_id : str
+        id of the machine
+
+    Returns
+    -------
+    messages : List[str]
+        notification messages
+    """
+    messages = []
+
+    global timestamp_of_last_timeout_check
+    now = datetime.now().timestamp()
+
+    msg = get_msg_if_machine_timed_out(
+        machine,
+        last_timestamp=timestamp_of_last_timeout_check,
+        new_timestamp=now,
+    )
+    if msg:
+        messages.append(msg)
+
+    timestamp_of_last_timeout_check = now
 
 
 def notify_on_wallet_sync_change(
@@ -245,5 +306,6 @@ ALL_EVENT_OBSERVERS = (
     notify_on_harvester_reward_found,
     notify_on_wallet_connection_change,
     notify_on_wallet_sync_change,
-    notify_when_harvester_times_out
+    notify_when_harvester_times_out,
+    notify_when_machine_times_out
 )
