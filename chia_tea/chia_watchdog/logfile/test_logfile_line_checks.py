@@ -1,13 +1,14 @@
-
 import unittest
 from datetime import datetime
+from typing import List
+
 
 from ..ChiaWatchdog import ChiaWatchdog
 from .FarmerHarvesterLogfile import FarmerHarvesterLogfile
-from .line_checks import (ActionHarvesterConnected,
+from .line_checks import (run_line_checks, AbstractLineAction, ActionHarvesterConnected,
                           ActionHarvesterDisconnected,
-                          ActionHarvesterFoundProof, MessageFromHarvester, ActionFinishedSignagePoint,
-                          MessageToHarvester)
+                          ActionHarvesterFoundProof, ActionMessageFromHarvester, ActionFinishedSignagePoint,
+                          ActionMessageToHarvester)
 
 
 class LineActionTester(unittest.TestCase):
@@ -139,18 +140,13 @@ class LineActionTester(unittest.TestCase):
 
     def test_farmer_message_to_harvester(self):
 
-        action = MessageToHarvester()
+        action = ActionMessageToHarvester()
 
         node_id = "d46fb9aaaa01f3aa3fc04f3e43231d35c3a1ddd4"
         ip_address = "57.22.39.97"
         timestamp_str = "2021-05-26T09:37:13.872"
 
-        line = (
-            f"{timestamp_str} farmer farmer_server            " +
-            "  : DEBUG    -> new_signage_point_harvester to peer " +
-            f"{ip_address} {node_id}"
-        )
-
+        line = msg_to_harvester(timestamp_str, ip_address, node_id)
         # check line detection
         self.assertTrue(action.is_match(line))
 
@@ -166,17 +162,13 @@ class LineActionTester(unittest.TestCase):
 
     def test_farmer_message_from_harvester(self):
 
-        action = MessageFromHarvester()
+        action = ActionMessageFromHarvester()
 
         node_id = "d46fb9aaaa01f3aa3fc04f3e43231d35c3a1ddd4"
         ip_address = "57.22.39.97"
         timestamp_str = "2021-05-26T09:37:13.872"
 
-        line = (
-            f"{timestamp_str} farmer farmer_server            " +
-            "  : DEBUG    <- farming_info from peer " +
-            f"{node_id} {ip_address}"
-        )
+        line = msg_from_harvester(timestamp_str, ip_address, node_id)
 
         # check line detection
         self.assertTrue(action.is_match(line))
@@ -232,17 +224,43 @@ class LineActionTester(unittest.TestCase):
         This test is done for the new logic with sgn points
         """
 
-        action_out = MessageToHarvester()
-        action_in = MessageFromHarvester()
-        action_sgn = ActionFinishedSignagePoint()
+        chia_dog = ChiaWatchdog("")
 
-        harvester_id = "befaebdf1129641d86bade79839d8616b584874c9a133e1f616633f3e6a2f9da"
+        node_id = "d46fb9aaaa01f3aa3fc04f3e43231d35c3a1ddd4"
+        ip_address = "57.22.39.97"
 
-        lineSignage = "2021-08-08T23:45:11.435 full_node chia.full_node.full_node: INFO    \
-             :timer:  Finished signage point 19/64: CC:      \
-                 RC: 7f11efb57cc2c97105c4e13099c$"
+        timestamp0_str = "2021-05-26T09:30:00.872"  # signage - should not fail
+        timestamp1_str = "2021-05-26T09:30:01.872"  # send
+        timestamp2_str = "2021-05-26T09:30:02.872"  # recieve
+        timestamp3_str = "2021-05-26T09:30:20.872"  # signage - not timed out
 
-        # TODO
+        timestamp4_str = "2021-05-26T09:30:21.872"  # send
+        timestamp5_str = "2021-05-26T09:30:51.872"  # signage - timeout
+
+        timestamp6_str = "2021-05-26T09:44:52.872"  # recieve - (connect)
+
+        line0 = msg_signage_point(timestamp0_str)
+        line1 = msg_to_harvester(timestamp1_str, ip_address, node_id)
+        line2 = msg_from_harvester(timestamp2_str, ip_address, node_id)
+        line3 = msg_signage_point(timestamp3_str)
+
+        ActionFinishedSignagePoint().apply(line0, chia_dog)
+        ActionMessageToHarvester().apply(line1, chia_dog)
+        ActionMessageFromHarvester().apply(line2, chia_dog)
+        ActionFinishedSignagePoint().apply(line3, chia_dog)
+        harvester_info = chia_dog.harvester_infos[node_id]
+        self.assertFalse(harvester_info.timed_out)
+
+        line4 = msg_to_harvester(timestamp4_str, ip_address, node_id)
+        line5 = msg_signage_point(timestamp5_str)
+        ActionMessageToHarvester().apply(line4, chia_dog)
+        ActionFinishedSignagePoint().apply(line5, chia_dog)
+        self.assertTrue(harvester_info.timed_out)
+        self.assertEqual(harvester_info.n_overdue_responses, 1)
+
+        line6 = msg_from_harvester(timestamp6_str, ip_address, node_id)
+        ActionMessageFromHarvester().apply(line6, chia_dog)
+        self.assertFalse(harvester_info.timed_out)
 
     def test_harvester_disconnect_times_reset_and_timeout(self):
         """
@@ -260,19 +278,20 @@ class LineActionTester(unittest.TestCase):
 
 
         """
-        actionOut = MessageToHarvester()
-        actionIn = MessageFromHarvester()
+        actionOut = ActionMessageToHarvester()
+        actionIn = ActionMessageFromHarvester()
 
         actionConnect = ActionHarvesterConnected()
         actionDisconnect = ActionHarvesterDisconnected()
 
         node_id = "d46fb9aaaa01f3aa3fc04f3e43231d35c3a1ddd4"
         ip_address = "57.22.39.97"
-        timestamp1_str = "2021-05-26T09:38:39.872"  # send
-        timestamp2_str = "2021-05-26T09:39:39.872"  # disconnect
+        timestamp1_str = "2021-05-26T09:38:01.872"  # send
+        timestamp2_str = "2021-05-26T09:38:02.872"  # disconnect
 
-        timestamp3_str = "2021-05-26T09:40:39.872"  # send
-        timestamp4_str = "2021-05-26T09:42:39.872"  # connect
+        timestamp3_str = "2021-05-26T09:38:41.872"  # send
+
+        timestamp4_str = "2021-05-26T09:38:56.872"  # connect
 
         timestamp5_str = "2021-05-26T09:43:39.872"  # recieve
         timestamp6_str = "2021-05-26T09:44:39.872"  # send
@@ -294,61 +313,70 @@ class LineActionTester(unittest.TestCase):
 
         # Here the testingbegins
         # send a challenge
-        lineOut = (
-            f"{timestamp1_str} farmer farmer_server           " +
-            "   : DEBUG    -> new_signage_point_or_end_of_sub_slot to peer " +
-            f"{ip_address} {node_id}"
-        )
-
+        lineOut = msg_to_harvester(timestamp1_str, ip_address, node_id)
         actionOut.apply(lineOut, chia_dog)
 
         # disconnect
-        lineDisconnect = (
-            f"{timestamp2_str} farmer farmer_server              : INFO"
-            + f"     Connection closed: {ip_address},"
-            + f" node id: {node_id}"
-        )
+        lineDisconnect = msg_disconnect(timestamp2_str, ip_address, node_id)
         actionDisconnect.apply(lineDisconnect, chia_dog)
 
-        #self.assertEqual(len(harvester_info.time_of_incoming_messages), 0)
-        #self.assertEqual(len(harvester_info.time_of_outgoing_messages), 0)
-        #self.assertTrue(not harvester_info.is_connected)
+        self.assertFalse(harvester_info.is_connected)
 
-        # send
-        lineOut = (
-            f"{timestamp3_str} farmer farmer_server           " +
-            "   : DEBUG    -> new_signage_point_or_end_of_sub_slot to peer " +
-            f"{ip_address} {node_id}"
-        )
+        # send - late
+        line = msg_signage_point(timestamp3_str)
+        ActionFinishedSignagePoint().apply(line, chia_dog)
+        lineOut = msg_to_harvester(timestamp3_str, ip_address, node_id)
         actionOut.apply(lineOut, chia_dog)
+        self.assertFalse(harvester_info.is_connected)
 
         # connect
-        lineConnect = (
-            f"{timestamp4_str} farmer farmer_server           " +
-            f"   : DEBUG    -> harvester_handshake to peer {ip_address} " +
-            node_id)
+        lineConnect = msg_connect(timestamp4_str, ip_address, node_id)
         actionConnect.apply(lineConnect, chia_dog)
+        self.assertTrue(harvester_info.is_connected)
+        self.assertFalse(harvester_info.timed_out)
 
-        # recieve with no send
-        lineIn = (
-            f"{timestamp5_str} farmer farmer_server           " +
-            "   : DEBUG    <- new_signage_point from peer " +
-            F"{node_id} {ip_address}"
-        )
-
+        # recieve  - late
+        lineIn = msg_from_harvester(timestamp5_str, ip_address, node_id)
         actionIn.apply(lineIn, chia_dog)
-        # send recieve
 
-        lineOut = (
-            f"{timestamp6_str} farmer farmer_server           " +
-            "   : DEBUG    -> new_signage_point_or_end_of_sub_slot to peer " +
-            f"{ip_address} {node_id}"
-        )
-        lineIn = (
-            f"{timestamp7_str} farmer farmer_server           " +
-            "   : DEBUG    <- new_signage_point from peer " +
-            F"{node_id} {ip_address}"
-        )
+        # send recieve
+        lineOut = msg_to_harvester(timestamp6_str, ip_address, node_id)
+        lineIn = msg_from_harvester(timestamp7_str, ip_address, node_id)
 
         actionOut.apply(lineOut, chia_dog)
         actionIn.apply(lineIn, chia_dog)
+
+
+def msg_to_harvester(timestamp_str: str, ip_address: str, node_id: str) -> str:
+    line = f"{timestamp_str} farmer farmer_server              : DEBUG    -> new_signage_point_harvester to peer {ip_address} {node_id}"
+    return line
+
+
+def msg_from_harvester(timestamp_str: str, ip_address: str, node_id: str) -> str:
+    line = f"{timestamp_str} farmer farmer_server              : DEBUG    <- farming_info from peer {node_id} {ip_address}"
+    return line
+
+
+def msg_signage_point(timestamp_str: str) -> str:
+    line = f"{timestamp_str} full_node chia.full_node.full_node: INFO    \
+             :timer:  Finished signage point 19/64: CC:      \
+                 RC: 7f11efb57cc2c97105c4e13099c$"
+    return line
+
+
+def msg_disconnect(timestamp_str: str, ip_address: str, node_id: str) -> str:
+    line = (
+        f"{timestamp_str} farmer farmer_server              : INFO"
+        + f"     Connection closed: {ip_address},"
+        + f" node id: {node_id}"
+    )
+    return line
+
+
+def msg_connect(timestamp_str: str, ip_address: str, node_id: str) -> str:
+    line = (
+        f"{timestamp_str} farmer farmer_server           " +
+        f"   : DEBUG    -> harvester_handshake to peer {ip_address} " +
+        node_id
+    )
+    return line

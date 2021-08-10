@@ -63,8 +63,8 @@ class FarmerHarvesterLogfile:
         self.is_connected = is_connected
         self.last_update = last_update
         self.time_of_end_of_last_sgn_point = time_of_end_of_last_sgn_point
-        self.time_last_incoming_msg = time_last_incoming_msg,
-        self.time_last_outgoing_msg = time_last_outgoing_msg,
+        self.time_last_incoming_msg = time_last_incoming_msg
+        self.time_last_outgoing_msg = time_last_outgoing_msg
         self.timed_out = timed_out
         self.n_responses = n_responses
         self.n_overdue_responses = n_overdue_responses
@@ -91,17 +91,14 @@ class FarmerHarvesterLogfile:
             n_overdue_responses=self.n_overdue_responses
         )
 
-    def check_if_last_response_was_in_time(self) -> None:
-        """ Check if latest response time was in time and updates metrics"""
-        if self.time_last_incoming_msg is not None and self.time_last_outgoing_msg is not None:
-            get_logger(__name__).log("All good")
-        elif self.time_last_incoming_msg is None and self.time_last_outgoing_msg is None:
-            get_logger(__name__).log("all good (none)")
-        elif self.time_last_incoming_msg is None and self.time_last_outgoing_msg is not None:
-            self.n_overdue_responses += 1
-            get_logger(__name__).log("Warning")
-
-        self.reset_times()
+    def check_for_timeout(self, current_time: datetime) -> None:
+        if not self.timed_out:
+            if self.time_last_incoming_msg is not None and self.time_last_outgoing_msg is not None:
+                delta_seconds = (
+                    current_time-self.time_last_incoming_msg).total_seconds()
+                if delta_seconds > 25:
+                    self.n_overdue_responses += 1
+                    self.timed_out = True
 
     def reset_times(self):
         self.time_last_outgoing_msg = None
