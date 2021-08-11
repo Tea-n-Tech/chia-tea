@@ -4,9 +4,9 @@ Chia Tea is a tools and utility library for the Chia Cryptocurrency. We are buil
 
 # Table of Contents
 
-- [Intro and FAQ](https://github.com/tnt-codie/chia-tea/blob/main/docs/faq.md)
-- [Quick-Start](https://github.com/tnt-codie/chia-tea/blob/main/docs/quick_start.md)
-- [Architecture Summary](https://github.com/tnt-codie/chia-tea/blob/develop/docs/architecture_summary.md)
+- [Intro and FAQ](https://github.com/Tea-n-Tech/chia-tea/blob/main/docs/faq.md)
+- [Quick-Start](https://github.com/Tea-n-Tech/chia-tea/blob/main/docs/quick_start.md)
+- [Architecture Summary](https://github.com/Tea-n-Tech/chia-tea/blob/develop/docs/architecture_summary.md)
 - [Feature Overview](#feature-overview)
   - [Copy Tool](#copy-tool)
   - [Monitoring](#monitoring)
