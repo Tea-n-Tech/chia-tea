@@ -178,7 +178,7 @@ async def _bot_machines(ctx):
     connection.close()
 
 
-@ bot.command(name="farmers")
+@bot.command(name="farmers")
 async def _farmer(ctx):
 
     # open the database read only
