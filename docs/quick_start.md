@@ -23,7 +23,7 @@ There are currently three major use-cases:
 Since we didn't make an official release yet, please install chia-tea through git:
 
 ```bash
-git clone https://github.com/tnt-codie/chia-tea.git
+git clone https://github.com/Tea-n-Tech/chia-tea.git
 cd chia-tea
 python setup.py install
 ```
@@ -40,7 +40,7 @@ All configurations are stored in a `config.yml` file.
 All cli tools use this config and search by default for
 a file `config.yml` in the very same directory where they are started.
 Command line tools can also specify the path to the config by using the `--config` option.
-You can either take the [default config file](https://github.com/tnt-codie/chia-tea/blob/develop/config_default.yml)
+You can either take the [default config file](https://github.com/Tea-n-Tech/chia-tea/blob/develop/config_default.yml)
 or generate the default config file by running
 
 ```
