@@ -65,7 +65,7 @@ def get_msg_if_farmer_harvester_timed_out(
         last_timestamp - harvester.time_last_msg_received >= HARVESTER_TIMOUT
         # we assume on startup that we already notified on a timeout
         # otherwise we can a message all the time when we restart
-        # the bot.
+        # the bot and a harvester timed out before.
         if last_timestamp != 0.
         else True
     )
@@ -80,7 +80,7 @@ def get_msg_if_farmer_harvester_timed_out(
         return ""
 
 
-MACHINE_TIMEOUT = 60  # seconds
+MACHINE_TIMEOUT = 65  # seconds
 
 
 def get_msg_if_machine_timed_out(
@@ -95,7 +95,7 @@ def get_msg_if_machine_timed_out(
         last_timestamp - machine.time_last_msg >= MACHINE_TIMEOUT
         # we assume on startup that we already notified on a timeout
         # otherwise we get a message all the time when we restart
-        # the bot.
+        # the bot and a machine is timed out.
         if last_timestamp != 0.
         else True
     )
@@ -104,7 +104,7 @@ def get_msg_if_machine_timed_out(
         return "{icon} {machine_name} {status}.".format(
             icon="⚠️",
             machine_name=get_machine_info_name(machine),
-            status=f"didn't respond for {HARVESTER_TIMOUT}s"
+            status=f"didn't send any monitoring data for {HARVESTER_TIMOUT}s"
         )
     else:
         return ""
@@ -154,6 +154,8 @@ def notify_when_harvester_times_out(
 
 def notify_when_machine_times_out(
     machine: MachineInfo,
+    old_computer_info: ComputerInfo,
+    new_computer_info: ComputerInfo,
 ) -> List[str]:
     """ notify when a machine times out
 

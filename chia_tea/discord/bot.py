@@ -178,7 +178,7 @@ async def _bot_machines(ctx):
     connection.close()
 
 
-@ bot.command(name="farmers")
+@bot.command(name="farmers")
 async def _farmer(ctx):
 
     # open the database read only
@@ -258,7 +258,7 @@ def format_memory_size(n_bytes: float, suffix: str = 'B'):
     return "%.1f%s%s" % (n_bytes, 'Yi', suffix)
 
 
-@ bot.command(name="harvesters")
+@bot.command(name="harvesters")
 async def _harvester(ctx):
 
     connection, cursor = _open_database_read_only()
@@ -349,7 +349,7 @@ def get_discord_channel_id() -> int:
     return channel_id
 
 
-@ bot.event
+@bot.event
 async def on_ready():
     get_logger(module_name).info("Bot started.")
 
