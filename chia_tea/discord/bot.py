@@ -69,10 +69,10 @@ async def _wallets(ctx):
     messages = []
 
     for _, (machine, computer_info) in machine_and_computer_info_dict.items():
-        wallet_info = computer_info.wallet_info
-        if wallet_info.is_running:
-            icon = "🟢" if wallet_info.is_synced else "🟠"
-            not_msg = "" if wallet_info.is_synced else "not "
+        wallet = computer_info.wallet
+        if wallet.is_running:
+            icon = "🟢" if wallet.is_synced else "🟠"
+            not_msg = "" if wallet.is_synced else "not "
             messages.append(f"\nWallet 👛 *{get_machine_info_name(machine)}*")
             messages.append(f"   {icon} {not_msg}synchronized")
 
