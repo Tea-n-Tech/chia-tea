@@ -6,7 +6,7 @@ from ...protobuf.generated.chia_pb2 import HarvesterViewedFromFarmer
 from ...protobuf.generated.computer_info_pb2 import ComputerInfo
 from ...protobuf.generated.machine_info_pb2 import MachineInfo
 from .computer_info_notifications import (
-    HARVESTER_TIMOUT, get_msg_if_farmer_harvester_timed_out,
+    HARVESTER_TIMOUT, MACHINE_TIMEOUT, get_msg_if_farmer_harvester_timed_out, get_msg_if_machine_timed_out,
     notify_on_harvester_reward_found, notify_on_wallet_connection_change,
     notify_on_wallet_sync_change)
 
@@ -228,6 +228,42 @@ class TestComputerInfoNotifications(unittest.TestCase):
             harvester=timed_out_farmer_harvester,
             last_timestamp=msg_timestamp+HARVESTER_TIMOUT-1,
             new_timestamp=msg_timestamp+HARVESTER_TIMOUT,
+            machine=machine,
+        )
+        self.assertTrue(len(msg) != 0)
+
+    def test_notification_on_machine_timeout(self):
+
+        machine = MachineInfo()
+        msg_timestamp = 1
+        machine.time_last_msg = msg_timestamp
+        # we dont perform a unittest on the notifier itself
+        # since it's timing logic is hard to test. Instead
+        # we test the internal wrapper function.
+
+        # no msg case if all is good
+        msg = get_msg_if_machine_timed_out(
+            last_timestamp=59,
+            new_timestamp=60,
+            machine=machine,
+        )
+        self.assertTrue(msg == "")
+
+        # on startup no message is given if a harvester
+        # is already timed out to avoid spamming the chat
+        # on restarts of the bot.
+        msg_timestamp = 1
+        msg = get_msg_if_machine_timed_out(
+            last_timestamp=0,
+            new_timestamp=msg_timestamp+MACHINE_TIMEOUT+2,
+            machine=machine,
+        )
+        self.assertTrue(msg == "")
+
+        # test general timeout notification mechanism
+        msg = get_msg_if_machine_timed_out(
+            last_timestamp=msg_timestamp+MACHINE_TIMEOUT-1,
+            new_timestamp=msg_timestamp+MACHINE_TIMEOUT,
             machine=machine,
         )
         self.assertTrue(len(msg) != 0)
