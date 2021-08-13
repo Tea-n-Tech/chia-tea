@@ -69,10 +69,10 @@ async def _wallets(ctx):
     messages = []
 
     for _, (machine, computer_info) in machine_and_computer_info_dict.items():
-        wallet_info = computer_info.wallet_info
-        if wallet_info.is_running:
-            icon = "🟢" if wallet_info.is_synced else "🟠"
-            not_msg = "" if wallet_info.is_synced else "not "
+        wallet = computer_info.wallet
+        if wallet.is_running:
+            icon = "🟢" if wallet.is_synced else "🟠"
+            not_msg = "" if wallet.is_synced else "not "
             messages.append(f"\nWallet 👛 *{get_machine_info_name(machine)}*")
             messages.append(f"   {icon} {not_msg}synchronized")
 
@@ -191,7 +191,7 @@ async def _farmer(ctx):
     messages = []
 
     for _, (machine, computer_info) in machine_and_computer_info_dict.items():
-        farmer_is_running = computer_info.farmer_info.is_running
+        farmer_is_running = computer_info.farmer.is_running
 
         # TODO synced status
         # TODO harvesters don't show yet
@@ -204,20 +204,18 @@ async def _farmer(ctx):
 
             # list up connected harvesters
             now_timestamp = datetime.now().timestamp()
-            for harvester in computer_info.connected_harvesters:
+            for harvester in computer_info.farmer_harvesters:
                 messages.append(
                     """
   Harvester *{harvester_id}*
      🌐 ip address:  {ip_address}
      📡 last answer: {last_answer} ago
-     🔌 Timeouts: {n_timeouts}
      🚆 missed challenges: {missed_challenges}
      🌾 plots: {n_plots}""".format(
                         ip_address=harvester.ip_address,
                         last_answer=format_timedelta_from_secs(
-                            now_timestamp - harvester.last_message_time),
+                            now_timestamp - harvester.time_last_msg_received),
                         harvester_id=harvester.id[:8],
-                        n_timeouts=harvester.n_timeouts,
                         missed_challenges=harvester.missed_challenges,
                         n_plots=harvester.n_plots,
                     )
