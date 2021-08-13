@@ -49,7 +49,7 @@ def notify_on_harvester_reward_found(
 
 
 HARVESTER_TIMOUT = 60  # seconds
-timestamp_of_last_timeout_check = 0.
+timestamp_of_last_timeout_check_for_harvester = 0.
 
 
 def get_msg_if_farmer_harvester_timed_out(
@@ -81,6 +81,7 @@ def get_msg_if_farmer_harvester_timed_out(
 
 
 MACHINE_TIMEOUT = 65  # seconds
+timestamp_of_last_timeout_check_for_machine = 0.
 
 
 def get_msg_if_machine_timed_out(
@@ -134,20 +135,20 @@ def notify_when_harvester_times_out(
 
     messages = []
 
-    global timestamp_of_last_timeout_check
+    global timestamp_of_last_timeout_check_for_harvester
     now = datetime.now().timestamp()
 
     for harvester in new_computer_info.farmer_harvesters:
         msg = get_msg_if_farmer_harvester_timed_out(
             machine,
-            last_timestamp=timestamp_of_last_timeout_check,
+            last_timestamp=timestamp_of_last_timeout_check_for_harvester,
             new_timestamp=now,
             harvester=harvester,
         )
         if msg:
             messages.append(msg)
 
-    timestamp_of_last_timeout_check = now
+    timestamp_of_last_timeout_check_for_harvester = now
 
     return messages
 
@@ -171,18 +172,18 @@ def notify_when_machine_times_out(
     """
     messages = []
 
-    global timestamp_of_last_timeout_check
+    global timestamp_of_last_timeout_check_for_machine
     now = datetime.now().timestamp()
 
     msg = get_msg_if_machine_timed_out(
         machine,
-        last_timestamp=timestamp_of_last_timeout_check,
+        last_timestamp=timestamp_of_last_timeout_check_for_machine,
         new_timestamp=now,
     )
     if msg:
         messages.append(msg)
 
-    timestamp_of_last_timeout_check = now
+    timestamp_of_last_timeout_check_for_machine = now
 
 
 def notify_on_wallet_sync_change(
