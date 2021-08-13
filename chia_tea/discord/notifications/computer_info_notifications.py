@@ -185,6 +185,8 @@ def notify_when_machine_times_out(
 
     timestamp_of_last_timeout_check_for_machine = now
 
+    return messages
+
 
 def notify_on_wallet_sync_change(
     machine: MachineInfo,
