@@ -7,6 +7,7 @@ Chia Tea is a tools and utility library for the Chia Cryptocurrency. We are buil
 - [Intro and FAQ](docs/faq.md)
 - [Quick-Start](docs/quick_start.md)
 - [Architecture Summary](docs/architecture_summary.md)
+- [Structure of this repository](#structure-of-this-repository)
 - [Feature Overview](#feature-overview)
   - [Copy Tool](#copy-tool)
   - [Monitoring](#monitoring)
@@ -15,10 +16,9 @@ Chia Tea is a tools and utility library for the Chia Cryptocurrency. We are buil
 - [About Us](#about-us)
 - [✊ Support Us ✊](#support-us)
 
-## Functionlity
+## Structure of this repository
 
 ![Chia-Tea Infrastructure](docs/Chia_Infrastructure.png?raw=true)
-
 
 ## Feature Overview
 
