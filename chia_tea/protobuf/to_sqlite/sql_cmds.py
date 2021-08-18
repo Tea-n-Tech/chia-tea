@@ -72,7 +72,8 @@ SQL_CREATE_MACHINE_TBL_CMD = sqlite_create_state_tbl_cmd_from_pb2(
     meta_attributes=[],
     primary_key_names=[
         "machine_id",
-    ]
+    ],
+    optional_primary_key_names=["id"]
 )
 
 
@@ -91,6 +92,7 @@ ALL_SQL_CREATE_TABLE_CMDS = (
                 "machine_id",
                 # id is sometimes hacked in this is not nice ...
             ],
+            optional_primary_key_names=["id"],
         )
         for field in _UPDATEEVENT.fields
         if field.type == ProtoType.MESSAGE.value
@@ -103,6 +105,7 @@ ALL_SQL_CREATE_TABLE_CMDS = (
                 ("machine_id", SqliteType.INTEGER),
             ],
             primary_key_names=["machine_id"],
+            optional_primary_key_names=["id"],
         )
         for field in _UPDATEEVENT.fields
         if field.type == ProtoType.MESSAGE.value

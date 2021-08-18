@@ -11,6 +11,19 @@ from ..utils.logger import get_logger
 
 
 def filter_least_used_disks(disk_to_lockfile_count: Dict[str, int]) -> List[str]:
+    """ Filters for the least used disk
+
+    Parameters
+    ----------
+    disk_to_lockfile_count : Dict[str, int]
+        Dictionary of disks with lockfile count
+
+    Returns
+    -------
+    available_dirs : List[str]
+        Available directories with minimal lockfile count. In case of
+        equal lockfile count then the disks are given randomly.
+    """
     minimum_number_of_lockfiles = min(disk_to_lockfile_count.values())
     available_target_dirpaths = [
         dirpath for dirpath in disk_to_lockfile_count
@@ -26,14 +39,14 @@ def find_disk_with_space(target_dirs: List[str],
     Parameters
     ----------
     target_dirs: List[str]
-        directories in which the file can be copied
+        Directories in which the file can be copied
     filepath_file: str
-        path to the file to be copied
+        Path to the file to be copied
 
     Returns
     -------
     dirpath: Union[str, None]
-        a target dir with space or None if no space available
+        A target dir with space or None if no space available
     """
     logger = get_logger(__file__)
     fstat = os.stat(filepath_file)
@@ -51,22 +64,36 @@ def find_disk_with_space(target_dirs: List[str],
             if space.free > (fstat.st_size+space_after_copying):
                 return dirpath
         except PermissionError:
-            warn_msg = "Permission denied to directory '{0}'."
-            logger.warn(warn_msg.format(dirpath))
+            warn_msg = "Permission denied to directory '%s'."
+            logger.warning(warn_msg, dirpath)
         except FileNotFoundError:
-            warn_msg = "Directory '{0}' does not exist."
-            logger.warn(warn_msg.format(dirpath))
+            warn_msg = "Directory '%s' does not exist."
+            logger.warning(warn_msg, dirpath)
         except ConnectionResetError:
-            warn_msg - "Lost connection to network drive '{0}'"
-            logger.warn(warn_msg.format(dirpath))
+            warn_msg = "Lost connection to network drive '%s'"
+            logger.warning(warn_msg, dirpath)
         except OSError:
-            warn_msg - "Cannot reach host for drive '{0}'"
-            logger.warn(warn_msg.format(dirpath))
+            warn_msg = "Cannot reach host for drive '%s'"
+            logger.warning(warn_msg, dirpath)
 
     return None
 
 
 def copy_file(source_path: str, target_path: str) -> bool:
+    """ Copies a file from a source path to a target path
+
+    Parameters
+    ----------
+    source_path : str
+        Path to the existing source file
+    target_path: str
+        Path where to copy the file
+
+    Returns
+    -------
+    success : bool
+        If the copy was a success.
+    """
     print(target_path)
     with open(source_path, 'rb') as fin:
         with open(target_path, 'wb') as fout:
@@ -106,7 +133,7 @@ def collect_files_from_folders(folder_list: List[str],
                 warn_msg = "Path '{0}' is a file and not a directory."
             else:
                 warn_msg = "Folder '{0}' does not exist or is not a directory."
-            logger.warning(warn_msg.format(folder_path))
+            logger.warning(warn_msg, folder_path)
             continue
 
         all_filepaths += glob.glob(os.path.join(folder_path, pattern))
@@ -114,7 +141,20 @@ def collect_files_from_folders(folder_list: List[str],
     return all_filepaths
 
 
-def update_lockfile_count(target_dirs: List[str]) -> Dict:
+def update_lockfile_count(target_dirs: List[str]) -> Dict[str, int]:
+    """ Get the lockfile count for the specified directories
+
+    Parameters
+    ----------
+    target_dirs : List[str]
+        Directories to get lockfile count for.
+
+    Returns
+    -------
+    lockfile_count : Dict[str, int]
+        Dictionary containing as key the directory and as
+        value den lockfile count.
+    """
     n_lockfiles_per_disk = {}
     for target_dir in target_dirs:
         lock_files = collect_files_from_folders([target_dir], "*.copying")

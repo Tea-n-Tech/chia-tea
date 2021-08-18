@@ -32,6 +32,7 @@ def sqlite_create_event_tbl_cmd_from_pb2(
     pb_descriptor: Descriptor,
     meta_attributes: List[Tuple[str, SqliteType]],
     primary_key_names: List[str],
+    optional_primary_key_names: List[str],
 ) -> str:
     """ Get a sqlite table creation cmd (if not exists)
     from a proto message descriptor
@@ -44,7 +45,9 @@ def sqlite_create_event_tbl_cmd_from_pb2(
         meta attributes to store besides proto data
     primary_key_names : List[str]
         var names used for the primary key
-
+    optional_primary_key_names : List[str]
+        optional primary keys which are added if they are
+        contained within the proto msg or meta_attributes
     Returns
     -------
     cmd : str
@@ -66,12 +69,13 @@ def sqlite_create_event_tbl_cmd_from_pb2(
                 all_var_names
             ))
 
-    # TODO remove hack
-    if any(field.name == "id" for field in pb_descriptor.fields):
-        primary_key_names = [
-            *primary_key_names,
-            "id",
-        ]
+    for additional_name in optional_primary_key_names:
+        for field in pb_descriptor.fields:
+            if field.name == additional_name:
+                primary_key_names = [
+                    *primary_key_names,
+                    additional_name,
+                ]
 
     return sqlite_create_tbl_cmd_from_pb2(
         table_name=table_name,
@@ -85,6 +89,7 @@ def sqlite_create_state_tbl_cmd_from_pb2(
     pb_descriptor: Descriptor,
     meta_attributes: List[Tuple[str, SqliteType]],
     primary_key_names: List[str],
+    optional_primary_key_names: List[str],
 ) -> str:
     """ Get a sqlite table creation cmd (if not exists)
     from a proto message descriptor
@@ -97,6 +102,9 @@ def sqlite_create_state_tbl_cmd_from_pb2(
         meta attributes to store besides proto data
     primary_key_names : List[str]
         var names used for the primary key
+    optional_primary_key_names : List[str]
+        optional primary keys which are added if they are
+        contained within the proto msg or meta_attributes
 
     Returns
     -------
@@ -119,12 +127,13 @@ def sqlite_create_state_tbl_cmd_from_pb2(
                 all_var_names
             ))
 
-    # TODO remove hack
-    if any(field.name == "id" for field in pb_descriptor.fields):
-        primary_key_names = [
-            *primary_key_names,
-            "id",
-        ]
+    for additional_name in optional_primary_key_names:
+        for field in pb_descriptor.fields:
+            if field.name == additional_name:
+                primary_key_names = [
+                    *primary_key_names,
+                    additional_name,
+                ]
 
     return sqlite_create_tbl_cmd_from_pb2(
         table_name=table_name,
@@ -242,7 +251,10 @@ def sqlite_delete_in_table_fun_from_pb2(
     """
 
     deletion_attributes = list(meta_attribute_names)
-    def _get_pb2_id(pb2_message) -> Tuple[Any, ...]: return tuple()
+
+    # pylint: disable=unused-argument
+    def _get_pb2_id(pb2_message) -> Tuple[Any, ...]:
+        return tuple()
 
     has_id = any(field.name == "id" for field in pb_descriptor.fields)
     if has_id:
@@ -534,10 +546,6 @@ def get_function_to_retrieve_pb2_from_sqlite_db(
         *key_values: List[Any],
     ) -> Tuple[List[Message], List[Dict[str, Any]]]:
 
-        # TODO create a test to check that
-        # primary_keys and primary_key_attribute_names
-        # are the same
-
         cursor.execute(cmd, key_values)
         rows = cursor.fetchall()
 
@@ -601,9 +609,9 @@ def get_fun_to_collect_pb2_messages_for_nested_submessages(
         if field.type != ProtoType.MESSAGE.value:
             continue
 
-        # TODO unittest to check if we can import a class
-        # from the full name. This indirectly requires that
-        # the module path is set correctly
+        # We can only import a proto class here
+        # when the module path is set correctly in
+        # the proto file.
 
         # get the class from the proto msg descriptor
         message_descriptor = field.message_type
@@ -680,9 +688,9 @@ def get_fun_to_collect_latest_update_events_from_db(
         if field.type != ProtoType.MESSAGE.value:
             continue
 
-        # TODO unittest to check if we can import a class
-        # from the full name. This indirectly requires that
-        # the module path is set correctly
+        # We can only import a proto class here
+        # when the module path is set correctly in
+        # the proto file.
 
         # get the class from the proto msg descriptor
         message_descriptor = field.message_type

@@ -14,6 +14,8 @@ from ..utils.logger import get_logger
 
 
 class MonitoringDatabase:
+    """ Used to store and retrieve data from the monitoring database
+    """
     filepath: str
     connection: Union[sqlite3.Connection, None]
     cursor: Union[sqlite3.Cursor, None]
@@ -105,9 +107,10 @@ class MonitoringDatabase:
         logger = get_logger(__file__)
 
         for event in data_update_request.events:
-            logger.debug("Received event: {0}".format(
+            logger.debug(
+                "Received event: %s",
                 MessageToDict(event),
-            ))
+            )
 
             insert_update_event_in_db(
                 sql_cursor=self.cursor,

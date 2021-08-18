@@ -11,18 +11,86 @@ from google.protobuf.json_format import MessageToDict
 from ..chia_watchdog.ChiaWatchdog import ChiaWatchdog
 from ..chia_watchdog.computer_info_comparison import get_update_events
 from ..protobuf.generated.computer_info_pb2 import ComputerInfo, UpdateEvent
+from ..protobuf.generated.config_pb2 import (
+    _MONITORINGCONFIG_CLIENTCONFIG_SENDUPDATEEVERY, MonitoringConfig)
 from ..protobuf.generated.monitoring_service_pb2 import (DataUpdateRequest,
                                                          GetStateRequest)
 from ..protobuf.generated.monitoring_service_pb2_grpc import MonitoringStub
-from ..protobuf.to_sqlite.custom import get_update_even_data
+from ..protobuf.to_sqlite.custom import ProtoType, get_update_even_data
 from ..utils.logger import get_logger
 from ..utils.settings import get_settings_value
 from ..utils.timing import wait_at_least
 
+ClientConfig = MonitoringConfig.ClientConfig
+
+
+def __load_machine_id() -> str:
+    """ Loads id of the machine
+
+    Returns
+    -------
+    machine_id : str
+        id of the machine
+
+    Notes
+    -----
+        The machine id is stored in the home directory in
+        `~/.chia_tea/settings.json`.
+    """
+
+    return get_settings_value(
+        "machineId",
+        default=uuid.getnode())
+
+
+def __get_collection_frequencies(config: ClientConfig) -> Dict[str, float]:
+    """ Get the collection frequencies for updates to the server
+
+    Parameters
+    ----------
+    config : ClientConfig
+        config for the monitoring client
+
+    Returns
+    -------
+    collection_frequencies : Dict[str, float]
+        update event name and frequency pairs
+
+    Raises
+    ------
+    ValueError
+        In case an invalid name not matching the proto schema
+        was given
+    """
+
+    collection_frequencies = config.send_update_every
+
+    user_rate_limits = {}
+    for field in _MONITORINGCONFIG_CLIENTCONFIG_SENDUPDATEEVERY.fields:
+        field_value = getattr(collection_frequencies, field.name)
+        user_rate_limits[field.name] = field_value
+
+    update_event_var_names = tuple(
+        field.name for field in UpdateEvent.DESCRIPTOR.fields
+        if field.type == ProtoType.MESSAGE.value
+    )
+
+    for name, _ in user_rate_limits.items():
+        if name not in update_event_var_names:
+            err_msg = ("Config entry '{0}' is not valid." +
+                       " Use one of {1}")
+            raise ValueError(err_msg.format(
+                name,
+                ", ".join(update_event_var_names)
+            ))
+
+    return user_rate_limits
+
 
 class MonitoringClient:
-    ip_address: str
-    port: int
+    """ Class for collecting and sending monitoring data to a server
+    """
+    config: ClientConfig
     credentials_cert: str
     machine_id: str
     machine_name: str
@@ -30,47 +98,24 @@ class MonitoringClient:
     # throttling
     collection_frequencies: Dict[str, float]
     last_time_sent: Dict[Union[str, Tuple[str, str]], datetime]
-    collect_data_every: float
 
     # watching stuff
     chia_dog: ChiaWatchdog
 
     def __init__(self,
                  chia_dog: ChiaWatchdog,
-                 ip_address: str,
-                 port: int,
-                 collection_frequencies: Dict[str, float],
-                 collect_data_every: float,
+                 config=MonitoringConfig.ClientConfig,
                  credentials_cert: str = "",
                  machine_name: str = "",
                  ):
-        self.ip_address = ip_address
-        self.port = port
+        self.config = config
         self.credentials_cert = credentials_cert
-        self.machine_id = self.__load_machine_id()
+        self.machine_id = __load_machine_id()
         self.chia_dog = chia_dog
-        self.collection_frequencies = collection_frequencies
+        self.collection_frequencies = __get_collection_frequencies(
+            config)
         self.last_time_sent = {}
-        self.collect_data_every = collect_data_every
         self.machine_name = machine_name
-
-    def __load_machine_id(self) -> str:
-        """ Loads id of the machine
-
-        Returns
-        -------
-        machine_id : str
-            id of the machine
-
-        Notes
-        -----
-            The machine id is stored in the home directory in
-            `~/.chia_tea/settings.json`.
-        """
-
-        return get_settings_value(
-            "machineId",
-            default=uuid.getnode())
 
     def is_event_allowed_to_be_sent(self, pb_msg: UpdateEvent) -> bool:
         """ Checks if a an update event is allowed to be sent
@@ -100,10 +145,11 @@ class MonitoringClient:
         # continue
         if not field_name:
             warn_msg = ("Could not identify which field" +
-                        " was set in an update event: {0}")
-            get_logger(__file__).warning(warn_msg.format(
+                        " was set in an update event: %s")
+            get_logger(__file__).warning(
+                warn_msg,
                 MessageToDict(pb_msg)
-            ))
+            )
             self.last_time_sent[field_key] = datetime.now()
             return True
 
@@ -190,7 +236,7 @@ class MonitoringClient:
             ]
             if not filtered_event_list:
                 await wait_at_least(
-                    min_duration=self.collect_data_every,
+                    min_duration=self.config.collect_data_every,
                     start_time=start_time)
                 continue
 
@@ -202,17 +248,17 @@ class MonitoringClient:
             )
 
             logger.info(
-                "Sending message to {address}: {message}".format(
-                    address=address_for_logging,
-                    message=MessageToDict(data_update_request)
-                ))
+                "Sending message to %s: %s",
+                address_for_logging,
+                MessageToDict(data_update_request)
+            )
 
             await stream.write(data_update_request)
 
             previous_state = current_state
 
             await wait_at_least(
-                min_duration=self.collect_data_every,
+                min_duration=self.config.collect_data_every,
                 start_time=start_time)
 
     async def start_sending_updates(self):
@@ -223,8 +269,8 @@ class MonitoringClient:
         logger.info("Starting to monitor system.")
 
         address = "{ip}:{port}".format(
-            ip=self.ip_address,
-            port=self.port
+            ip=self.config.ip_address,
+            port=self.config.port
         )
 
         channel_constructor, channel_args = await self.__setup_channel(
@@ -235,7 +281,7 @@ class MonitoringClient:
         while True:
             try:
                 # Open a connection to the server
-                logger.debug(f"Connecting to {address}")
+                logger.debug("Connecting to %s", address)
                 async with channel_constructor(**channel_args) \
                         as channel:
 
@@ -251,9 +297,10 @@ class MonitoringClient:
                             machine_id=self.machine_id
                         )
                     )
-                    logger.debug("Received message {message}".format(
+                    logger.debug(
+                        "Received message %s",
                         message=MessageToDict(last_known_state),
-                    ))
+                    )
 
                     # we can only send data once the watchdog
                     # is ready with it's init. Otherwise we will
@@ -270,12 +317,13 @@ class MonitoringClient:
 
             # in case of trouble reconnect
             except grpc.aio.AioRpcError as err:
-                err_msg = "Connection error with {0} ({1}): {2}"
-                logger.error(err_msg.format(
+                err_msg = "Connection error with %s (%d): %s"
+                logger.error(
+                    err_msg,
                     address,
                     err.code(),
                     err.details(),
-                ))
+                )
                 await asyncio.sleep(5)
 
             except Exception:

@@ -148,6 +148,8 @@ async def start_server(config: ChiaTeaConfig):
 
 
 def main():
+    """ Main function starting the monitoring server
+    """
 
     try:
         args = parse_args(
@@ -160,7 +162,6 @@ def main():
         config = read_config(args.config)
 
         # setup logger
-        global logger
         logger = get_logger(__name__)
 
         # start the server

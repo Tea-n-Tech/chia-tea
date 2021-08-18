@@ -1,21 +1,22 @@
-
 import os
 import sqlite3
+import sys
 from datetime import datetime
 from typing import Tuple
 
 from discord.ext import commands
 
-from ..protobuf.to_sqlite.sql_cmds import (
-    get_machine_infos_from_db,
-    get_cpu_for_machine_from_db,
-    get_ram_for_machine_from_db,
-)
+from ..protobuf.to_sqlite.sql_cmds import (get_cpu_for_machine_from_db,
+                                           get_machine_infos_from_db,
+                                           get_ram_for_machine_from_db)
 from ..utils.cli import parse_args
 from ..utils.config import get_config, read_config
 from ..utils.logger import get_logger
-from ..utils.timing import format_timedelta_from_secs
 from .notifications.common import get_machine_info_name
+from .notifications.formatting import (cpu_pb2_as_markdown,
+                                       farmer_harvester_pb2_as_markdown,
+                                       harvester_pb2_as_markdown,
+                                       ram_pb2_as_markdown)
 from .notifications.run_notifiers import (
     get_current_computer_and_machine_infos_from_db, log_and_send_msg_if_any,
     run_notifiers)
@@ -42,6 +43,7 @@ def _open_database_read_only() -> Tuple[sqlite3.Connection, sqlite3.Cursor]:
     cursor : sqlite3.Cursor
         sqlite cursor
     """
+    # pylint: disable=global-statement
     global db_filepath
     connection = sqlite3.connect(
         f"file:{db_filepath}?mode=ro",
@@ -100,11 +102,10 @@ async def _bot_machines(ctx):
     machine_infos, _ = get_machine_infos_from_db(cursor)
 
     # convert the infos into messages
-    # TODO move this elsewhere
     messages = []
     for machine_info in machine_infos:
-        dt = datetime.fromtimestamp(machine_info.time_last_msg)
-        seconds_since_last_contact = (datetime.now() - dt).total_seconds()
+        seconds_since_last_contact = (
+            datetime.now() - datetime.fromtimestamp(machine_info.time_last_msg)).total_seconds()
         is_connected = seconds_since_last_contact < 60
         icon = "🟢" if is_connected else "🟠"
 
@@ -113,18 +114,7 @@ async def _bot_machines(ctx):
             machine_info.machine_id,
         )
         cpu_msgs = [
-            """   __CPU__
-      name:  {name}
-      cores: {cores}
-      usage: {usage:.1f}%
-      temp:  {temperature:.0f} deg
-      clock: {speed:.0f} Mhz""".format(
-                name=cpu.name,
-                cores=cpu.n_vcores,
-                usage=cpu.usage,
-                temperature=cpu.temperature,
-                speed=cpu.clock_speed,
-            )
+            cpu_pb2_as_markdown(cpu)
             for cpu in cpus
         ]
 
@@ -132,30 +122,9 @@ async def _bot_machines(ctx):
             cursor,
             machine_info.machine_id,
         )
-        ram_msgs = []
-        for ram in rams:
-            used_percent = 0.
-            try:
-                used_percent = ram.used_ram / ram.total_ram * 100
-            except ZeroDivisionError:
-                pass
-            swap_percent = 0.
-            try:
-                swap_percent = ram.used_swap / ram.total_swap * 100
-            except ZeroDivisionError:
-                pass
-
-            ram_msgs.append(
-                """   __RAM__
-      total: {total}
-      used:  {used:.1f}%
-      swap:  {swap:.1f}%
-      """.format(
-                    total=format_memory_size(ram.total_ram),
-                    used=used_percent,
-                    swap=swap_percent,
-                )
-            )
+        ram_msgs = [
+            ram_pb2_as_markdown(ram) for ram in rams
+        ]
 
         machine_name = get_machine_info_name(machine_info)
         messages += [
@@ -193,9 +162,6 @@ async def _farmer(ctx):
     for _, (machine, computer_info) in machine_and_computer_info_dict.items():
         farmer_is_running = computer_info.farmer.is_running
 
-        # TODO synced status
-        # TODO harvesters don't show yet
-
         # a farmer is running, create a message
         if farmer_is_running:
             messages += [
@@ -203,23 +169,10 @@ async def _farmer(ctx):
             ]
 
             # list up connected harvesters
-            now_timestamp = datetime.now().timestamp()
-            for harvester in computer_info.farmer_harvesters:
-                messages.append(
-                    """
-  Harvester *{harvester_id}*
-     🌐 ip address:  {ip_address}
-     📡 last answer: {last_answer} ago
-     🚆 missed challenges: {missed_challenges}
-     🌾 plots: {n_plots}""".format(
-                        ip_address=harvester.ip_address,
-                        last_answer=format_timedelta_from_secs(
-                            now_timestamp - harvester.time_last_msg_received),
-                        harvester_id=harvester.id[:8],
-                        missed_challenges=harvester.missed_challenges,
-                        n_plots=harvester.n_plots,
-                    )
-                )
+            messages = [
+                farmer_harvester_pb2_as_markdown(harvester)
+                for harvester in computer_info.farmer_harvesters
+            ]
 
     if messages:
         messages.insert(0, "**Farmers:**")
@@ -236,28 +189,6 @@ async def _farmer(ctx):
     connection.close()
 
 
-def format_memory_size(n_bytes: float, suffix: str = 'B'):
-    """ Formats a memory size number
-
-    Parameters
-    ----------
-    n_bytes : float
-        bytes to format
-    suffix : string
-        suffix of the memory
-
-    Notes
-    -----
-        Thanks Fred @ Stackoverflow:
-        https://stackoverflow.com/questions/1094841/get-human-readable-version-of-file-size
-    """
-    for unit in ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi']:
-        if abs(n_bytes) < 1024.0:
-            return "%3.1f%s%s" % (n_bytes, unit, suffix)
-        n_bytes /= 1024.0
-    return "%.1f%s%s" % (n_bytes, 'Yi', suffix)
-
-
 @bot.command(name="harvesters")
 async def _harvester(ctx):
 
@@ -270,37 +201,12 @@ async def _harvester(ctx):
     messages = []
 
     for _, (machine, computer_info) in machine_and_computer_info_dict.items():
-        harvester = computer_info.harvester
-        plots = computer_info.harvester_plots
-        total_size = sum(plot.filesize for plot in plots)
-
-        # disk messages
-        disk_msgs = []
-        for disk in computer_info.disks:
-            usage_percent = 0
-            try:
-                usage_percent = disk.used_space / disk.total_space * 100
-            except ZeroDivisionError:
-                pass
-            disk_msgs.append(
-                f"        {usage_percent:3.1f}% {disk.id}"
-            )
-
-        # full msg
         messages.append(
-            """
-  🚜 Harvester {machine}
-     🍀 proofs: {n_proofs}
-     🌾 plots: {n_plots}
-     🌾 size of plots: {total_size}
-     💽 disks:
-{disk_msgs}
-     """.format(
-                machine=get_machine_info_name(machine),
-                n_plots=len(plots),
-                n_proofs=harvester.n_proofs,
-                total_size=format_memory_size(total_size),
-                disk_msgs="\n".join(disk_msgs)
+            harvester_pb2_as_markdown(
+                machine,
+                computer_info.harvester,
+                computer_info.plots,
+                computer_info.disks,
             )
         )
 
@@ -324,7 +230,7 @@ def get_discord_channel_id() -> int:
 
     Returns
     -------
-    channel_id : int
+    channel_id_cfg : int
         discord channel id
 
     Raises
@@ -332,25 +238,25 @@ def get_discord_channel_id() -> int:
     ValueError
         In case that the channel id cannot be converte to a string
     """
-    channel_id = get_config().discord.channel_id
+    channel_id_cfg = get_config().discord.channel_id
 
     # yaml sometimes returns a str depending on how
     # the user put the value in, but we need an int
-    if not isinstance(channel_id, int):
+    if not isinstance(channel_id_cfg, int):
         try:
-            channel_id = int(channel_id)
+            channel_id_cfg = int(channel_id_cfg)
         except ValueError:
             err_msg = "Cannot convert discord channel id '{0}' to number."
-            get_logger(module_name).error(err_msg.format(
-                channel_id
-            ))
-            exit(1)
+            get_logger(module_name).error(err_msg, channel_id_cfg)
+            sys.exit(1)
 
-    return channel_id
+    return channel_id_cfg
 
 
 @bot.event
 async def on_ready():
+    """ Function run when the bot is ready
+    """
     get_logger(module_name).info("Bot started.")
 
     # get discord channel
@@ -367,6 +273,8 @@ async def on_ready():
 
 
 def main():
+    """ Main function for the discord bot
+    """
     args = parse_args(
         name="Chia Tea Discord Bot",
         description="Start a discord bot to keep an eye on your Chia farm."
@@ -376,6 +284,8 @@ def main():
     config = read_config(args.config)
 
     discord_token = config.discord.token
+
+    # pylint: disable=global-statement
     global channel_id
     channel_id = get_discord_channel_id()
 

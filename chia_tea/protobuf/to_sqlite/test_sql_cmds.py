@@ -1,15 +1,14 @@
 
 import unittest
 
-from chia_tea.protobuf.generated.computer_info_pb2 import (ADD, DELETE, UPDATE,
-                                                           UpdateEvent)
 from google.protobuf.json_format import ParseDict
 
 from ...monitoring.MonitoringDatabase import MonitoringDatabase
+from ..generated.computer_info_pb2 import ADD, DELETE, UPDATE, UpdateEvent
 from .sql_cmds import get_update_events_from_db, insert_update_event_in_db
 
 
-class SqlCmdsTest(unittest.TestCase):
+class TestSqlCmds(unittest.TestCase):
 
     def test_that_fetched_events_have_correct_event_type(self):
 

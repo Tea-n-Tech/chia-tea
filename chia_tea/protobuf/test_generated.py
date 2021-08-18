@@ -1,11 +1,15 @@
 
-from chia_tea.protobuf.to_sqlite.generic import ProtoType, field_descriptor_is_list
-from .generated.computer_info_pb2 import _UPDATEEVENT, _COMPUTERINFO
-from .generated.config_pb2 import _MONITORINGCONFIG_CLIENTCONFIG_SENDUPDATEEVERY
 import unittest
 
+from chia_tea.protobuf.to_sqlite.generic import (ProtoType,
+                                                 field_descriptor_is_list)
 
-class GeneratedTest(unittest.TestCase):
+from .generated.computer_info_pb2 import _COMPUTERINFO, _UPDATEEVENT
+from .generated.config_pb2 import \
+    _MONITORINGCONFIG_CLIENTCONFIG_SENDUPDATEEVERY
+
+
+class TestGenerated(unittest.TestCase):
 
     def test_send_update_every_matches_update_event_names(self):
 
