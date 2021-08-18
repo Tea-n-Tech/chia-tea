@@ -4,9 +4,9 @@ Chia Tea is a tools and utility library for the Chia Cryptocurrency. We are buil
 
 # Table of Contents
 
-- [Intro and FAQ](https://github.com/Tea-n-Tech/chia-tea/blob/main/docs/faq.md)
-- [Quick-Start](https://github.com/Tea-n-Tech/chia-tea/blob/main/docs/quick_start.md)
-- [Architecture Summary](https://github.com/Tea-n-Tech/chia-tea/blob/develop/docs/architecture_summary.md)
+- [Intro and FAQ](docs/faq.md)
+- [Quick-Start](docs/quick_start.md)
+- [Architecture Summary](docs/architecture_summary.md)
 - [Feature Overview](#feature-overview)
   - [Copy Tool](#copy-tool)
   - [Monitoring](#monitoring)
@@ -15,13 +15,18 @@ Chia Tea is a tools and utility library for the Chia Cryptocurrency. We are buil
 - [About Us](#about-us)
 - [✊ Support Us ✊](#support-us)
 
+## Functionlity
+
+![Chia-Tea Infrastructure](docs/Chia_Infrastructure.png?raw=true)
+
+
 ## Feature Overview
 
 ### Copy Tool
 
 Copy is a tool to copy your chia files to a different location. It can be faster to plot to a temporary storage space and then move the plots to your harvester afterwards to not block the plotting queue. We manage this process through our copy cli tool. It incorporates the following features:
 
-- Selects a drive from multiple specified
+- Selects a drive with sufficient space from multiple disks specified
 - Checks drive space regularly
 - Takes plots which are being copied already into account
 - Uses the drive with the fewest copy processes
