@@ -51,7 +51,7 @@ Commands:
 
 Reconsider the structure of this repository
 
-![Chia-Tea Infrastructure](docs/Chia_Infrastructure.png?raw=true)
+![Chia-Tea Infrastructure](Chia_Infrastructure.png?raw=true)
 
 In both use scenarios, you in total need three programs to run:
 
