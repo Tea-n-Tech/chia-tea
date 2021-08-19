@@ -38,6 +38,7 @@ Notify on:
 - [x] Wallet syncing or loosing sync
 - [x] Computer has full RAM
 - [x] Computer looses a disk
+- [x] Computer timeouts
 
 Commands:
 
