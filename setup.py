@@ -20,7 +20,7 @@ def get_requirements():
 def main():
 
     setup(name='chia-tea',
-          version='0.0.1',
+          version='0.1.0',
           description='A library dedicated to chia-blockchain farmer.',
           author="Tea 'n Tech",
           url='https://www.youtube.com/channel/UCba194Pls_bHSqWoWMGoyzA',
