@@ -26,10 +26,9 @@ def get_event_type(old_msg: Any, new_msg: Any) -> int:
     """
     if old_msg is None and new_msg is not None:
         return ADD
-    elif old_msg is not None and new_msg is not None:
+    if old_msg is not None and new_msg is not None:
         return UPDATE
-    else:
-        return DELETE
+    return DELETE
 
 
 async def compare_computer_info(

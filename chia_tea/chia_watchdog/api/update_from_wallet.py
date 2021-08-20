@@ -1,12 +1,10 @@
-import asyncio
-
-import aiohttp
 from chia.rpc.wallet_rpc_client import WalletRpcClient
 from chia.util.config import load_config
 from chia.util.default_root import DEFAULT_ROOT_PATH
 from chia.util.ints import uint16
 
 from ..ChiaWatchdog import ChiaWatchdog
+from .shared_settings import API_EXCEPTIONS
 
 
 async def update_from_wallet(chia_dog: ChiaWatchdog):
@@ -38,15 +36,8 @@ async def update_from_wallet(chia_dog: ChiaWatchdog):
         chia_dog.wallet_service.n_wallets = len(await wallet_client.get_connections())
         chia_dog.wallet_service.is_running = True
         chia_dog.wallet_service.is_synced = await wallet_client.get_synced()
-    except (
-        # No config or error response
-        ValueError,
-        # No chia on machine
-        RuntimeError,
-        # Not running
-        aiohttp.ClientConnectorError,
-        asyncio.exceptions.TimeoutError,
-    ):
+
+    except API_EXCEPTIONS:
         chia_dog.wallet_service.n_wallets = 0
         chia_dog.wallet_service.is_running = False
         chia_dog.wallet_service.is_synced = False

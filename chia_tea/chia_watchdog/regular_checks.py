@@ -3,6 +3,7 @@ from chia_tea.chia_watchdog.ChiaWatchdog import ChiaWatchdog
 
 
 # NOT NEEDED ANYMORE BUT LEFT AS EXAMPLE!
+# pylint: disable=unused-argument
 def check_something(watchdog: ChiaWatchdog):
     """ Check something e.g. possibly modify the harvester
 
@@ -11,7 +12,6 @@ def check_something(watchdog: ChiaWatchdog):
     watchdog : ChiaWatchdog
         Watchdog to run regular checks on
     """
-    pass
 
 
 async def run_watchdog_checks(watchdog: ChiaWatchdog):

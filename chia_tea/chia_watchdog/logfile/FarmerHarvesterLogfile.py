@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Union
 
 
+# pylint: disable=too-many-instance-attributes
 class FarmerHarvesterLogfile:
     """Class with compact information about harvesters"""
 
@@ -56,6 +57,7 @@ class FarmerHarvesterLogfile:
         time_of_timeout : Union[datetime, None]
             time of last timeout
         """
+        # pylint: disable=too-many-arguments
         self.harvester_id = harvester_id
         self.ip_address = ip_address
         self.is_connected = is_connected
@@ -90,6 +92,17 @@ class FarmerHarvesterLogfile:
         )
 
     def check_for_timeout(self, current_time: datetime) -> None:
+        """ This functions checks if the harvester timed out from the view of a farmer
+
+        Parameters
+        ----------
+        current_time : datetime
+            current time to base computation on
+
+        Notes
+        -----
+            Modifies internal attributes so don't spam.
+        """
         CHALLENGE_TIMEOUT = 25  # seconds
         HARVESTER_TIMOUT = 60  # seconds
 
@@ -103,6 +116,8 @@ class FarmerHarvesterLogfile:
                     self.timed_out = True
 
     def reset_times(self):
+        """ Resets time of incoming, outgoing msgs and signage points
+        """
         self.time_last_outgoing_msg = None
         self.time_last_incoming_msg = None
         self.time_of_end_of_last_sgn_point = None

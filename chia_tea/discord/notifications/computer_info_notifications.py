@@ -58,6 +58,26 @@ def get_msg_if_farmer_harvester_timed_out(
     new_timestamp: float,
     harvester: HarvesterViewedFromFarmer
 ) -> str:
+    """ Returns a message if a farmer recognizes that a harvester
+    didn't respond for a while
+
+    Parameters
+    ----------
+    machine : MachineInfo
+        info about the machine itself
+    last_timestamp : float
+        timestamp when the last time this check was performed
+    new_timestamp : float
+        timestamp now
+    harvester : HarvesterViewedFromFarmer
+        harvester to perform timeout check on
+
+    Returns
+    -------
+    msg : str
+        Timeout message or an empty string if the harvester
+        didn't time out.
+    """
 
     new_harvester_timed_out = (new_timestamp -
                                harvester.time_last_msg_received >= HARVESTER_TIMOUT)
@@ -76,8 +96,8 @@ def get_msg_if_farmer_harvester_timed_out(
             machine_name=get_machine_info_name(machine),
             status=f"didn't respond for {HARVESTER_TIMOUT}s"
         )
-    else:
-        return ""
+
+    return ""
 
 
 def notify_when_harvester_times_out(
@@ -101,9 +121,11 @@ def notify_when_harvester_times_out(
     messages : List[str]
         notification messages
     """
+    # pylint: disable=unused-argument
 
     messages = []
 
+    # pylint: disable=global-statement
     global timestamp_of_last_timeout_check
     now = datetime.now().timestamp()
 

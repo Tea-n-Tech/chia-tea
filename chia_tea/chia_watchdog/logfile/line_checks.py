@@ -30,7 +30,7 @@ class AbstractLineAction(ABC):
     def apply(
             self: str,
             line: str,
-            chia_dog: 'ChiaWatchdog',
+            chia_dog: ChiaWatchdog,
     ):
         """ Apply the line action
 
@@ -45,6 +45,7 @@ class AbstractLineAction(ABC):
 
 
 class ActionMessageFromHarvester(AbstractLineAction):
+    """ This action is triggered if a farmer sends a msg to a harvester """
 
     def is_match(self, line: str) -> bool:
         codewords = ("farmer farmer_server",
@@ -52,13 +53,12 @@ class ActionMessageFromHarvester(AbstractLineAction):
                      "farming_info from peer")
         if all(word in line for word in codewords):
             return True
-        else:
-            return False
+        return False
 
     def apply(
         self,
         line: str,
-        chia_dog: 'ChiaWatchdog',
+        chia_dog: ChiaWatchdog,
     ):
 
         fragments = line.split()
@@ -84,6 +84,7 @@ class ActionMessageFromHarvester(AbstractLineAction):
 
 
 class ActionMessageToHarvester(AbstractLineAction):
+    """ This action is triggered if a farmer sends a msg to a harvester """
 
     def is_match(self, line: str) -> bool:
         codewords = ("farmer farmer_server",
@@ -91,13 +92,12 @@ class ActionMessageToHarvester(AbstractLineAction):
                      "new_signage_point_harvester")
         if all(word in line for word in codewords):
             return True
-        else:
-            return False
+        return False
 
     def apply(
         self,
         line: str,
-        chia_dog: 'ChiaWatchdog',
+        chia_dog: ChiaWatchdog,
     ):
         fragments = line.split()
 
@@ -129,13 +129,12 @@ class ActionFinishedSignagePoint(AbstractLineAction):
                      "Finished signage point")
         if all(word in line for word in codewords):
             return True
-        else:
-            return False
+        return False
 
     def apply(
         self,
         line: str,
-        chia_dog: 'ChiaWatchdog',
+        chia_dog: ChiaWatchdog,
     ):
         fragments = line.split()
 
@@ -150,18 +149,18 @@ class ActionFinishedSignagePoint(AbstractLineAction):
 
 
 class ActionHarvesterConnected(AbstractLineAction):
+    """ This action is triggered if a farmer connects to a harvester """
 
     def is_match(self, line: str) -> bool:
         codewords = ("farmer farmer_server", "harvester_handshake to peer")
         if all(word in line for word in codewords):
             return True
-        else:
-            return False
+        return False
 
     def apply(
         self,
         line: str,
-        chia_dog: 'ChiaWatchdog',
+        chia_dog: ChiaWatchdog,
     ):
         fragments = line.split()
 
@@ -182,18 +181,18 @@ class ActionHarvesterConnected(AbstractLineAction):
 
 
 class ActionHarvesterDisconnected(AbstractLineAction):
+    """ This action is triggered if a farmer disconnects to a harvester"""
 
     def is_match(self, line: str) -> bool:
         codewords = ("farmer farmer_server", "Connection closed")
         if all(word in line for word in codewords):
             return True
-        else:
-            return False
+        return False
 
     def apply(
         self,
         line: str,
-        chia_dog: 'ChiaWatchdog',
+        chia_dog: ChiaWatchdog,
     ):
         fragments = line.split()
 
@@ -217,6 +216,8 @@ class ActionHarvesterDisconnected(AbstractLineAction):
 
 
 class ActionHarvesterFoundProof(AbstractLineAction):
+    """ This action is triggered if a harvester found a proof """
+
     # Chia Version: 1.2.0
     # Example:
     #
@@ -229,13 +230,12 @@ class ActionHarvesterFoundProof(AbstractLineAction):
                      "eligible", "Found", "proofs")
         if all(word in line for word in codewords):
             return True
-        else:
-            return False
+        return False
 
     def apply(
         self,
         line: str,
-        chia_dog: 'ChiaWatchdog',
+        chia_dog: ChiaWatchdog,
     ):
         fragments = line.split()
 
@@ -248,18 +248,19 @@ class ActionHarvesterFoundProof(AbstractLineAction):
 
 
 class ActionFarmedUnfinishedBlock(AbstractLineAction):
+    """ This action is triggered if a harvester found a block """
+
     def is_match(self, line: str) -> bool:
         codewords = ("full_node chia.full_node.full_node",
                      "Farmed unfinished_block")
         if all(word in line for word in codewords):
             return True
-        else:
-            return False
+        return False
 
     def apply(
         self,
         line: str,
-        chia_dog: 'ChiaWatchdog',
+        chia_dog: ChiaWatchdog,
     ):
         fragments = line.split()
 
@@ -269,7 +270,7 @@ class ActionFarmedUnfinishedBlock(AbstractLineAction):
             chia_dog.farmed_blocks.append(block_id)
 
 
-async def run_line_checks(chia_dog: 'ChiaWatchdog', line: str):
+async def run_line_checks(chia_dog: ChiaWatchdog, line: str):
     """ Processes a line from the logfile
 
     Parameters
@@ -288,8 +289,8 @@ async def run_line_checks(chia_dog: 'ChiaWatchdog', line: str):
 
     except Exception:
         trace = traceback.format_exc()
-        err_msg = "Error in line: {0}\n{1}"
-        get_logger(__name__).error(err_msg.format(line, trace))
+        err_msg = "Error in line: %s\n%s"
+        get_logger(__name__).error(err_msg, line, trace)
 
 ALL_LINE_ACTIONS = (
     ActionMessageFromHarvester(),
@@ -297,6 +298,5 @@ ALL_LINE_ACTIONS = (
     ActionFinishedSignagePoint(),
     ActionHarvesterConnected(),
     ActionHarvesterDisconnected(),
-    ActionHarvesterFoundProof()
-
+    ActionHarvesterFoundProof(),
 )
