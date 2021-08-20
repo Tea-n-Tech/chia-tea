@@ -1,4 +1,3 @@
-import logging
 import ntpath
 import os
 import time
@@ -32,8 +31,8 @@ def main():
     from_folders = config.copy.source_folders
     target_folders = config.copy.target_folders
 
-    logger.info("Copying from: {0}".format(from_folders))
-    logger.info("Copying to  : {0}".format(target_folders))
+    logger.info("Copying from: %s", from_folders)
+    logger.info("Copying to  : %s", target_folders)
 
     # execute infinite copy loop
     while True:
@@ -44,7 +43,7 @@ def main():
             # search for a space on the specified disks
             target_dir = find_disk_with_space(target_folders, filepath)
             if target_dir is None:
-                logging.error(f"No disk space available for: {filepath}")
+                logger.error("No disk space available for: %s", filepath)
                 continue
 
             # compose new filepath after move
@@ -53,7 +52,7 @@ def main():
 
             # move file (with measurement)
             logger.info(
-                "moving file: {0} -> {1}".format(filepath, target_path))
+                "moving file: %s -> %s", filepath, target_path)
             start = time.time()
 
             # lockfile
@@ -65,16 +64,16 @@ def main():
 
             duration_secs = time.time() - start
             if successful_copy:
-                logger.info("done in {0}s".format(duration_secs))
+                logger.info("done in %.1fs", duration_secs)
                 try:
                     os.remove(filepath)
                 except FileNotFoundError:
-                    logging.error(
-                        "Could not remove original file: {}".format(filepath))
+                    logger.error(
+                        "Could not remove original file: %s", filepath)
 
             else:
-                logger.error("failed to copy {} in {}s".format(
-                    filepath, duration_secs))
+                logger.error("failed to copy %s in %.1fs",
+                             filepath, duration_secs)
 
         # rate limiter
         time.sleep(15)
@@ -84,4 +83,4 @@ if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        get_logger(module_name).info("Received shutdown signal.")
+        get_logger(module_name).info("Shutting down.")

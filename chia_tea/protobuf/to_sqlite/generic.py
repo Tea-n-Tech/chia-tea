@@ -35,6 +35,7 @@ class ProtoType(enum.Enum):
 
 
 class SqliteType(enum.Enum):
+    """ Enum for sqlite3 datatypes """
     REAL = "READ"
     INTEGER = "INTEGER"
     STRING = "STRING"
@@ -44,6 +45,17 @@ class SqliteType(enum.Enum):
 def field_descriptor_is_list(
     field_descriptor: FieldDescriptor
 ) -> bool:
+    """ Checks if a proto field is a list or not
+
+    Parameters
+    ----------
+    field_descriptor : FieldDescriptor
+        descriptor of a field within a proto msg
+
+    Returns
+    -------
+    is_list : bool
+    """
     return isinstance(field_descriptor.default_value, list)
 
 
@@ -77,7 +89,8 @@ def sql_type_from_proto_type(
             ProtoType.DOUBLE.value,
             ProtoType.FLOAT.value):
         return SqliteType.REAL
-    elif proto_type in (
+
+    if proto_type in (
             ProtoType.INT64.value,
             ProtoType.UINT64.value,
             ProtoType.INT32.value,
@@ -91,14 +104,16 @@ def sql_type_from_proto_type(
             ProtoType.SINT64.value,
     ):
         return SqliteType.INTEGER
-    elif proto_type == ProtoType.STRING.value:
+
+    if proto_type == ProtoType.STRING.value:
         return SqliteType.STRING
-    elif proto_type == ProtoType.BYTES.value:
+
+    if proto_type == ProtoType.BYTES.value:
         return SqliteType.BLOB
-    else:
-        err_msg = (f"{message_name}.{field_name} " +
-                   f"has an unknown protobuf type enum: {proto_type}")
-        raise RuntimeError(err_msg)
+
+    err_msg = (f"{message_name}.{field_name} " +
+               f"has an unknown protobuf type enum: {proto_type}")
+    raise RuntimeError(err_msg)
 
 
 def get_proto_fields_with_types(
@@ -130,7 +145,7 @@ def get_proto_fields_with_types(
     except RuntimeError:
         err_msg = traceback.format_exc(
         ) + f"\nError in {pb_descriptor.full_name}"
-        raise RuntimeError(err_msg)
+        raise RuntimeError(err_msg) from None
 
 
 def get_sqlite_fields_for_insertion_from_pb2(
@@ -178,8 +193,6 @@ def get_create_table_cmd(
     create_tbl_cmd : str
         command for sqlite to create a table
     """
-
-    # TODO check if primary key attributes are in attributes
 
     format_str = "{0} {1}"
     name_and_type_as_str = (
@@ -233,6 +246,17 @@ def sqlite_create_tbl_cmd_from_pb2(
         raise ValueError(err_msg.format(
             ", ".join(duplicate_names)
         ))
+
+    set_primary_names = set(primary_key_attribute_names)
+    set_all_attribute_names = set_meta_names.union(set_pb2_names)
+    missing_attributes = set_primary_names - set_all_attribute_names
+    if missing_attributes:
+        err_msg = (
+            "The following primary key attribute names do" +
+            " neither exist in the proto file nor the additionally" +
+            " specified attributes: " +
+            ", ".join(missing_attributes)
+        )
 
     return get_create_table_cmd(
         table_name=table_name,

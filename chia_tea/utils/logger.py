@@ -34,19 +34,19 @@ def __parse_loglevel(level: str) -> int:
     """
     if level == INFO:
         return logging.INFO
-    elif level == DEBUG:
+    if level == DEBUG:
         return logging.DEBUG
-    elif level == WARNING:
+    if level == WARNING:
         return logging.WARNING
-    elif level == ERROR:
+    if level == ERROR:
         return logging.ERROR
-    elif level == TRACE:
+    if level == TRACE:
         return TRACE_LEVEL
-    else:
-        msg = (
-            f"Name '{0}' is not an a correct log level."
-            "Try one of TRACE, DEBUG, INFO, WARNING, ERROR.")
-        raise ValueError(msg.format(level))
+
+    msg = (
+        f"Name '{0}' is not an a correct log level."
+        "Try one of TRACE, DEBUG, INFO, WARNING, ERROR.")
+    raise ValueError(msg.format(level))
 
 
 def __add_handler_only_once(
@@ -119,6 +119,7 @@ def get_logger(
                 ConcurrentRotatingFileHandler
             )
 
+    # pylint: disable=broad-except
     except Exception:
         err_msg = traceback.format_exc()
         logging.getLogger(__name__).error(err_msg)

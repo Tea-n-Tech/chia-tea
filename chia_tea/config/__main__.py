@@ -48,7 +48,7 @@ def _parse_args() -> argparse.Namespace:
 
     if len(sys.argv) < 1:
         parser.print_help()
-        exit(0)
+        sys.exit(0)
 
     return parser.parse_args(sys.argv[1:])
 
@@ -69,11 +69,9 @@ def _generate_default_config(
     logger = get_logger(module_name)
 
     if os.path.isfile(filepath) and not overwrite:
-        err_msg = "Config file '{0}' does already exist. Use '--overwrite' to overwrite this file."
-        logger.error(err_msg.format(
-            filepath
-        ))
-        exit(1)
+        err_msg = "Config file '%s' does already exist. Use '--overwrite' to overwrite this file."
+        logger.error(err_msg, filepath)
+        sys.exit(1)
 
     save_config(
         filepath=filepath,
@@ -93,15 +91,15 @@ def _validate_config(filepath: str):
 
     try:
         read_config(filepath)
-        logger.info("👍 Config '{0}' is valid".format(
-            filepath
-        ))
+        logger.info("👍 Config '%s' is valid", filepath)
     except Exception as err:
         logger.error(str(err))
-        exit(1)
+        sys.exit(1)
 
 
 def main():
+    """ Main function for the config cli
+    """
     args = _parse_args()
 
     # generate a deffault config

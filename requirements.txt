@@ -1,4 +1,3 @@
-grpcio-tools
 grpcio
 discord
 psutil

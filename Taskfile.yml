@@ -1,6 +1,11 @@
 version: "3"
 
 tasks:
+  setup:
+    desc: Install dependencies and dev-dependencies
+    cmds:
+      - python3 -m pip install -r requirements-dev.txt
+      - python3 -m pip install -r requirements.txt
   generate:
     desc: Generates code from the protobuf definitions.
     cmds:
@@ -16,6 +21,7 @@ tasks:
     cmds:
       - flake8 chia_tea --count --select=E9,F63,F7,F82 --show-source --statistics
       - flake8 chia_tea --exclude ./chia_tea/protobuf/generated --count --max-complexity=10 --max-line-length=127
+      - pylint chia_tea --ignore=chia_tea/protobuf/generated
 
   test:
     desc: Runs the test suite.

@@ -10,7 +10,7 @@ from ..utils.testing import async_test
 from .computer_info_comparison import compare_computer_info
 
 
-class MonitoringClientTest(unittest.TestCase):
+class TestMonitoringClient(unittest.TestCase):
 
     @async_test
     async def test_compare_empty_computer_info(self):

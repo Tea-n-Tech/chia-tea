@@ -11,20 +11,19 @@ from .logfile.FarmerHarvesterLogfile import FarmerHarvesterLogfile
 
 class ChiaWatchdog:
     """Class for watching chia"""
+    # pylint: disable=too-many-instance-attributes
 
     date_last_reset: date
     __logfile_watching_ready: bool
 
     # members related to logfile checking
     harvester_infos: Dict[str, FarmerHarvesterLogfile]
+    farmed_blocks: List[str]
 
     # members for contacting chia directly
     farmer_service: FarmerAPI
     wallet_service: WalletAPI
     harvester_service: HarvesterAPI
-
-    # TODO check if we still need this
-    farmed_blocks: List[str]
 
     def __init__(self, logfile_filepath: str):
         """ initialize a chia watchdog
@@ -59,6 +58,8 @@ class ChiaWatchdog:
         # date is immutable thus safe to share
         new_instance.date_last_reset = self.date_last_reset
         # not sure about this one but ok
+        # pylint: disable=protected-access
+        # pylint: disable=unused-private-member
         new_instance.__logfile_watching_ready = self.__logfile_watching_ready
         new_instance.farmer_service = self.farmer_service.copy()
         new_instance.wallet_service = self.wallet_service.copy()
@@ -70,7 +71,6 @@ class ChiaWatchdog:
     async def ready(self):
         """ Wait for the readiness of the watchdog
         """
-        # TODO refactor this
         while not (self.__logfile_watching_ready and
                    self.harvester_service.is_ready and
                    self.farmer_service.is_ready and
@@ -78,16 +78,15 @@ class ChiaWatchdog:
             await asyncio.sleep(0.25)
 
     def set_as_ready(self):
+        """ When we scanned the entire logfile once and caught up set this """
         self.__logfile_watching_ready = True
 
     def is_reset_time(self) -> bool:
-        """If it is already midnight we need to reset to prevent data overflow"""
-        # TODO change to FIFO queue
+        """ If it is already midnight we need to reset to prevent data overflow """
         date_right_now = date.today()
         if (date_right_now - self.date_last_reset).total_seconds():
             return True
-        else:
-            return False
+        return False
 
     def reset_data(self):
         """ Reset the watchdogs data """
@@ -98,14 +97,14 @@ class ChiaWatchdog:
 
     def get_or_create_harvester_info(
         self,
-        id: str,
+        harvester_id: str,
         ip_address: str,
     ) -> FarmerHarvesterLogfile:
         """ Get or create a harvester info
 
         Parameters
         ----------
-        id : str
+        harvester_id : str
             id of the harvester
         ip_address : str
             ip address
@@ -116,15 +115,15 @@ class ChiaWatchdog:
             existing or newly created harvester info
         """
 
-        harvester_info = self.harvester_infos.get(id)
+        harvester_info = self.harvester_infos.get(harvester_id)
 
         #  does not exist yet
         if harvester_info is None:
             harvester_info = FarmerHarvesterLogfile(
-                harvester_id=id,
+                harvester_id=harvester_id,
                 ip_address=ip_address,
             )
-            self.harvester_infos[id] = harvester_info
+            self.harvester_infos[harvester_id] = harvester_info
         else:
             # make sure ip is updated
             harvester_info.ip_address = ip_address

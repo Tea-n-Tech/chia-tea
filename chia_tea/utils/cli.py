@@ -15,12 +15,14 @@ def str2bool(value) -> bool:
 
     if isinstance(value, bool):
         return value
+
     if value.lower() in ('yes', 'true', 't', 'y', '1'):
         return True
-    elif value.lower() in ('no', 'false', 'f', 'n', '0'):
+
+    if value.lower() in ('no', 'false', 'f', 'n', '0'):
         return False
-    else:
-        raise argparse.ArgumentTypeError('Boolean value expected.')
+
+    raise argparse.ArgumentTypeError('Boolean value expected.')
 
 
 def parse_args(name: str, description: str) -> argparse.Namespace:
@@ -47,6 +49,6 @@ def parse_args(name: str, description: str) -> argparse.Namespace:
 
     if len(sys.argv) < 1:
         parser.print_help()
-        exit(0)
+        sys.exit(0)
 
     return parser.parse_args(sys.argv[1:])

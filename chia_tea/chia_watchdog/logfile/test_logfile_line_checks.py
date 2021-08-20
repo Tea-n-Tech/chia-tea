@@ -10,8 +10,10 @@ from .line_checks import (ActionHarvesterConnected,
                           ActionFinishedSignagePoint,
                           ActionMessageToHarvester)
 
+# pylint: skip-file
 
-class LineActionTester(unittest.TestCase):
+
+class TestLineAction(unittest.TestCase):
 
     def test_harvester_disconnected(self):
 
@@ -223,6 +225,7 @@ class LineActionTester(unittest.TestCase):
         """
         This test is done for the new logic with sgn points
         """
+        # pylint: disable=too-many-locals
 
         chia_dog = ChiaWatchdog("")
 
@@ -275,9 +278,9 @@ class LineActionTester(unittest.TestCase):
         - recieve
         - send
         - recieve
-
-
         """
+        # pylint: disable=too-many-locals
+
         actionOut = ActionMessageToHarvester()
         actionIn = ActionMessageFromHarvester()
 
@@ -299,6 +302,7 @@ class LineActionTester(unittest.TestCase):
 
         timestamp = datetime.fromisoformat(timestamp1_str)
 
+        # pylint: disable=duplicate-code
         chia_dog = ChiaWatchdog("")
         chia_dog.harvester_infos = {
             node_id: FarmerHarvesterLogfile(
@@ -348,6 +352,7 @@ class LineActionTester(unittest.TestCase):
 
 
 def msg_to_harvester(timestamp_str: str, ip_address: str, node_id: str) -> str:
+    """ Get a fake log msg indicating a send msg to harvester """
     line = (
         f"{timestamp_str} farmer farmer_server              : DEBUG" +
         f"    -> new_signage_point_harvester to peer {ip_address} {node_id}"
@@ -356,6 +361,7 @@ def msg_to_harvester(timestamp_str: str, ip_address: str, node_id: str) -> str:
 
 
 def msg_from_harvester(timestamp_str: str, ip_address: str, node_id: str) -> str:
+    """ Get a fake log msg when a farmer receives data from a harvester """
     line = (
         f"{timestamp_str} farmer farmer_server              : DEBUG"
         + f"    <- farming_info from peer {node_id} {ip_address}"
@@ -364,6 +370,7 @@ def msg_from_harvester(timestamp_str: str, ip_address: str, node_id: str) -> str
 
 
 def msg_signage_point(timestamp_str: str) -> str:
+    """ Get a fake log msg in case a new signage point has started """
     line = (
         f"{timestamp_str} full_node chia.full_node.full_node: INFO"
         + ":timer:  Finished signage point 19/64: CC: RC:"
@@ -372,6 +379,7 @@ def msg_signage_point(timestamp_str: str) -> str:
 
 
 def msg_disconnect(timestamp_str: str, ip_address: str, node_id: str) -> str:
+    """ Get a fake log msg for a disconnecting harvester to a farmer """
     line = (
         f"{timestamp_str} farmer farmer_server              : INFO"
         + f"     Connection closed: {ip_address},"
@@ -381,6 +389,7 @@ def msg_disconnect(timestamp_str: str, ip_address: str, node_id: str) -> str:
 
 
 def msg_connect(timestamp_str: str, ip_address: str, node_id: str) -> str:
+    """ Get a fake log msg for a harvester connecting to a farmer """
     line = (
         f"{timestamp_str} farmer farmer_server           " +
         f"   : DEBUG    -> harvester_handshake to peer {ip_address} " +

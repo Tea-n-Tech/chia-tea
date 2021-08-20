@@ -1,6 +1,5 @@
 import asyncio
 import os
-from datetime import datetime
 from typing import (AsyncGenerator, Awaitable, Callable, Coroutine, Optional,
                     Union)
 
@@ -28,7 +27,7 @@ async def watch_lines_infinitely(
 
     logger = get_logger(__name__)
 
-    logger.debug(f"Searching chia logfile: {filepath}")
+    logger.debug("Searching chia logfile: %s", filepath)
 
     # try to watch file
     line_generator: Union[None, AsyncGenerator[str, None]] = None
@@ -41,11 +40,11 @@ async def watch_lines_infinitely(
         except FileNotFoundError:
             # in case there is no log file (yet) simply
             # wait gently for one to appear
-            logger.info(f"Logfile {filepath} not found," +
-                        " waiting for one to appear.")
+            logger.info(
+                "Logfile %s not found, waiting for one to appear.", filepath)
             await asyncio.sleep(3)
 
-    logger.debug(f"Logfile '{filepath}' found. Starting to watch it.")
+    logger.debug("Logfile '%s' found. Starting to watch it.", filepath)
 
     # process lines
     async for line in line_generator:
@@ -79,20 +78,13 @@ async def watch_logfile_generator(
     if filepath.startswith("~"):
         filepath = os.path.expanduser(filepath)
 
-    # TODO remove in the future after fixing issue
-    # https://github.com/tnt-codie/chia-tea/issues/42
-    # for the moment this is here for debugging
-    # but this should be removed in the future
-    warn_if_no_update_happened_in_this_time = 3 * 60
-    last_update = datetime.now()
-
     # loop for reopening the log file
     # chia uses a rotating logging scheme
     # moving the log file when it's full
     # and making a new one in-place.
     # To keep track we need to reopen the new file
     while True:
-        logger.debug(f"Reopening chia logfile: {filepath}")
+        logger.debug("Reopening chia logfile: %s", filepath)
         with open(filepath, "r", encoding="utf8") as fp:
             while True:
 
@@ -106,21 +98,6 @@ async def watch_logfile_generator(
                 while new_line:
                     yield new_line
                     new_line = fp.readline()
-
-                    last_update = datetime.now()
-
-                # TODO remove in the future after fixing issue
-                # https://github.com/tnt-codie/chia-tea/issues/42
-                duration_since_update = (datetime.now() -
-                                         last_update).total_seconds()
-                if duration_since_update > warn_if_no_update_happened_in_this_time:
-                    logger.warn("Logfile {0} wasn't updated for {1}s".format(
-                        filepath,
-                        duration_since_update,
-                    ))
-
-                    # avoids spam
-                    last_update = datetime.now()
 
                     # after startup we caught up
                 if on_ready is not None:

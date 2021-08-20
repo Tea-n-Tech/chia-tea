@@ -49,12 +49,12 @@ def format_timedelta_from_secs(seconds: Union[float, None]) -> str:
     return response_long.format(seconds / HOUR, "h")
 
 
-def format_timedelta(dt: Union[timedelta, None]) -> str:
+def format_timedelta(delta_time: Union[timedelta, None]) -> str:
     """Format datetime into a better format
 
     Parameters
     ----------
-    dt: Union[timedelta, None]
+    delta_time: Union[timedelta, None]
         timedelta object to format
 
     Returns
@@ -63,10 +63,10 @@ def format_timedelta(dt: Union[timedelta, None]) -> str:
         datetime object nicely formatted
     """
 
-    if dt is None:
+    if delta_time is None:
         return ""
 
-    dt_secs = dt.total_seconds()
+    dt_secs = delta_time.total_seconds()
 
     return format_timedelta_from_secs(dt_secs)
 

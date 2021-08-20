@@ -1,8 +1,6 @@
 
-import asyncio
 from typing import Any, Dict, List
 
-import aiohttp
 from chia.rpc.farmer_rpc_client import FarmerRpcClient
 from chia.server.outbound_message import NodeType
 from chia.util.config import load_config
@@ -11,6 +9,7 @@ from chia.util.ints import uint16
 
 from ..ChiaWatchdog import ChiaWatchdog
 from .FarmerHarvesterAPI import FarmerHarvesterAPI
+from .shared_settings import API_EXCEPTIONS
 
 
 async def _get_farmer_harvesters(
@@ -52,6 +51,7 @@ async def update_from_farmer(chia_dog: ChiaWatchdog):
     chia_dog : ChiaWatchdog
         watchdog instance to be modified
     """
+    # pylint: disable=duplicate-code
 
     try:
         config = load_config(
@@ -69,15 +69,9 @@ async def update_from_farmer(chia_dog: ChiaWatchdog):
             farmer_client=farmer_client
         )
         chia_dog.farmer_service.is_running = True
-    except (
-        # No config
-        ValueError,
-        # No chia on machine
-        RuntimeError,
-        # Not running
-        aiohttp.ClientConnectorError,
-        asyncio.exceptions.TimeoutError,
-    ):
+
+    # pylint: disable=catching-non-exception
+    except API_EXCEPTIONS:
         chia_dog.farmer_service.connections = []
         chia_dog.farmer_service.is_running = False
     finally:
