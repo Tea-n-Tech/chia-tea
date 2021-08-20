@@ -1,16 +1,12 @@
 name: Release Python Package
 
 on:
-  workflow_run:
-    workflows: ["Python Linting, Test and Upload"]
-    types:
-      - completed
   push:
     branches:
       - staging
       - "release/*"
     tags:
-      - "*.*.*"
+      - "**"
 
 defaults:
   run:
