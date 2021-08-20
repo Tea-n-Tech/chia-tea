@@ -69,6 +69,8 @@ async def update_from_farmer(chia_dog: ChiaWatchdog):
             farmer_client=farmer_client
         )
         chia_dog.farmer_service.is_running = True
+
+    # pylint: disable=catching-non-exception
     except API_EXCEPTIONS:
         chia_dog.farmer_service.connections = []
         chia_dog.farmer_service.is_running = False

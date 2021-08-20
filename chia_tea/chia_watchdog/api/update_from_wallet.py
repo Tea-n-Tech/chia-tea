@@ -37,6 +37,7 @@ async def update_from_wallet(chia_dog: ChiaWatchdog):
         chia_dog.wallet_service.is_running = True
         chia_dog.wallet_service.is_synced = await wallet_client.get_synced()
 
+    # pylint: disable=catching-non-exception
     except API_EXCEPTIONS:
         chia_dog.wallet_service.n_wallets = 0
         chia_dog.wallet_service.is_running = False

@@ -44,6 +44,7 @@ async def update_from_harvester(chia_dog: ChiaWatchdog):
 
         chia_dog.harvester_service.plot_directories = await harvester_client.get_plot_directories()
 
+    # pylint: disable=catching-non-exception
     except API_EXCEPTIONS:
         chia_dog.harvester_service.is_running = False
     finally:

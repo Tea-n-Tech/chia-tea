@@ -9,5 +9,5 @@ API_EXCEPTIONS = (
     RuntimeError,
     # Not running
     aiohttp.ClientConnectorError,
-    asyncio.exceptions.TimeoutError,
+    asyncio.TimeoutError,
 )

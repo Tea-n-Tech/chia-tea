@@ -59,6 +59,7 @@ class ChiaWatchdog:
         new_instance.date_last_reset = self.date_last_reset
         # not sure about this one but ok
         # pylint: disable=protected-access
+        # pylint: disable=unused-private-member
         new_instance.__logfile_watching_ready = self.__logfile_watching_ready
         new_instance.farmer_service = self.farmer_service.copy()
         new_instance.wallet_service = self.wallet_service.copy()
