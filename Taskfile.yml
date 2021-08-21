@@ -4,17 +4,17 @@ tasks:
   setup:
     desc: Install dependencies and dev-dependencies
     cmds:
-      - python3 -m pip install -r requirements-dev.txt
-      - python3 -m pip install -r requirements.txt
+      - poetry install --no-root
   generate:
     desc: Generates code from the protobuf definitions.
     cmds:
-      - python3 -m grpc.tools.protoc -I./protocol --python_out=. protocol/chia_tea/protobuf/generated/hardware.proto
-      - python3 -m grpc.tools.protoc -I./protocol --python_out=. protocol/chia_tea/protobuf/generated/chia.proto
-      - python3 -m grpc.tools.protoc -I./protocol --python_out=. protocol/chia_tea/protobuf/generated/computer_info.proto
-      - python3 -m grpc.tools.protoc -I./protocol --python_out=. protocol/chia_tea/protobuf/generated/machine_info.proto
-      - python3 -m grpc.tools.protoc -I./protocol --python_out=. protocol/chia_tea/protobuf/generated/config.proto
-      - python3 -m grpc.tools.protoc -I./protocol --python_out=. --grpc_python_out=. protocol/chia_tea/protobuf/generated/monitoring_service.proto
+      - poetry run python -m grpc.tools.protoc -I./protocol --python_out=. protocol/chia_tea/protobuf/generated/hardware.proto
+      - poetry run python -m grpc.tools.protoc -I./protocol --python_out=. protocol/chia_tea/protobuf/generated/hardware.proto
+      - poetry run python -m grpc.tools.protoc -I./protocol --python_out=. protocol/chia_tea/protobuf/generated/chia.proto
+      - poetry run python -m grpc.tools.protoc -I./protocol --python_out=. protocol/chia_tea/protobuf/generated/computer_info.proto
+      - poetry run python -m grpc.tools.protoc -I./protocol --python_out=. protocol/chia_tea/protobuf/generated/machine_info.proto
+      - poetry run python -m grpc.tools.protoc -I./protocol --python_out=. protocol/chia_tea/protobuf/generated/config.proto
+      - poetry run python -m grpc.tools.protoc -I./protocol --python_out=. --grpc_python_out=. protocol/chia_tea/protobuf/generated/monitoring_service.proto
 
   lint:
     desc: Lints the code and reports on issues.
@@ -26,22 +26,23 @@ tasks:
   build:
     desc: Builds the puthon package
     cmds:
-      - python3 setup.py bdist_wheel sdist
+      #- python3 setup.py bdist_wheel sdist
+      - poetry build # TODO CHECK
 
   test:
     desc: Runs the test suite.
     cmds:
-      - python3 -m pytest
+      - poetry run pytest
 
   copy:
     desc: Starts the copy cli tool.
     cmds:
-      - python3 -m chia_tea.copy_plots
+      - poetry run python -m chia_tea.copy_plots
 
   discord:
     desc: Starts the discord bot.
     cmds:
-      - python3 -m chia_tea.discord.bot
+      - poetry run python -m chia_tea.discord.bot
 
   clean:
     desc: Cleans up by deleting generated files including the database.
@@ -53,13 +54,13 @@ tasks:
     desc: Starts the monitoring main server collecting data from clients.
     deps: [generate]
     cmds:
-      - python3 -m chia_tea.monitoring.server
+      - poetry run python -m chia_tea.monitoring.server
 
   client:
     desc: Starts a monitoring client collecting data and sending it to the server.
     deps: [generate]
     cmds:
-      - python3 -m chia_tea.monitoring.client
+      - poetry run python -m chia_tea.monitoring.client
 
   certs:
     desc: Generates certificates for the monitoring
