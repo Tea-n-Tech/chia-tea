@@ -1,6 +1,8 @@
 # Chia Tea 🌱🍵
 
-Chia Tea is a tools and utility library for the Chia Cryptocurrency. We are building tools in this library to serve our own needs and share our work openly with others. Feel free to use them and make your life easier 💚
+Chia Tea is a tools and utility library for the Chia Cryptocurrency.
+We are building tools in this library to serve our own needs and share our work openly with others.
+Feel free to use them and make your life easier 💚
 
 # Table of Contents
 
@@ -44,7 +46,7 @@ The discord module is a bot watching a farm and reports major incidents. Interna
 
 ## About Us
 
-We are a small group of professional engineers and software developers doing Chia for fun. Join our discord server: https://discord.gg/azNjcVPYnY for questions, tips and tricks or just come over for a nice warm cup of your favourite tea. 
+We are a small group of professional engineers and software developers doing Chia for fun. Join our discord server: https://discord.gg/azNjcVPYnY for questions, tips and tricks or just come over for a nice warm cup of your favourite tea.
 
 <a name="security"></a>
 
