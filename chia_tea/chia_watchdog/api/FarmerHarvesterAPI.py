@@ -10,13 +10,14 @@ class FarmerHarvesterAPI:
         'creation_time': 1625781881.464225,
         'last_message_time': 1625856666.3932514,
         'local_port': 8447,
-        'node_id': b'1n\x0f\xc4J\xb5q8\xc4\x98\x0b\xe7\\\xac\xd1\x82u\xbd\xe4!\x00r\xe5\xf0f\xefqI\xf2\xee4\x15',
+        'node_id': b'1n\x0f\xc4J\xb5q8\xc4\x98\x0b\xe7\\\xac\xd1\x82...',
         'peer_host': '127.0.0.1',
         'peer_port': 51844,
         'peer_server_port': 8448,
         'type': 2
     }
     """
+    # pylint: disable=too-few-public-methods, too-many-instance-attributes
 
     bytes_read: int
     bytes_written: int
@@ -44,6 +45,7 @@ class FarmerHarvesterAPI:
         type: int,
         n_plots: int = 0,
     ):
+        # pylint: disable=redefined-builtin, too-many-arguments
         self.bytes_read = bytes_read
         self.bytes_written = bytes_written
         self.creation_time = creation_time
@@ -57,6 +59,13 @@ class FarmerHarvesterAPI:
         self.n_plots = n_plots
 
     def copy(self) -> 'FarmerHarvesterAPI':
+        """ Get a copy of the instance
+
+        Returns
+        -------
+        farmer_harvester : FarmerHarvesterAPI
+            copy of the instance
+        """
         return FarmerHarvesterAPI(
             **self.__dict__,
         )

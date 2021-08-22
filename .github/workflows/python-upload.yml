@@ -1,0 +1,97 @@
+name: Release Python Package
+
+on:
+  push:
+    branches:
+      - staging
+      - "main"
+    tags:
+      - "**"
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Cancel previous runs on the same branch
+        if: ${{ github.ref != 'refs/heads/main' }}
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
+
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Install Task
+        run: |
+          sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          ./bin/task setup
+
+      - name: Lint code
+        run: |
+          ./bin/task lint
+
+      - name: Test code
+        run: |
+          ./bin/task test
+
+      - name: Test code
+        run: |
+          ./bin/task test
+
+      - name: Build packages for release
+        run: |
+          ./bin/task build
+
+      - name: Save packages as artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist
+          path: dist
+          if-no-files-found: error
+
+      - name: Test for PyPi Test Secret
+        id: check_secrets
+        shell: bash
+        run: |
+          unset HAS_TEST_SECRET
+          if [ -n "$PYPI_TEST_TOKEN" ]; then HAS_TEST_SECRET='true' ; fi
+          echo ::set-output name=HAS_TEST_SECRET::${HAS_TEST_SECRET}
+
+          unset HAS_SECRET
+          if [ -n "$PYPI_TOKEN" ]; then HAS_SECRET='true' ; fi
+          echo ::set-output name=HAS_SECRET::${HAS_SECRET}
+        env:
+          PYPI_TEST_TOKEN: "${{ secrets.TEST_PYPI_API_TOKEN }}"
+          PYPI_TOKEN: "${{ secrets.PYPI_API_TOKEN }}"
+
+      - name: Publish package to Test-PyPi
+        # if: ${{ github.ref != 'refs/heads/staging' }}
+        if: steps.check_secrets.outputs.HAS_TEST_SECRET
+        env:
+          TWINE_REPOSITORY_URL: https://test.pypi.org/legacy/
+          TWINE_USERNAME: __token__
+          TWINE_NON_INTERACTIVE: 1
+          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        run: twine upload --non-interactive --skip-existing --verbose 'dist/*'
+
+      - name: Publish package to PyPi
+        # if: ${{ github.ref != 'refs/heads/main' }}
+        if: steps.check_secrets.outputs.HAS_SECRET && startsWith(github.event.ref, 'refs/tags')
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_NON_INTERACTIVE: 1
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: twine upload --non-interactive --skip-existing --verbose 'dist/*'

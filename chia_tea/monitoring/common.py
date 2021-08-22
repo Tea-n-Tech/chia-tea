@@ -4,7 +4,8 @@ from ..protobuf.generated.config_pb2 import ChiaTeaConfig
 
 def get_credentials_key(
         is_testing: bool,
-        config: ChiaTeaConfig) -> bytes:
+        config: ChiaTeaConfig,
+) -> bytes:
     """ Get the private key from the config
 
     Parameters
@@ -22,13 +23,13 @@ def get_credentials_key(
 
     if is_testing:
         return b""
-    else:
-        key_filepath = config.monitoring.auth.key_filepath
 
-        with open(key_filepath, 'r') as fp:
-            key = fp.read().encode('utf8')
+    key_filepath = config.monitoring.auth.key_filepath
 
-        return key
+    with open(key_filepath, 'r', encoding="utf8") as fp:
+        key = fp.read().encode('utf8')
+
+    return key
 
 
 def get_credentials_cert(
@@ -51,10 +52,10 @@ def get_credentials_cert(
 
     if is_testing:
         return b""
-    else:
-        cert_filepath = config.monitoring.auth.cert_filepath
 
-        with open(cert_filepath, 'r') as fp:
-            cert = fp.read().encode('utf8')
+    cert_filepath = config.monitoring.auth.cert_filepath
 
-        return cert
+    with open(cert_filepath, 'r', encoding="utf8") as fp:
+        cert = fp.read().encode('utf8')
+
+    return cert

@@ -13,7 +13,17 @@ from ...utils.logger import log_runtime_async
 async def collect_connected_harvesters_to_farmer(
     chia_dog: ChiaWatchdog
 ) -> List[HarvesterViewedFromFarmer]:
-    """
+    """ Converts harvester farmer data from watchdog to protobuf
+
+    Parameters
+    ----------
+    chia_dog : ChiaWatchdog
+        watchdog instance to get data from
+
+    Returns
+    -------
+    farmer_harvesters : List[HarvesterViewedFromFarmer]
+        harvester data reported by farmer in proto format
     """
 
     harvesters_rpc = {
@@ -27,14 +37,14 @@ async def collect_connected_harvesters_to_farmer(
         set(chia_dog.harvester_infos.keys())
 
     connected_harvesters = []
-    for id in all_harvester_ids:
+    for harvester_id in all_harvester_ids:
 
         kwargs: Dict[str, Any] = dict(
-            id=id,
+            id=harvester_id,
         )
 
         # get information from chia rpc
-        connected_harvester = harvesters_rpc.get(id)
+        connected_harvester = harvesters_rpc.get(harvester_id)
         if connected_harvester is not None:
             kwargs["connection_time"] = connected_harvester.creation_time
             kwargs["ip_address"] = connected_harvester.peer_host
@@ -49,7 +59,7 @@ async def collect_connected_harvesters_to_farmer(
             continue
 
         # get information written to logfile
-        harvester_info = harvesters_logfile.get(id)
+        harvester_info = harvesters_logfile.get(harvester_id)
         if harvester_info:
             # don't append harvester info if it is not connected
             # anymore

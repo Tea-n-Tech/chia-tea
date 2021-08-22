@@ -22,8 +22,8 @@ def ensure_chia_settings_file():
         os.makedirs(settings_dir, exist_ok=True)
 
     if not os.path.isfile(path_to_settings):
-        with open(path_to_settings, "w") as fp:
-            fp.write(json.dumps(SETTINGS_CACHE))
+        with open(path_to_settings, "w", encoding="utf8") as file_handle:
+            file_handle.write(json.dumps(SETTINGS_CACHE))
 
 
 def read_settings_file() -> Dict[str, str]:
@@ -31,14 +31,14 @@ def read_settings_file() -> Dict[str, str]:
     """
     ensure_chia_settings_file()
 
-    with open(path_to_settings, "r") as fp:
-        return json.loads(fp.read())
+    with open(path_to_settings, "r", encoding="utf8") as file_handle:
+        return json.loads(file_handle.read())
 
 
 def write_settings_file():
     """ Writes the settings File to disc
     """
-    with open(path_to_settings, "w") as settings_file:
+    with open(path_to_settings, "w", encoding="utf8") as settings_file:
         json.dump(SETTINGS_CACHE, settings_file)
 
 
@@ -46,6 +46,7 @@ def ensure_settings_are_loaded():
     """ Checks that the settings are loaded
     """
     if not SETTINGS_ARE_LOADED:
+        # pylint: disable=global-statement
         global SETTINGS_CACHE
         SETTINGS_CACHE = read_settings_file()
 

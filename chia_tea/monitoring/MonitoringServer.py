@@ -13,31 +13,45 @@ from ..protobuf.to_sqlite.sql_cmds import insert_machine_info_in_db
 from ..utils.logger import get_logger
 from .MonitoringDatabase import MonitoringDatabase
 
-LOG_MSG_RCV = "Received message from {address}: {message}"
-
 
 class MonitoringServer(MonitoringServicer):
+    """ This class contains the server receiving and storing
+    monitoring data from monitoring clients.
+    """
+
     db: MonitoringDatabase
 
     def __init__(self, db: MonitoringDatabase):
-        """
+        """ Constructor
+
+        Parameters
+        ----------
+        db : MonitoringDatabase
+            database to operate on
         """
         super().__init__()
         self.db = db
 
+    # pylint: disable=invalid-overridden-method
     async def GetMachineState(self, request, context):
+        """ Stub to get the latest state of a machine
+        """
         logger = get_logger(__name__)
 
-        logger.info(LOG_MSG_RCV.format(
+        msg = "Received message from {address}: {message}".format(
             address=context.peer(),
             message=MessageToDict(request),
-        ))
+        )
+        logger.info(msg)
 
         return self.db.get_machine_state(request.machine_id)
 
+    # pylint: disable=invalid-overridden-method
     async def SendMonitoringUpdate(self, request_iterator, context):
+        """ Stub to receive monitoring updates from clients
+        """
         logger = get_logger(__name__)
-        logger.info(f"Connected to {context.peer()}")
+        logger.info("Connected to %s", context.peer())
 
         # we endlessly process updates
         while True:
@@ -50,9 +64,7 @@ class MonitoringServer(MonitoringServicer):
                 if data_update_request == grpc.aio.EOF:
                     continue
 
-                logger.info("Received update from {address}".format(
-                    address=context.peer(),
-                ))
+                logger.info("Received update from %s", context.peer())
 
                 if not data_update_request.timestamp:
                     raise ValueError("DataUpdateRequest requires a timestamp.")

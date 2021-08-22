@@ -1,9 +1,8 @@
-from datetime import datetime, timedelta
-from typing import List, Union
-
-from ...utils.logger import get_logger
+from datetime import datetime
+from typing import Union
 
 
+# pylint: disable=too-many-instance-attributes
 class FarmerHarvesterLogfile:
     """Class with compact information about harvesters"""
 
@@ -15,8 +14,9 @@ class FarmerHarvesterLogfile:
     is_connected = False
 
     # Signage point tracking
-    time_of_incoming_messages: List[datetime]
-    time_of_outgoing_messages: List[datetime]
+    time_of_end_of_last_sgn_point: Union[datetime, None]
+    time_last_incoming_msg: Union[datetime, None]
+    time_last_outgoing_msg: Union[datetime, None]
 
     # Metrics
     n_responses = 0
@@ -31,8 +31,9 @@ class FarmerHarvesterLogfile:
         ip_address: str,
         is_connected: bool = False,
         last_update: datetime = datetime.now(),
-        time_of_incoming_messages: Union[List[datetime], None] = None,
-        time_of_outgoing_messages: Union[List[datetime], None] = None,
+        time_of_end_of_last_sgn_point: Union[datetime, None] = None,
+        time_last_incoming_msg: Union[datetime, None] = None,
+        time_last_outgoing_msg: Union[datetime, None] = None,
         timed_out: bool = False,
         n_responses: int = 0,
         n_overdue_responses: int = 0,
@@ -56,21 +57,18 @@ class FarmerHarvesterLogfile:
         time_of_timeout : Union[datetime, None]
             time of last timeout
         """
+        # pylint: disable=too-many-arguments
         self.harvester_id = harvester_id
         self.ip_address = ip_address
-        self.time_of_incoming_messages = (
-            [] if time_of_incoming_messages is None
-            else time_of_incoming_messages
-        )
-        self.time_of_outgoing_messages = (
-            [] if time_of_outgoing_messages is None
-            else time_of_outgoing_messages
-        )
         self.is_connected = is_connected
         self.last_update = last_update
+        self.time_of_end_of_last_sgn_point = time_of_end_of_last_sgn_point
+        self.time_last_incoming_msg = time_last_incoming_msg
+        self.time_last_outgoing_msg = time_last_outgoing_msg
         self.timed_out = timed_out
         self.n_responses = n_responses
         self.n_overdue_responses = n_overdue_responses
+        self.reset_times()
 
     def copy(self):
         """ Get a copy of the HarvesterInfo
@@ -84,71 +82,42 @@ class FarmerHarvesterLogfile:
             harvester_id=self.harvester_id,
             ip_address=self.ip_address,
             is_connected=self.is_connected,
-            n_overdue_responses=self.n_overdue_responses,
-            n_responses=self.n_responses,
             last_update=self.last_update,
-            time_of_incoming_messages=list(self.time_of_incoming_messages),
-            time_of_outgoing_messages=list(self.time_of_outgoing_messages),
+            time_of_end_of_last_sgn_point=self.time_of_end_of_last_sgn_point,
+            time_last_incoming_msg=self.time_last_incoming_msg,
+            time_last_outgoing_msg=self.time_last_outgoing_msg,
             timed_out=self.timed_out,
+            n_responses=self.n_responses,
+            n_overdue_responses=self.n_overdue_responses
         )
 
-    def get_response_duration(self) -> Union[timedelta, None]:
-        """Get the response duration"""
+    def check_for_timeout(self, current_time: datetime) -> None:
+        """ This functions checks if the harvester timed out from the view of a farmer
 
-        last_complete_index = self.__index_last_msg_pair
+        Parameters
+        ----------
+        current_time : datetime
+            current time to base computation on
 
-        if last_complete_index is not None:
+        Notes
+        -----
+            Modifies internal attributes so don't spam.
+        """
+        CHALLENGE_TIMEOUT = 25  # seconds
+        HARVESTER_TIMOUT = 60  # seconds
 
-            delta = self.time_of_incoming_messages[last_complete_index] - \
-                self.time_of_outgoing_messages[last_complete_index]
+        if not self.timed_out:
+            if self.time_last_incoming_msg is not None and self.time_last_outgoing_msg is not None:
+                delta_seconds = (
+                    current_time-self.time_last_incoming_msg).total_seconds()
+                if delta_seconds > CHALLENGE_TIMEOUT:
+                    self.n_overdue_responses += 1
+                if delta_seconds > HARVESTER_TIMOUT:
+                    self.timed_out = True
 
-            if delta.total_seconds() < 0:
-                get_logger(__file__).warn(
-                    "Times of in/out msgs reset b/c of negative timedelta on harvester {}".format(self.harvester_id))
-                get_logger(__file__).debug("Last incoming {}".format(
-                    self.time_of_incoming_messages[last_complete_index]))
-                get_logger(__file__).debug("Last outgoing {}".format(
-                    self.time_of_outgoing_messages[last_complete_index]))
-
-            return delta
-        else:
-            return None
-
-    def check_if_last_response_was_in_time(self) -> None:
-        """ Check if latest response time was in time and updates metrics"""
-        latestResponseTime = self.get_response_duration()
-        if (latestResponseTime is not None):
-            latestResponseTimeSeconds = latestResponseTime.total_seconds()
-            self.n_responses += 1
-            if(latestResponseTimeSeconds > 25):
-                self.n_overdue_responses += 1
-
-    @property
-    def __index_last_msg_pair(self) -> Union[int, None]:
-        """Index of last number msg pairs """
-        if (
-            self.time_of_incoming_messages
-            and self.time_of_outgoing_messages
-        ):
-            return min(len(self.time_of_incoming_messages),
-                       len(self.time_of_outgoing_messages))-1
-        return None
-
-    @property
-    def time_last_incoming_msg(self) -> Union[datetime, None]:
-        """Time when last message came in"""
-        if len(self.time_of_incoming_messages):
-            return self.time_of_incoming_messages[-1]
-        else:
-            return None
-
-    @property
-    def time_last_outgoing_msg(self) -> Union[datetime, None]:
-        """Time when last message to harvester was end"""
-        if len(self.time_of_outgoing_messages):
-            return self.time_of_outgoing_messages[-1]
-        else:
-            return None
-
-    def reset(self):
-        """Reset the instance by dropping the collected data"""
+    def reset_times(self):
+        """ Resets time of incoming, outgoing msgs and signage points
+        """
+        self.time_last_outgoing_msg = None
+        self.time_last_incoming_msg = None
+        self.time_of_end_of_last_sgn_point = None

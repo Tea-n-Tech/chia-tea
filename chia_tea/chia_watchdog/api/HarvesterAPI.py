@@ -4,6 +4,11 @@ from typing import Iterable, List
 
 
 class HarvesterAPI:
+    """ This class holds chia information fetched through RPC
+    from chia services on the same machine
+    """
+    # pylint: disable=too-few-public-methods
+
     # This helps us to check if an update happened
     is_ready: bool = False
 
@@ -31,6 +36,13 @@ class HarvesterAPI:
         self.not_found_filenames = []
 
     def copy(self) -> 'HarvesterAPI':
+        """ Get a copy of the instance
+
+        Returns
+        -------
+        harvester : HarvesterAPI
+            copy of the instance
+        """
         new_harvester = HarvesterAPI()
         new_harvester.is_running = self.is_running
         new_harvester.is_ready = self.is_ready

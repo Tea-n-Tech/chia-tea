@@ -1,12 +1,15 @@
 # Chia Tea 🌱🍵
 
-Chia Tea is a tools and utility library for the Chia Cryptocurrency. We are building tools in this library to serve our own needs and share our work openly with others. Feel free to use them and make your life easier 💚
+Chia Tea is a tools and utility library for the Chia Cryptocurrency.
+We are building tools in this library to serve our own needs and share our work openly with others.
+Feel free to use them and make your life easier 💚
 
 # Table of Contents
 
-- [Intro and FAQ](https://github.com/tnt-codie/chia-tea/blob/main/docs/faq.md)
-- [Quick-Start](https://github.com/tnt-codie/chia-tea/blob/main/docs/quick_start.md)
-- [Architecture Summary](https://github.com/tnt-codie/chia-tea/blob/develop/docs/architecture_summary.md)
+- [Intro and FAQ](docs/faq.md)
+- [Quick-Start](docs/quick_start.md)
+- [Architecture Summary](docs/architecture_summary.md)
+- [Structure of this repository](#structure-of-this-repository)
 - [Feature Overview](#feature-overview)
   - [Copy Tool](#copy-tool)
   - [Monitoring](#monitoring)
@@ -15,13 +18,17 @@ Chia Tea is a tools and utility library for the Chia Cryptocurrency. We are buil
 - [About Us](#about-us)
 - [✊ Support Us ✊](#support-us)
 
+## Structure of this repository
+
+![Chia-Tea Infrastructure](docs/Chia_Infrastructure.png?raw=true)
+
 ## Feature Overview
 
 ### Copy Tool
 
 Copy is a tool to copy your chia files to a different location. It can be faster to plot to a temporary storage space and then move the plots to your harvester afterwards to not block the plotting queue. We manage this process through our copy cli tool. It incorporates the following features:
 
-- Selects a drive from multiple specified
+- Selects a drive with sufficient space from multiple disks specified
 - Checks drive space regularly
 - Takes plots which are being copied already into account
 - Uses the drive with the fewest copy processes
@@ -39,7 +46,7 @@ The discord module is a bot watching a farm and reports major incidents. Interna
 
 ## About Us
 
-We are a small group of professional engineers and software developers doing Chia for fun. Join our discord server: https://discord.gg/azNjcVPYnY for questions, tips and tricks or just come over for a nice warm cup of your favourite tea. 
+We are a small group of professional engineers and software developers doing Chia for fun. Join our discord server: https://discord.gg/azNjcVPYnY for questions, tips and tricks or just come over for a nice warm cup of your favourite tea.
 
 <a name="security"></a>
 

@@ -7,7 +7,7 @@ from .logfile.FarmerHarvesterLogfile import FarmerHarvesterLogfile
 from .logfile.line_checks import ActionFarmedUnfinishedBlock
 
 
-class ChiaWatchdogTests(unittest.TestCase):
+class TestChiaWatchdog(unittest.TestCase):
 
     def test_nightly_reset(self):
 

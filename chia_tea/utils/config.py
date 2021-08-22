@@ -27,7 +27,7 @@ def create_default_config(filepath: str) -> ChiaTeaConfig:
         The config is being stored in the '.chia_tea'
         directory in the home folder.
     """
-    config_filepath = os.path.join(filepath, "config.yml")
+    config_filepath = os.path.join(filepath, "config.yml",)
     if not os.path.exists(config_filepath):
         config = get_default_config()
         save_config(config_filepath, get_default_config())
@@ -164,7 +164,7 @@ def read_config(filepath: str) -> ChiaTeaConfig:
     ValueError
         If config values are invalid
     """
-    with open(filepath, 'r') as stream:
+    with open(filepath, 'r', encoding="utf8") as stream:
         config_dict = yaml.safe_load(stream)
 
     config = ParseDict(
@@ -172,6 +172,7 @@ def read_config(filepath: str) -> ChiaTeaConfig:
         message=ChiaTeaConfig(),
     )
 
+    # pylint: disable=global-statement
     global __GLOBAL_CONFIG
     global __IS_LOADED
     __GLOBAL_CONFIG = config
@@ -202,8 +203,8 @@ def save_config(filepath: str, config: ChiaTeaConfig):
         config to save
     """
 
-    with open(filepath, "w")as fp:
-        fp.write(
+    with open(filepath, "w", encoding="utf8") as file_handle:
+        file_handle.write(
             yaml.dump(
                 MessageToDict(
                     message=config,
@@ -228,5 +229,4 @@ def get_config() -> ChiaTeaConfig:
     config : ChiaTeaConfig
         global config
     """
-    global __GLOBAL_CONFIG
     return __GLOBAL_CONFIG
