@@ -21,15 +21,14 @@ tasks:
   lint:
     desc: Lints the code and reports on issues.
     cmds:
-      - flake8 chia_tea --count --select=E9,F63,F7,F82 --show-source --statistics
-      - flake8 chia_tea --exclude ./chia_tea/protobuf/generated --count --max-complexity=10 --max-line-length=127
-      - pylint chia_tea --ignore=chia_tea/protobuf/generated
+      - poetry run flake8 chia_tea --count --select=E9,F63,F7,F82 --show-source --statistics
+      - poetry run flake8 chia_tea --exclude ./chia_tea/protobuf/generated --count --max-complexity=10 --max-line-length=127
+      - poetry run pylint chia_tea --ignore=chia_tea/protobuf/generated
 
   build:
     desc: Builds the puthon package
     cmds:
-      #- python3 setup.py bdist_wheel sdist
-      - poetry build # TODO CHECK
+      - poetry build
 
   test:
     desc: Runs the test suite.
