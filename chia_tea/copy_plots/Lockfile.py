@@ -14,7 +14,7 @@ class Lockfile:
 
     def __enter__(self):
         logging.info("Creating LogFile")
-        with open(self.path, "w") as fp:
+        with open(self.path, "w", encoding="utf8") as fp:
             try:
                 fp.write("copying")
             except Exception:

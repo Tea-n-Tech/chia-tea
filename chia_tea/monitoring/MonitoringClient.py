@@ -24,7 +24,7 @@ from ..utils.timing import wait_at_least
 ClientConfig = MonitoringConfig.ClientConfig
 
 
-def __load_machine_id() -> str:
+def load_machine_id() -> str:
     """ Loads id of the machine
 
     Returns
@@ -43,7 +43,7 @@ def __load_machine_id() -> str:
         default=uuid.getnode())
 
 
-def __get_collection_frequencies(config: ClientConfig) -> Dict[str, float]:
+def get_collection_frequencies(config: ClientConfig) -> Dict[str, float]:
     """ Get the collection frequencies for updates to the server
 
     Parameters
@@ -110,9 +110,9 @@ class MonitoringClient:
                  ):
         self.config = config
         self.credentials_cert = credentials_cert
-        self.machine_id = __load_machine_id()
+        self.machine_id = load_machine_id()
         self.chia_dog = chia_dog
-        self.collection_frequencies = __get_collection_frequencies(
+        self.collection_frequencies = get_collection_frequencies(
             config)
         self.last_time_sent = {}
         self.machine_name = machine_name
@@ -269,7 +269,7 @@ class MonitoringClient:
         logger.info("Starting to monitor system.")
 
         address = "{ip}:{port}".format(
-            ip=self.config.ip_address,
+            ip=self.config.address,
             port=self.config.port
         )
 
@@ -299,7 +299,7 @@ class MonitoringClient:
                     )
                     logger.debug(
                         "Received message %s",
-                        message=MessageToDict(last_known_state),
+                        MessageToDict(last_known_state),
                     )
 
                     # we can only send data once the watchdog

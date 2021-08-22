@@ -22,7 +22,7 @@ def ensure_chia_settings_file():
         os.makedirs(settings_dir, exist_ok=True)
 
     if not os.path.isfile(path_to_settings):
-        with open(path_to_settings, "w") as file_handle:
+        with open(path_to_settings, "w", encoding="utf8") as file_handle:
             file_handle.write(json.dumps(SETTINGS_CACHE))
 
 
@@ -31,14 +31,14 @@ def read_settings_file() -> Dict[str, str]:
     """
     ensure_chia_settings_file()
 
-    with open(path_to_settings, "r") as file_handle:
+    with open(path_to_settings, "r", encoding="utf8") as file_handle:
         return json.loads(file_handle.read())
 
 
 def write_settings_file():
     """ Writes the settings File to disc
     """
-    with open(path_to_settings, "w") as settings_file:
+    with open(path_to_settings, "w", encoding="utf8") as settings_file:
         json.dump(SETTINGS_CACHE, settings_file)
 
 

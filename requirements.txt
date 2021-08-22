@@ -1,9 +1,0 @@
-grpcio
-discord
-psutil
-pyyaml
-py-cpuinfo
-aiohttp==3.7.4
-chia-blockchain
-sortedcontainers==2.3.0
-concurrent-log-handler

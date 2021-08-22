@@ -1,0 +1,83 @@
+[tool.poetry]
+name = "chia-tea"
+version = "0.1.0"
+description = "A library dedicated to chia-blockchain farmer."
+authors = ["Tea n Tech"]
+license = "BSD-3"
+readme = "README.md"
+repository = "https://www.youtube.com/channel/UCba194Pls_bHSqWoWMGoyzA"
+classifiers=[
+              'Development Status :: 3 - Alpha',
+              'Environment :: Console',
+              'Topic :: Scientific/Engineering',
+              'Intended Audience :: Developers',
+              'Intended Audience :: Information Technology',
+              'Intended Audience :: System Administrators',
+              'License :: OSI Approved :: BSD License',
+              'Natural Language :: English',
+              'Operating System :: Microsoft :: Windows',
+              'Operating System :: POSIX',
+              'Programming Language :: PL/SQL',
+              'Topic :: Database',
+              'Topic :: Communications :: Chat',
+              'Topic :: System :: Monitoring',
+              'Programming Language :: Python :: 3.7',
+              'Programming Language :: Python :: 3.8',
+              'Programming Language :: Python :: 3.9',
+]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+pywin32 = {version="225", markers="sys_platform == 'win32'"}
+grpcio = "^1.39.0"
+discord = "^1.7.3"
+psutil = "^5.8.0"
+PyYAML = "^5.4.1"
+py-cpuinfo = "^8.0.0"
+aiohttp = "3.7.4"
+chia-blockchain = "^1.2.3"
+sortedcontainers = "2.3.0"
+concurrent-log-handler = "^0.9.19"
+
+[tool.poetry.dev-dependencies]
+grpcio-tools = "^1.39.0"
+pylint = "^2.10.1"
+pylint-protobuf = "^0.20.2"
+flake8 = "^3.9.2"
+pytest = "^6.2.4"
+twine = "^3.4.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pylint.master]
+# This plugin is important since it allows pylint
+# to work with protobuf.
+load-plugins="pylint_protobuf"
+
+[tool.pylint.message_control]
+disable=[
+    # Module docstrings are a bit too much
+    "missing-module-docstring",
+    # Some files use camel-case when a single
+    # class is contained. 
+    "invalid-name"
+]
+
+[tool.pylint.basic]
+# Test files and classes don't need linting
+no-docstring-rgx="^(_|test_|Test)"
+good-names=[
+    # database variable name
+    "db",
+    "_"
+]
+
+[tool.pylint.exceptions]
+overgeneral-exceptions=[
+    "BaseException",
+    # We allow catching this since it is used in a lot
+    # of places and services.
+    # "Exception"
+]
