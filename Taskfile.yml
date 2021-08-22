@@ -5,6 +5,7 @@ tasks:
     desc: Install dependencies and dev-dependencies
     cmds:
       - python3 -m pip install --user poetry
+      - poetry config virtualenvs.in-project true
       - poetry install --no-root
 
   generate:
