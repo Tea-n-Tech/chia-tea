@@ -4,7 +4,9 @@ tasks:
   setup:
     desc: Install dependencies and dev-dependencies
     cmds:
+      - python3 -m pip install --user poetry
       - poetry install --no-root
+
   generate:
     desc: Generates code from the protobuf definitions.
     cmds:
