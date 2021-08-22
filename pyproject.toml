@@ -50,3 +50,34 @@ twine = "^3.4.2"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pylint.master]
+# This plugin is important since it allows pylint
+# to work with protobuf.
+load-plugins="pylint_protobuf"
+
+[tool.pylint.message_control]
+disable=[
+    # Module docstrings are a bit too much
+    "missing-module-docstring",
+    # Some files use camel-case when a single
+    # class is contained. 
+    "invalid-name"
+]
+
+[tool.pylint.basic]
+# Test files and classes don't need linting
+no-docstring-rgx="^(_|test_|Test)"
+good-names=[
+    # database variable name
+    "db",
+    "_"
+]
+
+[tool.pylint.exceptions]
+overgeneral-exceptions=[
+    "BaseException",
+    # We allow catching this since it is used in a lot
+    # of places and services.
+    # "Exception"
+]
