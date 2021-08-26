@@ -2,13 +2,12 @@
 from datetime import datetime
 from typing import List
 
-from chia_tea.discord.notifications.common import get_machine_info_name
-from chia_tea.protobuf.generated.machine_info_pb2 import MachineInfo
-
 from ...protobuf.generated.chia_pb2 import (Harvester, HarvesterPlot,
                                             HarvesterViewedFromFarmer)
 from ...protobuf.generated.hardware_pb2 import Cpu, Disk, Ram
+from ...protobuf.generated.machine_info_pb2 import MachineInfo
 from ...utils.timing import format_timedelta_from_secs
+from ..common import get_machine_info_name
 
 
 def format_memory_size(n_bytes: float, suffix: str = 'B'):

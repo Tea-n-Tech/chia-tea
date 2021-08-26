@@ -2,7 +2,7 @@
 import sqlite3
 import traceback
 from contextlib import contextmanager
-from typing import Generator, List
+from typing import Generator
 
 from ..protobuf.generated.machine_info_pb2 import MachineInfo
 
@@ -19,7 +19,7 @@ async def catch_errors_as_message(function):
     async def wrapper(*args, **kwargs):
         try:
             return await function(*args, **kwargs)
-        except:
+        except Exception:
             trace = traceback.format_exc()
             return [trace]
     return wrapper

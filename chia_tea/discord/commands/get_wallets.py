@@ -1,8 +1,6 @@
 
 from typing import List
 
-from discord.ext.commands import Context
-
 from ...utils.config import get_config
 from ..common import (catch_errors_as_message, get_machine_info_name,
                       open_database_read_only)
@@ -11,13 +9,8 @@ from ..notifications.run_notifiers import \
 
 
 @catch_errors_as_message
-async def wallets_cmd(ctx: Context) -> List[str]:
+async def wallets_cmd() -> List[str]:
     """ Formats all wallets into a message
-
-    Parameters
-    ----------
-    ctx : Context
-        discord context
 
     Returns
     -------

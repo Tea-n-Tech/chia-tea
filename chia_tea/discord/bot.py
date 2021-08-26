@@ -1,4 +1,3 @@
-from chia_tea.discord.commands.get_wallets import wallets_cmd
 import os
 import sys
 import traceback
@@ -12,8 +11,8 @@ from ..protobuf.to_sqlite.sql_cmds import (get_cpu_for_machine_from_db,
 from ..utils.cli import parse_args
 from ..utils.config import get_config, read_config
 from ..utils.logger import get_logger
-from .notifications.common import (get_machine_info_name,
-                                   open_database_read_only)
+from .commands.get_wallets import wallets_cmd
+from .common import get_machine_info_name, open_database_read_only
 from .notifications.formatting import (cpu_pb2_as_markdown,
                                        farmer_harvester_pb2_as_markdown,
                                        harvester_pb2_as_markdown,
@@ -36,13 +35,14 @@ db_filepath = ""
 
 @bot.command(name="hi")
 async def bot_hi(ctx):
+    """ Says hi to the user """
     await ctx.send("Hi!")
 
 
 @bot.command(name="wallets")
 async def bot_wallets(ctx):
-
-    messages = await wallets_cmd(ctx)
+    """ Prints all wallets """
+    messages = await wallets_cmd()
 
     await log_and_send_msg_if_any(
         messages=messages,
@@ -54,7 +54,7 @@ async def bot_wallets(ctx):
 
 @bot.command(name="machines")
 async def bot_machines(ctx):
-
+    """ Prints all machines """
     with open_database_read_only(db_filepath) as cursor:
 
         # get all machine infos from the database
@@ -106,7 +106,7 @@ async def bot_machines(ctx):
 
 @bot.command(name="farmers")
 async def bot_farmers(ctx):
-
+    """ Prints all farmers """
     with open_database_read_only(db_filepath) as cursor:
 
         machine_and_computer_info_dict = get_current_computer_and_machine_infos_from_db(
@@ -145,7 +145,7 @@ async def bot_farmers(ctx):
 
 @bot.command(name="harvesters")
 async def bot_harvester(ctx):
-
+    """ Prints all harvesters """
     messages = []
 
     try:

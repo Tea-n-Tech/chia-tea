@@ -6,7 +6,7 @@ from typing import List
 from ...protobuf.generated.chia_pb2 import HarvesterViewedFromFarmer
 from ...protobuf.generated.computer_info_pb2 import ComputerInfo
 from ...protobuf.generated.machine_info_pb2 import MachineInfo
-from .common import get_machine_info_name
+from ..common import get_machine_info_name
 
 
 def notify_on_harvester_reward_found(
