@@ -1,5 +1,7 @@
+from chia_tea.discord.commands.get_wallets import wallets_cmd
 import os
 import sys
+import traceback
 from datetime import datetime
 
 from discord.ext import commands
@@ -10,7 +12,8 @@ from ..protobuf.to_sqlite.sql_cmds import (get_cpu_for_machine_from_db,
 from ..utils.cli import parse_args
 from ..utils.config import get_config, read_config
 from ..utils.logger import get_logger
-from .notifications.common import get_machine_info_name, open_database_read_only
+from .notifications.common import (get_machine_info_name,
+                                   open_database_read_only)
 from .notifications.formatting import (cpu_pb2_as_markdown,
                                        farmer_harvester_pb2_as_markdown,
                                        harvester_pb2_as_markdown,
@@ -32,42 +35,25 @@ db_filepath = ""
 
 
 @bot.command(name="hi")
-async def _bot_hi(ctx):
+async def bot_hi(ctx):
     await ctx.send("Hi!")
 
 
 @bot.command(name="wallets")
-async def _wallets(ctx):
+async def bot_wallets(ctx):
 
-    with open_database_read_only(db_filepath) as cursor:
-        machine_and_computer_info_dict = get_current_computer_and_machine_infos_from_db(
-            cursor
-        )
-        messages = []
+    messages = await wallets_cmd(ctx)
 
-        for _, (machine, computer_info) in machine_and_computer_info_dict.items():
-            wallet = computer_info.wallet
-            if wallet.is_running:
-                icon = "🟢" if wallet.is_synced else "🟠"
-                not_msg = "" if wallet.is_synced else "not "
-                messages.append(
-                    f"\nWallet 👛 *{get_machine_info_name(machine)}*")
-                messages.append(f"   {icon} {not_msg}synchronized")
-
-        # Heading in case there is anything to report
-        if not messages:
-            messages.append("No wallets 👛 found.")
-
-        await log_and_send_msg_if_any(
-            messages=messages,
-            logger=get_logger(__file__),
-            channel=ctx.channel,
-            is_testing=get_config().development.testing,
-        )
+    await log_and_send_msg_if_any(
+        messages=messages,
+        logger=get_logger(__file__),
+        channel=ctx.channel,
+        is_testing=get_config().development.testing,
+    )
 
 
 @bot.command(name="machines")
-async def _bot_machines(ctx):
+async def bot_machines(ctx):
 
     with open_database_read_only(db_filepath) as cursor:
 
@@ -119,7 +105,7 @@ async def _bot_machines(ctx):
 
 
 @bot.command(name="farmers")
-async def _farmer(ctx):
+async def bot_farmers(ctx):
 
     with open_database_read_only(db_filepath) as cursor:
 
@@ -158,31 +144,36 @@ async def _farmer(ctx):
 
 
 @bot.command(name="harvesters")
-async def _harvester(ctx):
+async def bot_harvester(ctx):
 
-    with open_database_read_only(db_filepath) as cursor:
+    messages = []
 
-        machine_and_computer_info_dict = get_current_computer_and_machine_infos_from_db(
-            cursor
-        )
+    try:
+        with open_database_read_only(db_filepath) as cursor:
 
-        messages = []
-
-        for _, (machine, computer_info) in machine_and_computer_info_dict.items():
-            messages.append(
-                harvester_pb2_as_markdown(
-                    machine,
-                    computer_info.harvester,
-                    computer_info.plots,
-                    computer_info.disks,
-                )
+            machine_and_computer_info_dict = get_current_computer_and_machine_infos_from_db(
+                cursor
             )
 
-        if messages:
-            messages.insert(0, "**Harvesters:**")
-        else:
-            messages.append("No Harvesters 🚜 around.")
+            for _, (machine, computer_info) in machine_and_computer_info_dict.items():
+                messages.append(
+                    harvester_pb2_as_markdown(
+                        machine,
+                        computer_info.harvester,
+                        computer_info.plots,
+                        computer_info.disks,
+                    )
+                )
 
+            if messages:
+                messages.insert(0, "**Harvesters:**")
+            else:
+                messages.append("No Harvesters 🚜 around.")
+
+    except Exception:
+        trace = traceback.format_exc()
+        messages.append(trace)
+    finally:
         await log_and_send_msg_if_any(
             messages=messages,
             logger=get_logger(__file__),
