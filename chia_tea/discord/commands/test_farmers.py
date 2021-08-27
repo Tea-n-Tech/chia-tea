@@ -20,7 +20,7 @@ class TestFarmersCmd(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             db_filepath = os.path.join(tmpdir, "temp.db")
 
-            with MonitoringDatabase(db_filepath) as db:
+            with MonitoringDatabase(db_filepath):
                 messages = await farmers_cmd(db_filepath)
 
                 self.assertEqual(len(messages), 1)

@@ -2,7 +2,7 @@
 import sqlite3
 import traceback
 from contextlib import contextmanager
-from typing import Any, Coroutine, Generator, List
+from typing import Generator, List
 
 
 def catch_errors_as_message(function):
