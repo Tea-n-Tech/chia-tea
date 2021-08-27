@@ -1,25 +1,16 @@
 import os
 import sys
-import traceback
-from datetime import datetime
 
 from discord.ext import commands
 
-from ..protobuf.to_sqlite.sql_cmds import (get_cpu_for_machine_from_db,
-                                           get_machine_infos_from_db,
-                                           get_ram_for_machine_from_db)
 from ..utils.cli import parse_args
 from ..utils.config import get_config, read_config
 from ..utils.logger import get_logger
-from .commands.get_wallets import wallets_cmd
-from .common import get_machine_info_name, open_database_read_only
-from .notifications.formatting import (cpu_pb2_as_markdown,
-                                       farmer_harvester_pb2_as_markdown,
-                                       harvester_pb2_as_markdown,
-                                       ram_pb2_as_markdown)
-from .notifications.run_notifiers import (
-    get_current_computer_and_machine_infos_from_db, log_and_send_msg_if_any,
-    run_notifiers)
+from .commands.farmers import farmers_cmd
+from .commands.harvesters import harvesters_cmd
+from .commands.machines import machines_cmd
+from .commands.wallets import wallets_cmd
+from .notifications.run_notifiers import log_and_send_msg_if_any, run_notifiers
 
 # setup log handler
 module_name = os.path.splitext(os.path.basename(__file__))[0]
@@ -30,7 +21,6 @@ module_name = os.path.splitext(os.path.basename(__file__))[0]
 
 bot = commands.Bot(command_prefix="$")
 channel_id = ""
-db_filepath = ""
 
 
 @bot.command(name="hi")
@@ -42,7 +32,9 @@ async def bot_hi(ctx):
 @bot.command(name="wallets")
 async def bot_wallets(ctx):
     """ Prints all wallets """
-    messages = await wallets_cmd()
+    db_filepath = get_config().monitoring.server.db_filepath
+
+    messages = await wallets_cmd(db_filepath)
 
     await log_and_send_msg_if_any(
         messages=messages,
@@ -55,131 +47,46 @@ async def bot_wallets(ctx):
 @bot.command(name="machines")
 async def bot_machines(ctx):
     """ Prints all machines """
-    with open_database_read_only(db_filepath) as cursor:
+    db_filepath = get_config().monitoring.server.db_filepath
 
-        # get all machine infos from the database
-        machine_infos, _ = get_machine_infos_from_db(cursor)
+    messages = await machines_cmd(db_filepath)
 
-        # convert the infos into messages
-        messages = []
-        for machine_info in machine_infos:
-            seconds_since_last_contact = (
-                datetime.now() - datetime.fromtimestamp(machine_info.time_last_msg)).total_seconds()
-            is_connected = seconds_since_last_contact < 60
-            icon = "🟢" if is_connected else "🟠"
-
-            cpus, _ = get_cpu_for_machine_from_db(
-                cursor,
-                machine_info.machine_id,
-            )
-            cpu_msgs = [
-                cpu_pb2_as_markdown(cpu)
-                for cpu in cpus
-            ]
-
-            rams, _ = get_ram_for_machine_from_db(
-                cursor,
-                machine_info.machine_id,
-            )
-            ram_msgs = [
-                ram_pb2_as_markdown(ram) for ram in rams
-            ]
-
-            machine_name = get_machine_info_name(machine_info)
-            messages += [
-                f"{icon} {machine_name} responded {seconds_since_last_contact:.1f} seconds ago",
-            ] + cpu_msgs + ram_msgs
-
-        # Heading in case there is anything to report
-        if messages:
-            messages.insert(0, "**Machines being Monitored 🧐:**")
-        else:
-            messages.append("No machines being monitored 😴")
-
-        await log_and_send_msg_if_any(
-            messages=messages,
-            logger=get_logger(__file__),
-            channel=ctx.channel,
-            is_testing=get_config().development.testing,
-        )
+    await log_and_send_msg_if_any(
+        messages=messages,
+        logger=get_logger(__file__),
+        channel=ctx.channel,
+        is_testing=get_config().development.testing,
+    )
 
 
 @bot.command(name="farmers")
 async def bot_farmers(ctx):
     """ Prints all farmers """
-    with open_database_read_only(db_filepath) as cursor:
+    db_filepath = get_config().monitoring.server.db_filepath
 
-        machine_and_computer_info_dict = get_current_computer_and_machine_infos_from_db(
-            cursor
-        )
+    messages = await farmers_cmd(db_filepath)
 
-        messages = []
-
-        for _, (machine, computer_info) in machine_and_computer_info_dict.items():
-            farmer_is_running = computer_info.farmer.is_running
-
-            # a farmer is running, create a message
-            if farmer_is_running:
-                messages += [
-                    f"\n🧑‍🌾 *{get_machine_info_name(machine)}*:"
-                ]
-
-                # list up connected harvesters
-                messages = [
-                    farmer_harvester_pb2_as_markdown(harvester)
-                    for harvester in computer_info.farmer_harvesters
-                ]
-
-        if messages:
-            messages.insert(0, "**Farmers:**")
-        else:
-            messages.append("No farmers 🧑‍🌾 around.")
-
-        await log_and_send_msg_if_any(
-            messages=messages,
-            logger=get_logger(__file__),
-            channel=ctx.channel,
-            is_testing=get_config().development.testing,
-        )
+    await log_and_send_msg_if_any(
+        messages=messages,
+        logger=get_logger(__file__),
+        channel=ctx.channel,
+        is_testing=get_config().development.testing,
+    )
 
 
 @bot.command(name="harvesters")
 async def bot_harvester(ctx):
     """ Prints all harvesters """
-    messages = []
+    db_filepath = get_config().monitoring.server.db_filepath
 
-    try:
-        with open_database_read_only(db_filepath) as cursor:
+    messages = await harvesters_cmd(db_filepath)
 
-            machine_and_computer_info_dict = get_current_computer_and_machine_infos_from_db(
-                cursor
-            )
-
-            for _, (machine, computer_info) in machine_and_computer_info_dict.items():
-                messages.append(
-                    harvester_pb2_as_markdown(
-                        machine,
-                        computer_info.harvester,
-                        computer_info.plots,
-                        computer_info.disks,
-                    )
-                )
-
-            if messages:
-                messages.insert(0, "**Harvesters:**")
-            else:
-                messages.append("No Harvesters 🚜 around.")
-
-    except Exception:
-        trace = traceback.format_exc()
-        messages.append(trace)
-    finally:
-        await log_and_send_msg_if_any(
-            messages=messages,
-            logger=get_logger(__file__),
-            channel=ctx.channel,
-            is_testing=get_config().development.testing,
-        )
+    await log_and_send_msg_if_any(
+        messages=messages,
+        logger=get_logger(__file__),
+        channel=ctx.channel,
+        is_testing=get_config().development.testing,
+    )
 
 
 def get_discord_channel_id() -> int:
@@ -214,6 +121,8 @@ def get_discord_channel_id() -> int:
 async def on_ready():
     """ Function run when the bot is ready
     """
+    db_filepath = get_config().monitoring.server.db_filepath
+
     get_logger(module_name).info("Bot started.")
 
     # get discord channel
@@ -245,9 +154,6 @@ def main():
     # pylint: disable=global-statement
     global channel_id
     channel_id = get_discord_channel_id()
-
-    global db_filepath
-    db_filepath = config.monitoring.server.db_filepath
 
     # initiate bot and event loop
     # create_task must come first!!!!

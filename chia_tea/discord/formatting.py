@@ -2,12 +2,11 @@
 from datetime import datetime
 from typing import List
 
-from ...protobuf.generated.chia_pb2 import (Harvester, HarvesterPlot,
-                                            HarvesterViewedFromFarmer)
-from ...protobuf.generated.hardware_pb2 import Cpu, Disk, Ram
-from ...protobuf.generated.machine_info_pb2 import MachineInfo
-from ...utils.timing import format_timedelta_from_secs
-from ..common import get_machine_info_name
+from ..protobuf.generated.chia_pb2 import (Harvester, HarvesterPlot,
+                                           HarvesterViewedFromFarmer)
+from ..protobuf.generated.hardware_pb2 import Cpu, Disk, Ram
+from ..protobuf.generated.machine_info_pb2 import MachineInfo
+from ..utils.timing import format_timedelta_from_secs
 
 
 def format_memory_size(n_bytes: float, suffix: str = 'B'):
@@ -183,11 +182,31 @@ def harvester_pb2_as_markdown(
      🌾 plots: {n_plots}
      🌾 size of plots: {total_size}
      💽 disks:
-{disk_msgs}
-     """.format(
+{disk_msgs}""".format(
         machine=get_machine_info_name(machine),
         n_plots=len(plots),
         n_proofs=harvester.n_proofs,
         total_size=format_memory_size(total_size),
         disk_msgs="\n".join(disk_msgs)
+    )
+
+
+def get_machine_info_name(machine: MachineInfo) -> str:
+    """ Get a nicely formatted name for a machine info
+
+    Parameters
+    ----------
+    machine : MachineInfo
+        machine info to get a name of
+
+    Returns
+    -------
+    name : str
+        nicely formatted name of the machine info
+    """
+
+    return "{name} {id} ({ip})".format(
+        name=f"{machine.name} -" if machine.name else "",
+        id=str(machine.machine_id)[:10],
+        ip=machine.ip_address,
     )
