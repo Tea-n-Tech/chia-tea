@@ -46,7 +46,7 @@ The discord module is a bot watching a farm and reports major incidents. Interna
 
 ## About Us
 
-We are a small group of professional engineers and software developers doing Chia for fun. Join our discord server: https://discord.gg/azNjcVPYnY for questions, tips and tricks or just come over for a nice warm cup of your favourite tea.
+We are a small group of professional engineers and software developers doing Chia for fun. Join our [Discord Server](https://discord.gg/kUS8AQEzsC) for questions, tips and tricks or just come over for a nice warm cup of your favourite tea.
 
 <a name="security"></a>
 
