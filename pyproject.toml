@@ -62,7 +62,13 @@ disable=[
     "missing-module-docstring",
     # Some files use camel-case when a single
     # class is contained. 
-    "invalid-name"
+    "invalid-name",
+    # It was triggered sometimes for imports
+    # and sometimes for repeating patterns such
+    # as discord commands. Thus not very useful
+    # since some code simply repeats, especially
+    # in a modular code such as this one.
+    "duplicate-code"
 ]
 
 [tool.pylint.basic]

@@ -14,7 +14,7 @@ from ...protobuf.to_sqlite.sql_cmds import (get_computer_info_from_db,
                                             get_machine_infos_from_db,
                                             get_update_events_from_db)
 from ...utils.logger import get_logger
-from .common import open_database_read_only
+from ..common import open_database_read_only
 from .computer_info_notifications import get_computer_info_messages_if_any
 from .update_event_notifications import get_update_event_messages_if_any
 

@@ -1,9 +1,26 @@
 
 import sqlite3
+import traceback
 from contextlib import contextmanager
-from typing import Generator
+from typing import Generator, List
 
-from ...protobuf.generated.machine_info_pb2 import MachineInfo
+
+def catch_errors_as_message(function):
+    """ Catches errors as a list of messages
+
+    Parameters
+    ----------
+    function : Coroutine[Any, Any, List[str]]
+        Function to wrap. In case of an error
+        the message is returned.
+    """
+    async def wrapper(*args, **kwargs) -> List[str]:
+        try:
+            return await function(*args, **kwargs)
+        except Exception:
+            trace = traceback.format_exc()
+            return [trace]
+    return wrapper
 
 
 @contextmanager
@@ -34,24 +51,3 @@ def open_database_read_only(
     finally:
         connection.commit()
         connection.close()
-
-
-def get_machine_info_name(machine: MachineInfo) -> str:
-    """ Get a nicely formatted name for a machine info
-
-    Parameters
-    ----------
-    machine : MachineInfo
-        machine info to get a name of
-
-    Returns
-    -------
-    name : str
-        nicely formatted name of the machine info
-    """
-
-    return "{name} {id} ({ip})".format(
-        name=f"{machine.name} -" if machine.name else "",
-        id=str(machine.machine_id)[:10],
-        ip=machine.ip_address,
-    )

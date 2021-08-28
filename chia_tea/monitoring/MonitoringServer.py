@@ -6,10 +6,8 @@ from typing import Union
 import grpc
 from google.protobuf.json_format import MessageToDict
 
-from ..protobuf.generated.machine_info_pb2 import MachineInfo
 from ..protobuf.generated.monitoring_service_pb2 import DataUpdateRequest
 from ..protobuf.generated.monitoring_service_pb2_grpc import MonitoringServicer
-from ..protobuf.to_sqlite.sql_cmds import insert_machine_info_in_db
 from ..utils.logger import get_logger
 from .MonitoringDatabase import MonitoringDatabase
 
@@ -73,20 +71,10 @@ class MonitoringServer(MonitoringServicer):
                     raise ValueError(
                         "DataUpdateRequest requires a machine id.")
 
-                # store info that the db was updated
-                insert_machine_info_in_db(
-                    self.db.cursor,
-                    MachineInfo(
-                        machine_id=data_update_request.machine_id,
-                        name=data_update_request.machine_name,
-                        ip_address=context.peer(),
-                        time_last_msg=data_update_request.timestamp,
-                    ),
-                    {},
-                )
-
                 # store in database
-                self.db.store_data_update_request(data_update_request)
+                self.db.store_data_update_request(
+                    data_update_request=data_update_request,
+                    ip_address=context.peer())
 
             except asyncio.TimeoutError:
                 # try again
