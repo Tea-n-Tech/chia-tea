@@ -98,10 +98,16 @@ async def collect_disk_info() -> List[Disk]:
     """
     disk_info_list = []
 
+    drives_to_skip = [
+        "/dev/loop",
+        "/boot",
+        "/etc",
+        "/snap",
+    ]
+
     disk_partitions = psutil.disk_partitions()
     for partition in disk_partitions:
-        if (partition.device.startswith("/dev/loop") or
-                partition.mountpoint.startswith("/boot")):
+        if any(partition.mountpoint.startswith(drive_name) for drive_name in drives_to_skip):
             continue
 
         disk_usage = psutil.disk_usage(partition.mountpoint)

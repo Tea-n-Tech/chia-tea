@@ -143,7 +143,8 @@ def disk_pb2_as_markdown(disk: Disk) -> str:
         usage_percent = disk.used_space / disk.total_space * 100
     except ZeroDivisionError:
         pass
-    return f"        {usage_percent:3.1f}% {disk.id}"
+    free_memory_as_str = format_memory_size(disk.total_space - disk.used_space)
+    return f"        {usage_percent:3.1f}% {disk.id} ({free_memory_as_str} free)"
 
 
 def harvester_pb2_as_markdown(

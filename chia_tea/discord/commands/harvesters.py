@@ -30,14 +30,15 @@ async def harvesters_cmd(db_filepath: str) -> List[str]:
         )
 
         for _, (machine, computer_info) in machine_and_computer_info_dict.items():
-            messages.append(
-                harvester_pb2_as_markdown(
-                    machine,
-                    computer_info.harvester,
-                    computer_info.plots,
-                    computer_info.disks,
+            if computer_info.harvester.is_running:
+                messages.append(
+                    harvester_pb2_as_markdown(
+                        machine,
+                        computer_info.harvester,
+                        computer_info.harvester_plots,
+                        computer_info.disks,
+                    )
                 )
-            )
 
         if messages:
             messages.insert(0, "**Harvesters:**")

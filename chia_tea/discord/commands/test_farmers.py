@@ -27,6 +27,35 @@ class TestFarmersCmd(unittest.TestCase):
                 self.assertTrue(messages[0].startswith("No farmers"))
 
     @async_test
+    async def test_not_running_farmers_not_displayed(self) -> None:
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_filepath = os.path.join(tmpdir, "tmp.db")
+
+            with MonitoringDatabase(db_filepath) as db:
+                update_event = ParseDict(
+                    js_dict=dict(
+                        event_type=ADD,
+                        farmer=dict(
+                            is_running=False,
+                        )
+                    ),
+                    message=UpdateEvent()
+                )
+                request = DataUpdateRequest(
+                    machine_id=2,
+                    machine_name="machine B",
+                    timestamp=1000,
+                    events=[update_event],
+                )
+                db.store_data_update_request(request)
+
+                messages = await farmers_cmd(db_filepath)
+
+                self.assertEqual(len(messages), 1)
+                self.assertTrue(messages[0].startswith("No farmers"))
+
+    @async_test
     async def test_farmers_in_db_case(self) -> None:
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -64,24 +93,6 @@ class TestFarmersCmd(unittest.TestCase):
                     machine_name="machine A",
                     timestamp=1000,
                     events=update_events,
-                )
-                db.store_data_update_request(request)
-
-                # machine B has no running farmer
-                update_event = ParseDict(
-                    js_dict=dict(
-                        event_type=ADD,
-                        farmer=dict(
-                            is_running=False,
-                        )
-                    ),
-                    message=UpdateEvent()
-                )
-                request = DataUpdateRequest(
-                    machine_id=2,
-                    machine_name="machine B",
-                    timestamp=1000,
-                    events=[update_event],
                 )
                 db.store_data_update_request(request)
 
