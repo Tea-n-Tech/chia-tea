@@ -81,20 +81,6 @@ class ChiaWatchdog:
         """ When we scanned the entire logfile once and caught up set this """
         self.__logfile_watching_ready = True
 
-    def is_reset_time(self) -> bool:
-        """ If it is already midnight we need to reset to prevent data overflow """
-        date_right_now = date.today()
-        if (date_right_now - self.date_last_reset).total_seconds():
-            return True
-        return False
-
-    def reset_data(self):
-        """ Reset the watchdogs data """
-        get_logger(__name__).debug("Resetting harvester data.")
-        self.harvester_infos = {}
-        self.date_last_reset = date.today()
-        self.farmed_blocks = []
-
     def get_or_create_harvester_info(
         self,
         harvester_id: str,

@@ -9,41 +9,6 @@ from .logfile.line_checks import ActionFarmedUnfinishedBlock
 
 class TestChiaWatchdog(unittest.TestCase):
 
-    def test_nightly_reset(self):
-
-        watchdog = ChiaWatchdog("")
-
-        # add a random harvester
-        harvester_info = FarmerHarvesterLogfile(
-            harvester_id="my_id",
-            ip_address="127.0.0.1",
-            is_connected=True,
-            last_update=datetime.now()
-        )
-        watchdog.harvester_infos = {
-            harvester_info.harvester_id: harvester_info
-        }
-
-        # set yesterday as date
-        today = date.today()
-        yesterday = today - timedelta(days=1)
-        watchdog.date_last_reset = yesterday
-
-        # test if reset is correctly detected
-        self.assertTrue(watchdog.is_reset_time())
-
-        # test if data is resettet
-        watchdog.reset_data()
-        self.assertDictEqual(watchdog.harvester_infos, {})
-
-        # check if reset is not executed anymore
-        should_be = {
-            harvester_info.harvester_id: harvester_info
-        }
-        watchdog.harvester_infos = should_be
-        self.assertFalse(watchdog.is_reset_time())
-        self.assertDictEqual(watchdog.harvester_infos, should_be)
-
     def test_reward_found(self):
         action1 = ActionFarmedUnfinishedBlock()
         node_id = "65322a31ad01f3aa3fc04f3e43231d35c3a1ddd4"
