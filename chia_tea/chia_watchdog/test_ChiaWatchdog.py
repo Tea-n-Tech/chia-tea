@@ -1,6 +1,6 @@
 
 import unittest
-from datetime import date, datetime, timedelta
+from datetime import datetime
 
 from .ChiaWatchdog import ChiaWatchdog
 from .logfile.FarmerHarvesterLogfile import FarmerHarvesterLogfile
