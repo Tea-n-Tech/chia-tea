@@ -279,9 +279,6 @@ async def run_line_checks(chia_dog: ChiaWatchdog, line: str):
         logfile line
     """
     try:
-        if chia_dog.is_reset_time():
-            chia_dog.reset_data()
-
         if line:
             for action in ALL_LINE_ACTIONS:
                 if action.is_match(line):
