@@ -29,7 +29,7 @@ async def sql_cmd(db_filepath: str, cmds: Iterable[str]) -> List[str]:
     messages = []
 
     cmd = " ".join(cmds)
-    table = Table(title=cmd)
+    table = Table()
 
     with open_database_read_only(db_filepath) as cursor:
         sql_cursor: sqlite3.Cursor = cursor
