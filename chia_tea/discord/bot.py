@@ -1,3 +1,4 @@
+from chia_tea.discord.commands.sql import sql_cmd
 import os
 import sys
 
@@ -80,6 +81,21 @@ async def bot_harvester(ctx):
     db_filepath = get_config().monitoring.server.db_filepath
 
     messages = await harvesters_cmd(db_filepath)
+
+    await log_and_send_msg_if_any(
+        messages=messages,
+        logger=get_logger(__file__),
+        channel=ctx.channel,
+        is_testing=get_config().development.testing,
+    )
+
+
+@bot.command(name="sql")
+async def bot_sql(ctx, *cmds):
+    """ Let's the user execute arbitrary sql statements """
+    db_filepath = get_config().monitoring.server.db_filepath
+
+    messages = await sql_cmd(db_filepath, cmds)
 
     await log_and_send_msg_if_any(
         messages=messages,
