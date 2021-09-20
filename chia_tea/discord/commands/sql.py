@@ -36,7 +36,9 @@ async def sql_cmd(db_filepath: str, cmds: Iterable[str]) -> List[str]:
 
         sql_cursor.execute(cmd)
         rows = sql_cursor.fetchall()
-        n_rows = len(rows)
+        row_limit = 5
+        n_rows = min(len(rows), row_limit)
+        has_too_many_rows = len(rows) > row_limit
 
         # this contains the names but if nothing is
         # found this is none
@@ -51,18 +53,17 @@ async def sql_cmd(db_filepath: str, cmds: Iterable[str]) -> List[str]:
         for name in entry_names:
             table.add_column(name)
 
-        has_inserted_buffer_line = False
         for i_row, row in enumerate(rows):
-            if i_row < 4 or i_row > n_rows - 5:
-                table.add_row(*tuple(str(value) for value in row))
-            elif not has_inserted_buffer_line:
-                buffer_data = tuple("⋮" for _ in row)
-                table.add_row(*buffer_data)
-                has_inserted_buffer_line = True
+            if i_row > n_rows:
+                break
+            table.add_row(*tuple(str(value) for value in row))
         console.print(table)
         messages.append("```")
         messages.append(console.file.getvalue())
         messages.append("```")
+        if has_too_many_rows:
+            messages.append(
+                f"⚠️ Displaying only {row_limit} of {len(rows)} entries.")
 
     if not messages:
         messages.append("😐 No entries found ")
