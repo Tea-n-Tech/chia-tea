@@ -1,4 +1,3 @@
-from chia_tea.discord.commands.sql import sql_cmd
 import os
 import sys
 
@@ -10,6 +9,7 @@ from ..utils.logger import get_logger
 from .commands.farmers import farmers_cmd
 from .commands.harvesters import harvesters_cmd
 from .commands.machines import machines_cmd
+from .commands.sql import sql_cmd
 from .commands.wallets import wallets_cmd
 from .notifications.run_notifiers import log_and_send_msg_if_any, run_notifiers
 

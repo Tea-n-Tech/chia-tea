@@ -9,6 +9,54 @@ from rich.table import Table
 from ..common import catch_errors_as_message, open_database_read_only
 
 
+ROW_LIMIT = 5
+
+
+async def format_sql_rows(rows: list, names: Iterable[str]) -> List[str]:
+    """ Format the sql rows as a table
+
+    Parameters
+    ----------
+    rows : list
+        row values as list
+    names : Iterable[str]
+        names of the columns
+
+    Returns
+    -------
+    messages : List[str]
+        list of messages to print
+    """
+    messages = []
+
+    table = Table()
+
+    n_rows = min(len(rows), ROW_LIMIT)
+
+    # format table
+    console = Console(file=StringIO())
+    # column names
+    for name in names:
+        table.add_column(name)
+    # row values
+    for i_row, row in enumerate(rows):
+        if i_row > n_rows:
+            break
+        table.add_row(*tuple(str(value) for value in row))
+    console.print(table)
+
+    messages.append("```")
+    # pylint: disable=no-member
+    messages.append(console.file.getvalue())
+    messages.append("```")
+
+    if len(rows) > ROW_LIMIT:
+        messages.append(
+            f"⚠️ Displaying only {ROW_LIMIT} of {len(rows)} entries.")
+
+    return messages
+
+
 @catch_errors_as_message
 async def sql_cmd(db_filepath: str, cmds: Iterable[str]) -> List[str]:
     """ Execute an sql command and return the results as text
@@ -29,41 +77,22 @@ async def sql_cmd(db_filepath: str, cmds: Iterable[str]) -> List[str]:
     messages = []
 
     cmd = " ".join(cmds)
-    table = Table()
 
     with open_database_read_only(db_filepath) as cursor:
         sql_cursor: sqlite3.Cursor = cursor
 
         sql_cursor.execute(cmd)
         rows = sql_cursor.fetchall()
-        row_limit = 5
-        n_rows = min(len(rows), row_limit)
-        has_too_many_rows = len(rows) > row_limit
 
         # this contains the names but if nothing is
         # found this is none
-        description = cursor.description or tuple()
+        description = sql_cursor.description or tuple()
         entry_names = tuple(
             entry[0]
             for entry in description
         )
 
-        # format table
-        console = Console(file=StringIO())
-        for name in entry_names:
-            table.add_column(name)
-
-        for i_row, row in enumerate(rows):
-            if i_row > n_rows:
-                break
-            table.add_row(*tuple(str(value) for value in row))
-        console.print(table)
-        messages.append("```")
-        messages.append(console.file.getvalue())
-        messages.append("```")
-        if has_too_many_rows:
-            messages.append(
-                f"⚠️ Displaying only {row_limit} of {len(rows)} entries.")
+        messages += await format_sql_rows(rows, entry_names)
 
     if not messages:
         messages.append("😐 No entries found ")
