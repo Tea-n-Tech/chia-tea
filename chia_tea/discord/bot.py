@@ -90,12 +90,13 @@ async def bot_harvester(ctx):
     )
 
 
-@bot.command(name="sql-select")
+@bot.command(name="sql")
 async def bot_sql(ctx, *cmds):
     """ Let's the user execute arbitrary sql statements """
     db_filepath = get_config().monitoring.server.db_filepath
 
-    messages = await sql_cmd(db_filepath, cmds)
+    cmd = " ".join(cmds)
+    messages = await sql_cmd(db_filepath, (cmd,))
 
     await log_and_send_msg_if_any(
         messages=messages,

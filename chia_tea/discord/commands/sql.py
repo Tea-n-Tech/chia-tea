@@ -12,7 +12,7 @@ from ..common import catch_errors_as_message, open_database_read_only
 ROW_LIMIT = 5
 
 
-async def format_sql_rows(rows: list, names: Iterable[str]) -> List[str]:
+async def format_sql_rows(rows: list, names: Iterable[str]) -> str:
     """ Format the sql rows as a table
 
     Parameters
@@ -24,14 +24,16 @@ async def format_sql_rows(rows: list, names: Iterable[str]) -> List[str]:
 
     Returns
     -------
-    messages : List[str]
-        list of messages to print
+    msg : str
+        msg to print
     """
-    messages = []
+    msg = ""
 
     table = Table()
 
     n_rows = min(len(rows), ROW_LIMIT)
+    if not n_rows:
+        return msg
 
     # format table
     console = Console(file=StringIO())
@@ -45,19 +47,17 @@ async def format_sql_rows(rows: list, names: Iterable[str]) -> List[str]:
         table.add_row(*tuple(str(value) for value in row))
     console.print(table)
 
-    messages.append("```")
     # pylint: disable=no-member
-    messages.append(console.file.getvalue())
-    messages.append("```")
+    output = console.file.getvalue()
+    msg += f"```\n{output}```"
 
     if len(rows) > ROW_LIMIT:
-        messages.append(
-            f"⚠️ Displaying only {ROW_LIMIT} of {len(rows)} entries.")
+        msg += f"\n⚠️ Displaying only {ROW_LIMIT} of {len(rows)} entries."
 
-    return messages
+    return msg
 
 
-@catch_errors_as_message
+@ catch_errors_as_message
 async def sql_cmd(db_filepath: str, cmds: Iterable[str]) -> List[str]:
     """ Execute an sql command and return the results as text
 
@@ -76,23 +76,27 @@ async def sql_cmd(db_filepath: str, cmds: Iterable[str]) -> List[str]:
 
     messages = []
 
-    cmd = " ".join(cmds)
-
     with open_database_read_only(db_filepath) as cursor:
         sql_cursor: sqlite3.Cursor = cursor
+        for cmd in cmds:
+            try:
+                sql_cursor.execute(cmd)
+                rows = sql_cursor.fetchall()
 
-        sql_cursor.execute(cmd)
-        rows = sql_cursor.fetchall()
+                # this contains the names but if nothing is
+                # found this is none
+                description = sql_cursor.description or tuple()
+                entry_names = tuple(
+                    entry[0]
+                    for entry in description
+                )
 
-        # this contains the names but if nothing is
-        # found this is none
-        description = sql_cursor.description or tuple()
-        entry_names = tuple(
-            entry[0]
-            for entry in description
-        )
+                msg = await format_sql_rows(rows, entry_names)
+                if msg:
+                    messages.append(msg)
 
-        messages += await format_sql_rows(rows, entry_names)
+            except sqlite3.OperationalError as err:
+                messages.append(str(err))
 
     if not messages:
         messages.append("😐 No entries found ")
