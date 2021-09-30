@@ -39,8 +39,14 @@ async def log_and_send_msg_if_any(
         whether to run in testing mode and not
         send but log messages
     """
+    discord_msg_limit = 4000
+
     if messages:
         total_message = "\n".join(messages)
+        n_chars_too_long = len(total_message) > discord_msg_limit
+        if n_chars_too_long > 0:
+            total_message = f"⚠️  Message too long for discord ({n_chars_too_long} chars)"
+
         logger.info(total_message)
         if not is_testing:
             await channel.send(total_message)

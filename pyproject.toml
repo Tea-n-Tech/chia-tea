@@ -38,6 +38,7 @@ aiohttp = "3.7.4"
 chia-blockchain = "^1.2.3"
 sortedcontainers = "2.3.0"
 concurrent-log-handler = "^0.9.19"
+rich = "^10.10.0"
 
 [tool.poetry.dev-dependencies]
 grpcio-tools = "^1.39.0"

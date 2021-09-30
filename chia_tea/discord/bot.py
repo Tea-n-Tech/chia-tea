@@ -9,6 +9,7 @@ from ..utils.logger import get_logger
 from .commands.farmers import farmers_cmd
 from .commands.harvesters import harvesters_cmd
 from .commands.machines import machines_cmd
+from .commands.sql import sql_cmd
 from .commands.wallets import wallets_cmd
 from .notifications.run_notifiers import log_and_send_msg_if_any, run_notifiers
 
@@ -80,6 +81,22 @@ async def bot_harvester(ctx):
     db_filepath = get_config().monitoring.server.db_filepath
 
     messages = await harvesters_cmd(db_filepath)
+
+    await log_and_send_msg_if_any(
+        messages=messages,
+        logger=get_logger(__file__),
+        channel=ctx.channel,
+        is_testing=get_config().development.testing,
+    )
+
+
+@bot.command(name="sql")
+async def bot_sql(ctx, *cmds):
+    """ Let's the user execute arbitrary sql statements """
+    db_filepath = get_config().monitoring.server.db_filepath
+
+    cmd = " ".join(cmds)
+    messages = await sql_cmd(db_filepath, (cmd,))
 
     await log_and_send_msg_if_any(
         messages=messages,
