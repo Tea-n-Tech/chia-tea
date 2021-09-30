@@ -57,16 +57,16 @@ async def format_sql_rows(rows: list, names: Iterable[str]) -> str:
     return msg
 
 
-@ catch_errors_as_message
-async def sql_cmd(db_filepath: str, cmds: Iterable[str]) -> List[str]:
+@catch_errors_as_message
+async def sql_cmd(db_filepath: str, cmd: str) -> List[str]:
     """ Execute an sql command and return the results as text
 
     Parameters
     ----------
     db_filepath : str
         filepath to the database
-    cmds : Iterable[str]
-        sql commands as iterable
+    cmds : str
+        sql command
 
     Returns
     -------
@@ -78,25 +78,24 @@ async def sql_cmd(db_filepath: str, cmds: Iterable[str]) -> List[str]:
 
     with open_database_read_only(db_filepath) as cursor:
         sql_cursor: sqlite3.Cursor = cursor
-        for cmd in cmds:
-            try:
-                sql_cursor.execute(cmd)
-                rows = sql_cursor.fetchall()
+        try:
+            sql_cursor.execute(cmd)
+            rows = sql_cursor.fetchall()
 
-                # this contains the names but if nothing is
-                # found this is none
-                description = sql_cursor.description or tuple()
-                entry_names = tuple(
-                    entry[0]
-                    for entry in description
-                )
+            # this contains the names but if nothing is
+            # found this is none
+            description = sql_cursor.description or tuple()
+            entry_names = tuple(
+                entry[0]
+                for entry in description
+            )
 
-                msg = await format_sql_rows(rows, entry_names)
-                if msg:
-                    messages.append(msg)
+            msg = await format_sql_rows(rows, entry_names)
+            if msg:
+                messages.append(msg)
 
-            except sqlite3.OperationalError as err:
-                messages.append(str(err))
+        except sqlite3.OperationalError as err:
+            messages.append(str(err))
 
     if not messages:
         messages.append("😐 No entries found ")

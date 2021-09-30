@@ -15,12 +15,46 @@ class TestSqlCmd(unittest.TestCase):
 
     @async_test
     async def test_syntax_error(self) -> None:
-
         with tempfile.TemporaryDirectory() as tmpdir:
             db_filepath = os.path.join(tmpdir, "temp.db")
-
             with MonitoringDatabase(db_filepath) as db:
+                messages = await sql_cmd(
+                    db_filepath,
+                    "ERROR ~!!#*)!(*#;")
 
+                self.assertEqual(len(messages), 1)
+                self.assertIn("syntax error", messages[0])
+
+    @async_test
+    async def test_empty_command(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_filepath = os.path.join(tmpdir, "temp.db")
+            with MonitoringDatabase(db_filepath):
+                messages = await sql_cmd(
+                    db_filepath,
+                    "",
+                )
+                self.assertEqual(len(messages), 1)
+                self.assertIn("No entries found", messages[0])
+
+    @async_test
+    async def test_if_readonly_protected(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_filepath = os.path.join(tmpdir, "temp.db")
+            with MonitoringDatabase(db_filepath):
+                messages = await sql_cmd(
+                    db_filepath,
+                    "CREATE TABLE yay (pewpew text)",
+                )
+                self.assertEqual(len(messages), 1)
+                self.assertEqual(
+                    "attempt to write a readonly database", messages[0])
+
+    @async_test
+    async def test_valid_select_cmd(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_filepath = os.path.join(tmpdir, "temp.db")
+            with MonitoringDatabase(db_filepath) as db:
                 update_events = [
                     ParseDict(
                         js_dict=dict(
@@ -41,20 +75,9 @@ class TestSqlCmd(unittest.TestCase):
                 db.store_data_update_request(request)
 
                 messages = await sql_cmd(
-                    db_filepath, [
-                        # empty command (returns nothing)
-                        "",
-                        # error command
-                        "ERROR ~!!#*)!(*#;",
-                        # create table is not allowed (read only)
-                        "CREATE TABLE yay (pewpew text)",
-                        # valid sql command
-                        "SELECT * FROM CPU",
-                    ])
-
-                self.assertEqual(len(messages), 3)
-                self.assertTrue("syntax error" in messages[0])
-                self.assertEqual(
-                    "attempt to write a readonly database", messages[1])
-                self.assertTrue(
-                    "usage" in messages[2] and "0.1" in messages[2])
+                    db_filepath,
+                    "SELECT * FROM CPU",
+                )
+                self.assertEqual(len(messages), 1)
+                self.assertIn("usage", messages[0])
+                self.assertIn("0.1", messages[0])
