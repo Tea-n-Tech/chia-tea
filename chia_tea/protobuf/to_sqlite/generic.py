@@ -1,7 +1,7 @@
 
 import enum
 import traceback
-from typing import List, Tuple
+from typing import Any, List, Tuple
 
 from google.protobuf.descriptor import Descriptor, FieldDescriptor
 
@@ -40,6 +40,31 @@ class SqliteType(enum.Enum):
     INTEGER = "INTEGER"
     STRING = "STRING"
     BLOB = "BLOB"
+
+
+def get_create_table_cmd_for_enum(enum_pb2_class: Any) -> str:
+    """ Get the command to create a table for a protobuf enum
+
+    Parameters
+    ----------
+    enum_pb2_class : Any
+        protobuf msg class
+
+    Returns
+    -------
+    cmds : str
+        sqlite3 commands for creating the table
+    """
+    cmd = get_create_table_cmd(
+        enum_pb2_class.DESCRIPTOR.name,
+        [
+            ("name", SqliteType.STRING),
+            ("value", SqliteType.INTEGER),
+        ],
+        ["name"],
+    )
+
+    return cmd
 
 
 def field_descriptor_is_list(
