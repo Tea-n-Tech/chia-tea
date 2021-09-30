@@ -42,8 +42,8 @@ class SqliteType(enum.Enum):
     BLOB = "BLOB"
 
 
-def get_create_table_cmd_for_enum(enum_pb2_class: Any) -> str:
-    """ Get the command to create a table for a protobuf enum
+def get_create_table_cmds_for_enum(enum_pb2_class: Any) -> List[str]:
+    """ Get the commands to create a table for a protobuf enum
 
     Parameters
     ----------
@@ -52,19 +52,30 @@ def get_create_table_cmd_for_enum(enum_pb2_class: Any) -> str:
 
     Returns
     -------
-    cmds : str
+    cmds : List[str]
         sqlite3 commands for creating the table
+        and inserting the enum values
     """
-    cmd = get_create_table_cmd(
-        enum_pb2_class.DESCRIPTOR.name,
+    table_name = enum_pb2_class.DESCRIPTOR.name
+
+    cmds = []
+    cmds.append(get_create_table_cmd(
+        table_name,
         [
             ("name", SqliteType.STRING),
             ("value", SqliteType.INTEGER),
         ],
         ["name"],
-    )
+    ))
 
-    return cmd
+    for name, value in enum_pb2_class.items():
+        cmds.append(
+            f"INSERT OR REPLACE INTO {table_name} " +
+            "(name, value) " +
+            f"VALUES('{name}',{value})"
+        )
+
+    return cmds
 
 
 def field_descriptor_is_list(

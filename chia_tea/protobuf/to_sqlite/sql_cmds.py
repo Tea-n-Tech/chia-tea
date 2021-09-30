@@ -1,7 +1,7 @@
 
 
 from ..generated.computer_info_pb2 import (_UPDATEEVENT, ComputerInfo,
-                                           UpdateEvent)
+                                           EventType, UpdateEvent)
 from ..generated.hardware_pb2 import Cpu, Ram
 from ..generated.machine_info_pb2 import _MACHINEINFO, MachineInfo
 from .custom import (SqliteType,
@@ -13,7 +13,7 @@ from .custom import (SqliteType,
                      sqlite_create_event_tbl_cmd_from_pb2,
                      sqlite_create_state_tbl_cmd_from_pb2,
                      sqlite_insert_into_table_fun_from_pb2)
-from .generic import ProtoType
+from .generic import ProtoType, get_create_table_cmds_for_enum
 
 insert_update_event_in_db = get_event_table_insertion_cmds_for_nested_messages(
     _UPDATEEVENT)
@@ -111,5 +111,7 @@ ALL_SQL_CREATE_TABLE_CMDS = (
         if field.type == ProtoType.MESSAGE.value
     ) +
     # machine metadata table
-    (SQL_CREATE_MACHINE_TBL_CMD, )
+    (SQL_CREATE_MACHINE_TBL_CMD, ) +
+    # enum tables
+    tuple(get_create_table_cmds_for_enum(EventType))
 )
