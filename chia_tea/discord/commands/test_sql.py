@@ -12,15 +12,12 @@ from .sql import sql_cmd
 
 
 class TestSqlCmd(unittest.TestCase):
-
     @async_test
     async def test_syntax_error(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             db_filepath = os.path.join(tmpdir, "temp.db")
             with MonitoringDatabase(db_filepath):
-                messages = await sql_cmd(
-                    db_filepath,
-                    "ERROR ~!!#*)!(*#;")
+                messages = await sql_cmd(db_filepath, "ERROR ~!!#*)!(*#;")
 
                 self.assertEqual(len(messages), 1)
                 self.assertIn("syntax error", messages[0])
@@ -47,8 +44,7 @@ class TestSqlCmd(unittest.TestCase):
                     "CREATE TABLE yay (pewpew text)",
                 )
                 self.assertEqual(len(messages), 1)
-                self.assertEqual(
-                    "attempt to write a readonly database", messages[0])
+                self.assertEqual("attempt to write a readonly database", messages[0])
 
     @async_test
     async def test_valid_select_cmd(self) -> None:
@@ -61,9 +57,9 @@ class TestSqlCmd(unittest.TestCase):
                             event_type=ADD,
                             cpu=dict(
                                 usage=0.1,
-                            )
+                            ),
                         ),
-                        message=UpdateEvent()
+                        message=UpdateEvent(),
                     ),
                 ]
                 request = DataUpdateRequest(

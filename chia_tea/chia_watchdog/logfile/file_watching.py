@@ -1,7 +1,6 @@
 import asyncio
 import os
-from typing import (AsyncGenerator, Awaitable, Callable, Coroutine, Optional,
-                    Union)
+from typing import AsyncGenerator, Awaitable, Callable, Coroutine, Optional, Union
 
 from ...utils.logger import get_logger
 
@@ -11,7 +10,7 @@ async def watch_lines_infinitely(
     on_ready: Optional[Coroutine] = None,
     on_line: Optional[Callable[[str], Awaitable[None]]] = None,
 ):
-    """ Start watching the specified file
+    """Start watching the specified file
 
     Parameters
     ----------
@@ -40,8 +39,7 @@ async def watch_lines_infinitely(
         except FileNotFoundError:
             # in case there is no log file (yet) simply
             # wait gently for one to appear
-            logger.info(
-                "Logfile %s not found, waiting for one to appear.", filepath)
+            logger.info("Logfile %s not found, waiting for one to appear.", filepath)
             await asyncio.sleep(3)
 
     logger.debug("Logfile '%s' found. Starting to watch it.", filepath)
@@ -53,26 +51,24 @@ async def watch_lines_infinitely(
 
 
 async def watch_logfile_generator(
-    filepath: str,
-    on_ready: Optional[Coroutine] = None,
-    interval_seconds: float = 1
+    filepath: str, on_ready: Optional[Coroutine] = None, interval_seconds: float = 1
 ) -> AsyncGenerator[str, None]:
     """Watch a logfile for changes
 
-        Parameters
-        ----------
-        filepath : str
-            path to the logfile to watch
-        on_ready: Optional[Coroutine] = None,
-            function to be called if initial lines were loaded
-        interval_seconds : str
-            timing interval in which to check the file for new content
+    Parameters
+    ----------
+    filepath : str
+        path to the logfile to watch
+    on_ready: Optional[Coroutine] = None,
+        function to be called if initial lines were loaded
+    interval_seconds : str
+        timing interval in which to check the file for new content
 
-        Yields
-        ------
-        line : str
-            a newly added line to the file
-        """
+    Yields
+    ------
+    line : str
+        a newly added line to the file
+    """
     logger = get_logger(__name__)
 
     if filepath.startswith("~"):

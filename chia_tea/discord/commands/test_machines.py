@@ -1,4 +1,3 @@
-
 import os
 import tempfile
 import unittest
@@ -13,7 +12,6 @@ from .machines import machines_cmd
 
 
 class TestMachinesCmd(unittest.TestCase):
-
     @async_test
     async def test_no_machine_case(self) -> None:
 
@@ -40,9 +38,9 @@ class TestMachinesCmd(unittest.TestCase):
                             wallet=dict(
                                 is_running=True,
                                 is_synced=True,
-                            )
+                            ),
                         ),
-                        message=UpdateEvent()
+                        message=UpdateEvent(),
                     ),
                 ]
                 request = DataUpdateRequest(

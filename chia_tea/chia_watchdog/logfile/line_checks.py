@@ -1,4 +1,3 @@
-
 import traceback
 from abc import ABC, abstractmethod
 from datetime import datetime
@@ -8,11 +7,11 @@ from ..ChiaWatchdog import ChiaWatchdog
 
 
 class AbstractLineAction(ABC):
-    """ Action to be applied on log lines """
+    """Action to be applied on log lines"""
 
     @abstractmethod
     def is_match(self, line: str) -> bool:
-        """ Checks if a line is matching the Action
+        """Checks if a line is matching the Action
 
         Parameter
         ---------
@@ -28,11 +27,11 @@ class AbstractLineAction(ABC):
 
     @abstractmethod
     def apply(
-            self: str,
-            line: str,
-            chia_dog: ChiaWatchdog,
+        self: str,
+        line: str,
+        chia_dog: ChiaWatchdog,
     ):
-        """ Apply the line action
+        """Apply the line action
 
         Parameter
         ---------
@@ -45,12 +44,10 @@ class AbstractLineAction(ABC):
 
 
 class ActionMessageFromHarvester(AbstractLineAction):
-    """ This action is triggered if a farmer sends a msg to a harvester """
+    """This action is triggered if a farmer sends a msg to a harvester"""
 
     def is_match(self, line: str) -> bool:
-        codewords = ("farmer farmer_server",
-                     "<-",
-                     "farming_info from peer")
+        codewords = ("farmer farmer_server", "<-", "farming_info from peer")
         if all(word in line for word in codewords):
             return True
         return False
@@ -70,10 +67,7 @@ class ActionMessageFromHarvester(AbstractLineAction):
         ip_address = fragments[-1]
 
         # update info of harvester
-        harvester_info = chia_dog.get_or_create_harvester_info(
-            harvester_id,
-            ip_address
-        )
+        harvester_info = chia_dog.get_or_create_harvester_info(harvester_id, ip_address)
 
         # First out then in
         harvester_info.time_last_incoming_msg = timestamp_dt
@@ -84,12 +78,10 @@ class ActionMessageFromHarvester(AbstractLineAction):
 
 
 class ActionMessageToHarvester(AbstractLineAction):
-    """ This action is triggered if a farmer sends a msg to a harvester """
+    """This action is triggered if a farmer sends a msg to a harvester"""
 
     def is_match(self, line: str) -> bool:
-        codewords = ("farmer farmer_server",
-                     "->",
-                     "new_signage_point_harvester")
+        codewords = ("farmer farmer_server", "->", "new_signage_point_harvester")
         if all(word in line for word in codewords):
             return True
         return False
@@ -108,10 +100,7 @@ class ActionMessageToHarvester(AbstractLineAction):
         ip_address = fragments[-2]
 
         # update info of harvester
-        harvester_info = chia_dog.get_or_create_harvester_info(
-            harvester_id,
-            ip_address
-        )
+        harvester_info = chia_dog.get_or_create_harvester_info(harvester_id, ip_address)
 
         harvester_info.time_last_outgoing_msg = timestamp_dt
         harvester_info.last_update = timestamp_dt
@@ -125,8 +114,7 @@ class ActionFinishedSignagePoint(AbstractLineAction):
     """
 
     def is_match(self, line: str) -> bool:
-        codewords = ("full_node",
-                     "Finished signage point")
+        codewords = ("full_node", "Finished signage point")
         if all(word in line for word in codewords):
             return True
         return False
@@ -149,7 +137,7 @@ class ActionFinishedSignagePoint(AbstractLineAction):
 
 
 class ActionHarvesterConnected(AbstractLineAction):
-    """ This action is triggered if a farmer connects to a harvester """
+    """This action is triggered if a farmer connects to a harvester"""
 
     def is_match(self, line: str) -> bool:
         codewords = ("farmer farmer_server", "harvester_handshake to peer")
@@ -170,10 +158,7 @@ class ActionHarvesterConnected(AbstractLineAction):
         ip_address = fragments[-2]
 
         # update info of harvester
-        harvester_info = chia_dog.get_or_create_harvester_info(
-            harvester_id,
-            ip_address
-        )
+        harvester_info = chia_dog.get_or_create_harvester_info(harvester_id, ip_address)
         harvester_info.is_connected = True
         harvester_info.timed_out = False
         harvester_info.last_update = timestamp_dt
@@ -181,7 +166,7 @@ class ActionHarvesterConnected(AbstractLineAction):
 
 
 class ActionHarvesterDisconnected(AbstractLineAction):
-    """ This action is triggered if a farmer disconnects to a harvester"""
+    """This action is triggered if a farmer disconnects to a harvester"""
 
     def is_match(self, line: str) -> bool:
         codewords = ("farmer farmer_server", "Connection closed")
@@ -206,17 +191,14 @@ class ActionHarvesterDisconnected(AbstractLineAction):
             ip_address = ip_address[:-1]
 
         # update info of harvester
-        harvester_info = chia_dog.get_or_create_harvester_info(
-            harvester_id,
-            ip_address
-        )
+        harvester_info = chia_dog.get_or_create_harvester_info(harvester_id, ip_address)
         harvester_info.is_connected = False
         harvester_info.last_update = timestamp_dt
         chia_dog.harvester_infos[harvester_id] = harvester_info
 
 
 class ActionHarvesterFoundProof(AbstractLineAction):
-    """ This action is triggered if a harvester found a proof """
+    """This action is triggered if a harvester found a proof"""
 
     # Chia Version: 1.2.0
     # Example:
@@ -226,8 +208,12 @@ class ActionHarvesterFoundProof(AbstractLineAction):
     # Found 0 proofs. Time: 0.00017 s. Total 0 plots
 
     def is_match(self, line: str) -> bool:
-        codewords = ("harvester chia.harvester.harvester",
-                     "eligible", "Found", "proofs")
+        codewords = (
+            "harvester chia.harvester.harvester",
+            "eligible",
+            "Found",
+            "proofs",
+        )
         if all(word in line for word in codewords):
             return True
         return False
@@ -248,11 +234,10 @@ class ActionHarvesterFoundProof(AbstractLineAction):
 
 
 class ActionFarmedUnfinishedBlock(AbstractLineAction):
-    """ This action is triggered if a harvester found a block """
+    """This action is triggered if a harvester found a block"""
 
     def is_match(self, line: str) -> bool:
-        codewords = ("full_node chia.full_node.full_node",
-                     "Farmed unfinished_block")
+        codewords = ("full_node chia.full_node.full_node", "Farmed unfinished_block")
         if all(word in line for word in codewords):
             return True
         return False
@@ -271,7 +256,7 @@ class ActionFarmedUnfinishedBlock(AbstractLineAction):
 
 
 async def run_line_checks(chia_dog: ChiaWatchdog, line: str):
-    """ Processes a line from the logfile
+    """Processes a line from the logfile
 
     Parameters
     ----------
@@ -288,6 +273,7 @@ async def run_line_checks(chia_dog: ChiaWatchdog, line: str):
         trace = traceback.format_exc()
         err_msg = "Error in line: %s\n%s"
         get_logger(__name__).error(err_msg, line, trace)
+
 
 ALL_LINE_ACTIONS = (
     ActionMessageFromHarvester(),

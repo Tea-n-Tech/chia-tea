@@ -1,21 +1,25 @@
-
 import asyncio
 from datetime import datetime
 
 from ...chia_watchdog.ChiaWatchdog import ChiaWatchdog
 from ...protobuf.generated.computer_info_pb2 import ComputerInfo
 from ...utils.logger import log_runtime_async
-from .chia import (collect_connected_harvesters_to_farmer, collect_farmer_info,
-                   collect_harvester_info, collect_harvester_plots,
-                   collect_process_info, collect_wallet_info)
+from .chia import (
+    collect_connected_harvesters_to_farmer,
+    collect_farmer_info,
+    collect_harvester_info,
+    collect_harvester_plots,
+    collect_process_info,
+    collect_wallet_info,
+)
 from .hardware import collect_cpu_info, collect_disk_info, collect_ram_info
 
 
 @log_runtime_async(__file__)
 async def collect_computer_info(
-        machine_id: str,
-        chia_dog: ChiaWatchdog) -> ComputerInfo:
-    """ Collects all the info about the machine
+    machine_id: str, chia_dog: ChiaWatchdog
+) -> ComputerInfo:
+    """Collects all the info about the machine
 
     Parameters
     ----------
@@ -30,15 +34,17 @@ async def collect_computer_info(
         info about the machine and it's chia related processes
     """
 
-    (cpu_info,
-     disks,
-     ram_info,
-     farmer_info,
-     harvester_info,
-     harvester_plots,
-     wallet_info,
-     chia_processes,
-     connected_harvesters) = await asyncio.gather(
+    (
+        cpu_info,
+        disks,
+        ram_info,
+        farmer_info,
+        harvester_info,
+        harvester_plots,
+        wallet_info,
+        chia_processes,
+        connected_harvesters,
+    ) = await asyncio.gather(
         collect_cpu_info(),
         collect_disk_info(),
         collect_ram_info(),

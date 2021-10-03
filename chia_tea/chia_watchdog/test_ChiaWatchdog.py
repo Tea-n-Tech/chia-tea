@@ -1,4 +1,3 @@
-
 import unittest
 from datetime import datetime
 
@@ -8,7 +7,6 @@ from .logfile.line_checks import ActionFarmedUnfinishedBlock
 
 
 class TestChiaWatchdog(unittest.TestCase):
-
     def test_reward_found(self):
         action1 = ActionFarmedUnfinishedBlock()
         node_id = "65322a31ad01f3aa3fc04f3e43231d35c3a1ddd4"
@@ -17,14 +15,14 @@ class TestChiaWatchdog(unittest.TestCase):
         timestamp = datetime.fromisoformat(timestamp_str)
 
         lineFirstRewardFound = (
-            "07:39:12.978 full_node chia.full_node.full_node: " +
-            "INFO     🍀 ️Farmed unfinished_block " +
-            "6b2a9249ec4aa159c24498a00305012772d33e68a01d116c1110091f440e0cf6"
+            "07:39:12.978 full_node chia.full_node.full_node: "
+            + "INFO     🍀 ️Farmed unfinished_block "
+            + "6b2a9249ec4aa159c24498a00305012772d33e68a01d116c1110091f440e0cf6"
         )
         lineSecondRewardFound = (
-            "07:39:12.978 full_node chia.full_node.full_node: " +
-            "INFO     🍀 ️Farmed unfinished_block " +
-            "6b2a9249ec4aa159c24498a00305012772d33e68a01d116c1110091f440e0cf7"
+            "07:39:12.978 full_node chia.full_node.full_node: "
+            + "INFO     🍀 ️Farmed unfinished_block "
+            + "6b2a9249ec4aa159c24498a00305012772d33e68a01d116c1110091f440e0cf7"
         )
 
         self.assertTrue(action1.is_match(lineFirstRewardFound))

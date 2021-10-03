@@ -1,4 +1,3 @@
-
 import sqlite3
 from typing import Union
 
@@ -7,17 +6,19 @@ from google.protobuf.json_format import MessageToDict
 from ..protobuf.generated.computer_info_pb2 import ComputerInfo
 from ..protobuf.generated.machine_info_pb2 import MachineInfo
 from ..protobuf.generated.monitoring_service_pb2 import DataUpdateRequest
-from ..protobuf.to_sqlite.sql_cmds import (ALL_SQL_CREATE_TABLE_CMDS,
-                                           get_computer_info_from_db,
-                                           insert_machine_info_in_db,
-                                           insert_update_event_in_db,
-                                           update_state_tables_in_db)
+from ..protobuf.to_sqlite.sql_cmds import (
+    ALL_SQL_CREATE_TABLE_CMDS,
+    get_computer_info_from_db,
+    insert_machine_info_in_db,
+    insert_update_event_in_db,
+    update_state_tables_in_db,
+)
 from ..utils.logger import get_logger
 
 
 class MonitoringDatabase:
-    """ Used to store and retrieve data from the monitoring database
-    """
+    """Used to store and retrieve data from the monitoring database"""
+
     filepath: str
     connection: Union[sqlite3.Connection, None]
     cursor: Union[sqlite3.Cursor, None]
@@ -29,10 +30,7 @@ class MonitoringDatabase:
 
     def __check_if_initialized(self):
         if self.connection is None or self.cursor is None:
-            err_msg = (
-                "MonitoringDatabase needs to be initialized by"
-                " a 'with' statement in python."
-            )
+            err_msg = "MonitoringDatabase needs to be initialized by a 'with' statement in python."
             raise ValueError(err_msg)
 
     def __init_tables(self):
@@ -73,7 +71,7 @@ class MonitoringDatabase:
         self.connection = None
 
     def get_machine_state(self, machine_id: str) -> ComputerInfo:
-        """ Get the state of a machine
+        """Get the state of a machine
 
         Parameters
         ----------
@@ -98,7 +96,7 @@ class MonitoringDatabase:
         data_update_request: DataUpdateRequest,
         ip_address: str = "",
     ):
-        """ Store the data in an update request in the database
+        """Store the data in an update request in the database
 
         Parameters
         ----------

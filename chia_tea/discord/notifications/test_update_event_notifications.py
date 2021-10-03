@@ -2,15 +2,16 @@ import unittest
 
 from google.protobuf.json_format import ParseDict
 
-from ...protobuf.generated.computer_info_pb2 import (ADD, DELETE, UPDATE,
-                                                     UpdateEvent)
+from ...protobuf.generated.computer_info_pb2 import ADD, DELETE, UPDATE, UpdateEvent
 from .update_event_notifications import (
-    notify_if_a_disk_is_lost, notify_if_plots_are_lost, notify_on_full_ram,
-    notify_when_farmer_connects_or_disconnects_to_harvester)
+    notify_if_a_disk_is_lost,
+    notify_if_plots_are_lost,
+    notify_on_full_ram,
+    notify_when_farmer_connects_or_disconnects_to_harvester,
+)
 
 
 class TestUpdateEventNotifications(unittest.TestCase):
-
     def test_msg_if_farmer_connects_to_harvesters(self):
 
         update_event = ParseDict(
@@ -19,13 +20,13 @@ class TestUpdateEventNotifications(unittest.TestCase):
                 farmer_harvester=dict(
                     id="harvester id",
                     ip_address="some ip",
-                )
+                ),
             ),
-            message=UpdateEvent())
+            message=UpdateEvent(),
+        )
 
         messages = notify_when_farmer_connects_or_disconnects_to_harvester(
-            machine_id="some machine id",
-            update_events=[update_event]
+            machine_id="some machine id", update_events=[update_event]
         )
 
         self.assertEqual(len(messages), 1)
@@ -38,13 +39,13 @@ class TestUpdateEventNotifications(unittest.TestCase):
                 farmer_harvester=dict(
                     id="harvester id",
                     ip_address="some ip",
-                )
+                ),
             ),
-            message=UpdateEvent())
+            message=UpdateEvent(),
+        )
 
         messages = notify_when_farmer_connects_or_disconnects_to_harvester(
-            machine_id="some machine id",
-            update_events=[update_event]
+            machine_id="some machine id", update_events=[update_event]
         )
 
         self.assertEqual(len(messages), 1)
@@ -57,13 +58,13 @@ class TestUpdateEventNotifications(unittest.TestCase):
                 farmer_harvester=dict(
                     id="harvester id",
                     ip_address="some ip",
-                )
+                ),
             ),
-            message=UpdateEvent())
+            message=UpdateEvent(),
+        )
 
         messages = notify_when_farmer_connects_or_disconnects_to_harvester(
-            machine_id="some machine id",
-            update_events=[update_event]
+            machine_id="some machine id", update_events=[update_event]
         )
 
         self.assertEqual(len(messages), 0)
@@ -77,7 +78,8 @@ class TestUpdateEventNotifications(unittest.TestCase):
                     used_ram=96,
                 )
             ),
-            message=UpdateEvent())
+            message=UpdateEvent(),
+        )
 
         messages = notify_on_full_ram(
             machine_id="some machine id",
@@ -95,7 +97,7 @@ class TestUpdateEventNotifications(unittest.TestCase):
                     used_ram=80,
                 )
             ),
-            message=UpdateEvent()
+            message=UpdateEvent(),
         )
 
         messages = notify_on_full_ram(
@@ -111,16 +113,13 @@ class TestUpdateEventNotifications(unittest.TestCase):
             js_dict=dict(
                 event_type=DELETE,
                 disk=dict(
-                    name='/somedir',
-                )
+                    name="/somedir",
+                ),
             ),
-            message=UpdateEvent()
+            message=UpdateEvent(),
         )
 
-        messages = notify_if_a_disk_is_lost(
-            "some machine id",
-            update_events=[update_event]
-        )
+        messages = notify_if_a_disk_is_lost("some machine id", update_events=[update_event])
         self.assertEqual(len(messages), 1)
 
     def test_no_msg_if_disk_is_added_or_updated(self):
@@ -129,23 +128,17 @@ class TestUpdateEventNotifications(unittest.TestCase):
             js_dict=dict(
                 event_type=ADD,
                 disk=dict(
-                    name='/somedir',
-                )
+                    name="/somedir",
+                ),
             ),
-            message=UpdateEvent()
+            message=UpdateEvent(),
         )
 
-        messages = notify_if_a_disk_is_lost(
-            "some machine id",
-            update_events=[update_event]
-        )
+        messages = notify_if_a_disk_is_lost("some machine id", update_events=[update_event])
         self.assertEqual(len(messages), 0)
 
         update_event.event_type = UPDATE
-        messages = notify_if_a_disk_is_lost(
-            "some machine id",
-            update_events=[update_event]
-        )
+        messages = notify_if_a_disk_is_lost("some machine id", update_events=[update_event])
         self.assertEqual(len(messages), 0)
 
     def test_msg_if_plots_are_lost(self):
@@ -154,16 +147,13 @@ class TestUpdateEventNotifications(unittest.TestCase):
             js_dict=dict(
                 event_type=DELETE,
                 harvester_plot=dict(
-                    id='some plot id 1',
-                )
+                    id="some plot id 1",
+                ),
             ),
-            message=UpdateEvent()
+            message=UpdateEvent(),
         )
 
-        messages = notify_if_plots_are_lost(
-            "some machine id",
-            update_events=[update_event]
-        )
+        messages = notify_if_plots_are_lost("some machine id", update_events=[update_event])
         self.assertEqual(len(messages), 1)
         self.assertTrue("1" in messages[0])
 
@@ -173,21 +163,15 @@ class TestUpdateEventNotifications(unittest.TestCase):
             js_dict=dict(
                 event_type=ADD,
                 harvester_plot=dict(
-                    id='some plot id 1',
-                )
+                    id="some plot id 1",
+                ),
             ),
-            message=UpdateEvent()
+            message=UpdateEvent(),
         )
 
-        messages = notify_if_plots_are_lost(
-            "some machine id",
-            update_events=[update_event]
-        )
+        messages = notify_if_plots_are_lost("some machine id", update_events=[update_event])
         self.assertEqual(len(messages), 0)
 
         update_event.event_type = UPDATE
-        messages = notify_if_plots_are_lost(
-            "some machine id",
-            update_events=[update_event]
-        )
+        messages = notify_if_plots_are_lost("some machine id", update_events=[update_event])
         self.assertEqual(len(messages), 0)

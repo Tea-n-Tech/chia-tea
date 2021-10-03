@@ -3,14 +3,21 @@ import os
 import yaml
 from google.protobuf.json_format import MessageToDict, ParseDict
 
-from ..protobuf.generated.config_pb2 import (INFO, ChiaConfig, ChiaTeaConfig,
-                                             CopyConfig, DevelopmentConfig,
-                                             DiscordConfig, LoggingConfig,
-                                             MachineConfig, MonitoringConfig)
+from ..protobuf.generated.config_pb2 import (
+    INFO,
+    ChiaConfig,
+    ChiaTeaConfig,
+    CopyConfig,
+    DevelopmentConfig,
+    DiscordConfig,
+    LoggingConfig,
+    MachineConfig,
+    MonitoringConfig,
+)
 
 
 def create_default_config(filepath: str) -> ChiaTeaConfig:
-    """ Creates a default config on the system
+    """Creates a default config on the system
 
     Parameters
     ----------
@@ -27,7 +34,10 @@ def create_default_config(filepath: str) -> ChiaTeaConfig:
         The config is being stored in the '.chia_tea'
         directory in the home folder.
     """
-    config_filepath = os.path.join(filepath, "config.yml",)
+    config_filepath = os.path.join(
+        filepath,
+        "config.yml",
+    )
     if not os.path.exists(config_filepath):
         config = get_default_config()
         save_config(config_filepath, get_default_config())
@@ -38,7 +48,7 @@ def create_default_config(filepath: str) -> ChiaTeaConfig:
 
 
 def get_default_config() -> ChiaTeaConfig:
-    """ Get the default config for chia tea
+    """Get the default config for chia tea
 
     Returns
     -------
@@ -72,7 +82,7 @@ def get_default_config() -> ChiaTeaConfig:
             target_folders=[
                 "/some/harvester/folder",
                 "/another/harvester/folder",
-            ]
+            ],
         ),
         # General chia-related settings
         chia=ChiaConfig(
@@ -132,20 +142,20 @@ def get_default_config() -> ChiaTeaConfig:
                     # Note though that 'collect_data_every'
                     # applies and automatically rate limits
                     # chia data.
-                )
-            )
+                ),
+            ),
         ),
         # Enables development mode. This currently disables
         # encryption and also the discord bot does not send
         # send messages but they are printed to console.
         development=DevelopmentConfig(
             testing=False,
-        )
+        ),
     )
 
 
 def read_config(filepath: str) -> ChiaTeaConfig:
-    """ Reads the config file
+    """Reads the config file
 
     Parameters
     ----------
@@ -164,7 +174,7 @@ def read_config(filepath: str) -> ChiaTeaConfig:
     ValueError
         If config values are invalid
     """
-    with open(filepath, 'r', encoding="utf8") as stream:
+    with open(filepath, "r", encoding="utf8") as stream:
         config_dict = yaml.safe_load(stream)
 
     config = ParseDict(
@@ -182,7 +192,7 @@ def read_config(filepath: str) -> ChiaTeaConfig:
 
 
 def config_is_loaded() -> bool:
-    """ Checks whether a config was loaded
+    """Checks whether a config was loaded
 
     Returns
     -------
@@ -193,7 +203,7 @@ def config_is_loaded() -> bool:
 
 
 def save_config(filepath: str, config: ChiaTeaConfig):
-    """ Save the config to a file
+    """Save the config to a file
 
     Parameters
     ----------
@@ -222,7 +232,7 @@ __IS_LOADED = False
 
 
 def get_config() -> ChiaTeaConfig:
-    """ Get the global application config
+    """Get the global application config
 
     Returns
     -------

@@ -10,41 +10,47 @@ module_name = "chia_tea.config"
 
 
 def _parse_args() -> argparse.Namespace:
-    ''' Parse the arguments from the command line
+    """Parse the arguments from the command line
 
     Returns
     -------
     args : argparse.Namespace
         parsed arguments
-    '''
+    """
 
     parser = argparse.ArgumentParser(
         prog="Chia-Tea Config",
         description=(
-            "This tool is used to either create a default config" +
-            " or validate an existing config."
-        ))
+            "This tool is used to either create a default config"
+            + " or validate an existing config."
+        ),
+    )
 
-    parser.add_argument("config",
-                        help="Path to the config file")
-    parser.add_argument("--generate",
-                        type=str2bool,
-                        nargs="?",
-                        default=False,
-                        const=True,
-                        help="Generate a default config")
-    parser.add_argument("--validate",
-                        type=str2bool,
-                        nargs="?",
-                        default=False,
-                        const=True,
-                        help="Generate a default config")
-    parser.add_argument("--overwrite",
-                        type=str2bool,
-                        nargs="?",
-                        default=False,
-                        const=True,
-                        help="Generate a default config")
+    parser.add_argument("config", help="Path to the config file")
+    parser.add_argument(
+        "--generate",
+        type=str2bool,
+        nargs="?",
+        default=False,
+        const=True,
+        help="Generate a default config",
+    )
+    parser.add_argument(
+        "--validate",
+        type=str2bool,
+        nargs="?",
+        default=False,
+        const=True,
+        help="Generate a default config",
+    )
+    parser.add_argument(
+        "--overwrite",
+        type=str2bool,
+        nargs="?",
+        default=False,
+        const=True,
+        help="Generate a default config",
+    )
 
     if len(sys.argv) < 1:
         parser.print_help()
@@ -57,7 +63,7 @@ def _generate_default_config(
     filepath: str,
     overwrite: bool,
 ):
-    """ Generate a default config on the specified path
+    """Generate a default config on the specified path
 
     Parameters
     ----------
@@ -80,7 +86,7 @@ def _generate_default_config(
 
 
 def _validate_config(filepath: str):
-    """ Validate a chia-tea config
+    """Validate a chia-tea config
 
     Parameters
     ----------
@@ -98,8 +104,7 @@ def _validate_config(filepath: str):
 
 
 def main():
-    """ Main function for the config cli
-    """
+    """Main function for the config cli"""
     args = _parse_args()
 
     # generate a deffault config
@@ -111,9 +116,7 @@ def main():
 
     # validate the config
     if args.validate:
-        _validate_config(
-            args.config
-        )
+        _validate_config(args.config)
 
 
 if __name__ == "__main__":

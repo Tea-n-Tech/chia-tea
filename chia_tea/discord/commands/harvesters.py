@@ -1,15 +1,13 @@
-
 from typing import List
 
 from ..common import catch_errors_as_message, open_database_read_only
 from ..formatting import harvester_pb2_as_markdown
-from ..notifications.run_notifiers import \
-    get_current_computer_and_machine_infos_from_db
+from ..notifications.run_notifiers import get_current_computer_and_machine_infos_from_db
 
 
 @catch_errors_as_message
 async def harvesters_cmd(db_filepath: str) -> List[str]:
-    """ Formats all harvesters into a message
+    """Formats all harvesters into a message
 
     Parameters
     ----------
@@ -25,9 +23,7 @@ async def harvesters_cmd(db_filepath: str) -> List[str]:
 
     with open_database_read_only(db_filepath) as cursor:
 
-        machine_and_computer_info_dict = get_current_computer_and_machine_infos_from_db(
-            cursor
-        )
+        machine_and_computer_info_dict = get_current_computer_and_machine_infos_from_db(cursor)
 
         for _, (machine, computer_info) in machine_and_computer_info_dict.items():
             if computer_info.harvester.is_running:

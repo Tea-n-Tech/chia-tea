@@ -1,8 +1,8 @@
-
 class WalletAPI:
-    """ This class holds chia information fetched through RPC
+    """This class holds chia information fetched through RPC
     from chia services on the same machine
     """
+
     # pylint: disable=too-few-public-methods
 
     is_ready: bool = False
@@ -10,8 +10,8 @@ class WalletAPI:
     is_synced: bool = False
     is_running: bool = False
 
-    def copy(self) -> 'WalletAPI':
-        """ Get a copy of the instance
+    def copy(self) -> "WalletAPI":
+        """Get a copy of the instance
 
         Returns
         -------

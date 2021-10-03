@@ -1,4 +1,3 @@
-
 import inspect
 import logging
 import os
@@ -20,7 +19,7 @@ logging.addLevelName(TRACE_LEVEL, TRACE_NAME)
 
 
 def __parse_loglevel(level: str) -> int:
-    """ Parse the log leve froms string into integer
+    """Parse the log leve froms string into integer
 
     Parameters
     ----------
@@ -45,16 +44,13 @@ def __parse_loglevel(level: str) -> int:
 
     msg = (
         f"Name '{0}' is not an a correct log level."
-        "Try one of TRACE, DEBUG, INFO, WARNING, ERROR.")
+        "Try one of TRACE, DEBUG, INFO, WARNING, ERROR."
+    )
     raise ValueError(msg.format(level))
 
 
-def __add_handler_only_once(
-    logger: logging.Logger,
-    handler: logging.Handler,
-    handler_type: type
-):
-    """ Adds a handler only if there is none of the same class yet
+def __add_handler_only_once(logger: logging.Logger, handler: logging.Handler, handler_type: type):
+    """Adds a handler only if there is none of the same class yet
 
     Parameters
     ----------
@@ -63,15 +59,14 @@ def __add_handler_only_once(
     handler : logging.Handler
         handler to add
     """
-    if not any(isinstance(handler, handler_type)
-               for handler in logger.handlers):
+    if not any(isinstance(handler, handler_type) for handler in logger.handlers):
         logger.addHandler(handler)
 
 
 def get_logger(
     name: str,
 ) -> logging.Logger:
-    """ Get a logger with a (module) name
+    """Get a logger with a (module) name
 
     Parameters
     ----------
@@ -111,13 +106,11 @@ def get_logger(
                 backupCount=config.max_logfiles,
             )
             formatter = logging.Formatter(
-                fmt='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-            handler.setFormatter(formatter)
-            __add_handler_only_once(
-                new_logger,
-                handler,
-                ConcurrentRotatingFileHandler
+                fmt="%(asctime)s %(levelname)-8s %(message)s",
+                datefmt="%Y-%m-%d %H:%M:%S",
             )
+            handler.setFormatter(formatter)
+            __add_handler_only_once(new_logger, handler, ConcurrentRotatingFileHandler)
 
     # pylint: disable=broad-except
     except Exception:
@@ -133,7 +126,7 @@ def get_logger(
 
 
 def get_function_name(function: Callable) -> str:
-    """ Get the proper name of a function as string
+    """Get the proper name of a function as string
 
     Parameters
     ----------
@@ -154,12 +147,13 @@ def get_function_name(function: Callable) -> str:
 
 
 def log_runtime_async(module_name: str):
-    """ Logs the time of the function call
+    """Logs the time of the function call
 
     Parameters
     ----------
     func : Callable
     """
+
     def decorator(function):
         @wraps(function)
         async def _time_it(*args, **kwargs):
@@ -172,7 +166,9 @@ def log_runtime_async(module_name: str):
                     "{0} took {1:.2f}s".format(
                         get_function_name(function),
                         time() - start,
-                    )
+                    ),
                 )
+
         return _time_it
+
     return decorator

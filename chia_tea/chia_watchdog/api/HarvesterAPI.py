@@ -1,12 +1,12 @@
-
 from copy import deepcopy
 from typing import Iterable, List
 
 
 class HarvesterAPI:
-    """ This class holds chia information fetched through RPC
+    """This class holds chia information fetched through RPC
     from chia services on the same machine
     """
+
     # pylint: disable=too-few-public-methods
 
     # This helps us to check if an update happened
@@ -35,8 +35,8 @@ class HarvesterAPI:
         self.failed_to_open_filenames = []
         self.not_found_filenames = []
 
-    def copy(self) -> 'HarvesterAPI':
-        """ Get a copy of the instance
+    def copy(self) -> "HarvesterAPI":
+        """Get a copy of the instance
 
         Returns
         -------
@@ -47,8 +47,7 @@ class HarvesterAPI:
         new_harvester.is_running = self.is_running
         new_harvester.is_ready = self.is_ready
         new_harvester.plots = deepcopy(self.plots)
-        new_harvester.failed_to_open_filenames = list(
-            self.failed_to_open_filenames)
+        new_harvester.failed_to_open_filenames = list(self.failed_to_open_filenames)
         new_harvester.not_found_filenames = list(self.not_found_filenames)
         new_harvester.plot_directories = list(self.plot_directories)
         new_harvester.n_proofs = self.n_proofs

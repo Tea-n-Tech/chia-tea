@@ -2,13 +2,8 @@ from typing import Dict, Any
 import os
 import json
 
-settings_dir = os.path.expanduser(
-    "~/.chia_tea"
-)
-path_to_settings = os.path.join(
-    settings_dir,
-    "settings.json"
-)
+settings_dir = os.path.expanduser("~/.chia_tea")
+path_to_settings = os.path.join(settings_dir, "settings.json")
 
 # for caching settings locally
 SETTINGS_CACHE = {}
@@ -16,8 +11,7 @@ SETTINGS_ARE_LOADED = False
 
 
 def ensure_chia_settings_file():
-    """ Ensure the chia settings file exists
-    """
+    """Ensure the chia settings file exists"""
     if not os.path.isdir(settings_dir):
         os.makedirs(settings_dir, exist_ok=True)
 
@@ -27,8 +21,7 @@ def ensure_chia_settings_file():
 
 
 def read_settings_file() -> Dict[str, str]:
-    """ Reads the settings File and puts its content to the settings variable
-    """
+    """Reads the settings File and puts its content to the settings variable"""
     ensure_chia_settings_file()
 
     with open(path_to_settings, "r", encoding="utf8") as file_handle:
@@ -36,15 +29,13 @@ def read_settings_file() -> Dict[str, str]:
 
 
 def write_settings_file():
-    """ Writes the settings File to disc
-    """
+    """Writes the settings File to disc"""
     with open(path_to_settings, "w", encoding="utf8") as settings_file:
         json.dump(SETTINGS_CACHE, settings_file)
 
 
 def ensure_settings_are_loaded():
-    """ Checks that the settings are loaded
-    """
+    """Checks that the settings are loaded"""
     if not SETTINGS_ARE_LOADED:
         # pylint: disable=global-statement
         global SETTINGS_CACHE
@@ -52,7 +43,7 @@ def ensure_settings_are_loaded():
 
 
 def get_settings_value(key: str, default: Any) -> Any:
-    """ Returns the value of a key in the settings Dict
+    """Returns the value of a key in the settings Dict
 
     Parameters
     ----------
@@ -78,7 +69,7 @@ def get_settings_value(key: str, default: Any) -> Any:
 
 
 def set_settings_value(name: str, value: Any):
-    """ Sets the value of the Dict and writes settings to disc
+    """Sets the value of the Dict and writes settings to disc
 
     Parameters
     ----------
