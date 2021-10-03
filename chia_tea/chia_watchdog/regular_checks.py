@@ -1,11 +1,10 @@
-
 from chia_tea.chia_watchdog.ChiaWatchdog import ChiaWatchdog
 
 
 # NOT NEEDED ANYMORE BUT LEFT AS EXAMPLE!
 # pylint: disable=unused-argument
 def check_something(watchdog: ChiaWatchdog):
-    """ Check something e.g. possibly modify the harvester
+    """Check something e.g. possibly modify the harvester
 
     Parameters
     ----------
@@ -15,7 +14,7 @@ def check_something(watchdog: ChiaWatchdog):
 
 
 async def run_watchdog_checks(watchdog: ChiaWatchdog):
-    """ Runs the harvester checks. Checks allow modification.
+    """Runs the harvester checks. Checks allow modification.
 
     Parameters
     ----------
@@ -27,6 +26,4 @@ async def run_watchdog_checks(watchdog: ChiaWatchdog):
         check_func(watchdog=watchdog)
 
 
-ALL_HARVESTER_CHECKS = [
-    check_something
-]
+ALL_HARVESTER_CHECKS = [check_something]

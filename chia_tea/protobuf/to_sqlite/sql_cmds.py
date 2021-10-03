@@ -1,27 +1,31 @@
-
-
-from ..generated.computer_info_pb2 import (_UPDATEEVENT, ComputerInfo,
-                                           EventType, UpdateEvent)
+from ..generated.computer_info_pb2 import (
+    _UPDATEEVENT,
+    ComputerInfo,
+    EventType,
+    UpdateEvent,
+)
 from ..generated.hardware_pb2 import Cpu, Ram
 from ..generated.machine_info_pb2 import _MACHINEINFO, MachineInfo
-from .custom import (SqliteType,
-                     get_event_table_insertion_cmds_for_nested_messages,
-                     get_fun_to_collect_latest_update_events_from_db,
-                     get_fun_to_collect_pb2_messages_for_nested_submessages,
-                     get_function_to_retrieve_pb2_from_sqlite_db,
-                     get_state_table_modification_fun_for_nested_messages,
-                     sqlite_create_event_tbl_cmd_from_pb2,
-                     sqlite_create_state_tbl_cmd_from_pb2,
-                     sqlite_insert_into_table_fun_from_pb2)
+from .custom import (
+    SqliteType,
+    get_event_table_insertion_cmds_for_nested_messages,
+    get_fun_to_collect_latest_update_events_from_db,
+    get_fun_to_collect_pb2_messages_for_nested_submessages,
+    get_function_to_retrieve_pb2_from_sqlite_db,
+    get_state_table_modification_fun_for_nested_messages,
+    sqlite_create_event_tbl_cmd_from_pb2,
+    sqlite_create_state_tbl_cmd_from_pb2,
+    sqlite_insert_into_table_fun_from_pb2,
+)
 from .generic import ProtoType, get_create_table_cmds_for_enum
 
 insert_update_event_in_db = get_event_table_insertion_cmds_for_nested_messages(
-    _UPDATEEVENT)
+    _UPDATEEVENT
+)
 
-update_state_tables_in_db = \
-    get_state_table_modification_fun_for_nested_messages(
-        _UPDATEEVENT
-    )
+update_state_tables_in_db = get_state_table_modification_fun_for_nested_messages(
+    _UPDATEEVENT
+)
 
 get_computer_info_from_db = get_fun_to_collect_pb2_messages_for_nested_submessages(
     pb_class=ComputerInfo,
@@ -47,17 +51,13 @@ get_machine_infos_from_db = get_function_to_retrieve_pb2_from_sqlite_db(
 get_cpu_for_machine_from_db = get_function_to_retrieve_pb2_from_sqlite_db(
     table_suffix="",
     pb_class=Cpu,
-    key_names_and_ops=[
-        ("machine_id", "==")
-    ],
+    key_names_and_ops=[("machine_id", "==")],
 )
 
 get_ram_for_machine_from_db = get_function_to_retrieve_pb2_from_sqlite_db(
     table_suffix="",
     pb_class=Ram,
-    key_names_and_ops=[
-        ("machine_id", "==")
-    ],
+    key_names_and_ops=[("machine_id", "==")],
 )
 
 insert_machine_info_in_db = sqlite_insert_into_table_fun_from_pb2(
@@ -73,7 +73,7 @@ SQL_CREATE_MACHINE_TBL_CMD = sqlite_create_state_tbl_cmd_from_pb2(
     primary_key_names=[
         "machine_id",
     ],
-    optional_primary_key_names=["id"]
+    optional_primary_key_names=["id"],
 )
 
 
@@ -96,7 +96,8 @@ ALL_SQL_CREATE_TABLE_CMDS = (
         )
         for field in _UPDATEEVENT.fields
         if field.type == ProtoType.MESSAGE.value
-    ) +
+    )
+    +
     # latest state tables
     tuple(
         sqlite_create_state_tbl_cmd_from_pb2(
@@ -109,9 +110,11 @@ ALL_SQL_CREATE_TABLE_CMDS = (
         )
         for field in _UPDATEEVENT.fields
         if field.type == ProtoType.MESSAGE.value
-    ) +
+    )
+    +
     # machine metadata table
-    (SQL_CREATE_MACHINE_TBL_CMD, ) +
+    (SQL_CREATE_MACHINE_TBL_CMD,)
+    +
     # enum tables
     tuple(get_create_table_cmds_for_enum(EventType))
 )

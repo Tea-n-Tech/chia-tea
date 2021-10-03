@@ -10,7 +10,7 @@ from .shared_settings import API_EXCEPTIONS
 
 @log_runtime_async(__file__)
 async def update_from_harvester(chia_dog: ChiaWatchdog):
-    """ Updates the chia dog with harvester data
+    """Updates the chia dog with harvester data
 
     Parameters
     ----------
@@ -19,14 +19,12 @@ async def update_from_harvester(chia_dog: ChiaWatchdog):
     """
 
     try:
-        config = load_config(
-            DEFAULT_ROOT_PATH, "config.yaml", exit_on_error=False)
+        config = load_config(DEFAULT_ROOT_PATH, "config.yaml", exit_on_error=False)
         self_hostname = config["self_hostname"]
 
         harvester_rpc_port = config["harvester"]["rpc_port"]
         harvester_client = await HarvesterRpcClient.create(
-            self_hostname, uint16(
-                harvester_rpc_port), DEFAULT_ROOT_PATH, config
+            self_hostname, uint16(harvester_rpc_port), DEFAULT_ROOT_PATH, config
         )
 
         # reduce timeout from around 4s to 1s
@@ -37,12 +35,16 @@ async def update_from_harvester(chia_dog: ChiaWatchdog):
         chia_dog.harvester_service.is_running = True
         if plots_response["success"]:
             chia_dog.harvester_service.plots = plots_response["plots"]
-            chia_dog.harvester_service.failed_to_open_filenames = \
-                plots_response["failed_to_open_filenames"]
-            chia_dog.harvester_service.not_found_filenames = \
-                plots_response["not_found_filenames"]
+            chia_dog.harvester_service.failed_to_open_filenames = plots_response[
+                "failed_to_open_filenames"
+            ]
+            chia_dog.harvester_service.not_found_filenames = plots_response[
+                "not_found_filenames"
+            ]
 
-        chia_dog.harvester_service.plot_directories = await harvester_client.get_plot_directories()
+        chia_dog.harvester_service.plot_directories = (
+            await harvester_client.get_plot_directories()
+        )
 
     # pylint: disable=catching-non-exception
     except API_EXCEPTIONS:

@@ -1,4 +1,3 @@
-
 import importlib
 import sqlite3
 from collections.abc import Iterable
@@ -7,11 +6,14 @@ from typing import Any, Callable, Dict, List, Tuple
 from google.protobuf.descriptor import Descriptor
 from google.protobuf.message import Message
 
-from ..generated.computer_info_pb2 import (ADD, DELETE, NONE, UPDATE,
-                                           UpdateEvent)
-from .generic import (ProtoType, SqliteType, field_descriptor_is_list,
-                      get_proto_fields_with_types,
-                      sqlite_create_tbl_cmd_from_pb2)
+from ..generated.computer_info_pb2 import ADD, DELETE, NONE, UPDATE, UpdateEvent
+from .generic import (
+    ProtoType,
+    SqliteType,
+    field_descriptor_is_list,
+    get_proto_fields_with_types,
+    sqlite_create_tbl_cmd_from_pb2,
+)
 
 TableInsertionFunc = Callable[[sqlite3.Cursor, Any, Dict[str, Any]], None]
 TableDeletionFunc = Callable[[sqlite3.Cursor, Any, int], None]
@@ -34,7 +36,7 @@ def sqlite_create_event_tbl_cmd_from_pb2(
     primary_key_names: List[str],
     optional_primary_key_names: List[str],
 ) -> str:
-    """ Get a sqlite table creation cmd (if not exists)
+    """Get a sqlite table creation cmd (if not exists)
     from a proto message descriptor
 
     Parameters
@@ -53,21 +55,16 @@ def sqlite_create_event_tbl_cmd_from_pb2(
     cmd : str
         command for execution
     """
-    table_name = pb_descriptor.name+"Events"
+    table_name = pb_descriptor.name + "Events"
 
-    all_var_names = [
-        field.name for field in pb_descriptor.fields
-    ] + [
+    all_var_names = [field.name for field in pb_descriptor.fields] + [
         name for name, _ in meta_attributes
     ]
 
     for key_name in primary_key_names:
         if key_name not in all_var_names:
             err_msg = "primary key attribute '{0}' does not match any var: {1}"
-            raise ValueError(err_msg.format(
-                key_name,
-                all_var_names
-            ))
+            raise ValueError(err_msg.format(key_name, all_var_names))
 
     for additional_name in optional_primary_key_names:
         for field in pb_descriptor.fields:
@@ -91,7 +88,7 @@ def sqlite_create_state_tbl_cmd_from_pb2(
     primary_key_names: List[str],
     optional_primary_key_names: List[str],
 ) -> str:
-    """ Get a sqlite table creation cmd (if not exists)
+    """Get a sqlite table creation cmd (if not exists)
     from a proto message descriptor
 
     Parameters
@@ -113,19 +110,14 @@ def sqlite_create_state_tbl_cmd_from_pb2(
     """
     table_name = pb_descriptor.name
 
-    all_var_names = [
-        field.name for field in pb_descriptor.fields
-    ] + [
+    all_var_names = [field.name for field in pb_descriptor.fields] + [
         name for name, _ in meta_attributes
     ]
 
     for key_name in primary_key_names:
         if key_name not in all_var_names:
             err_msg = "primary key attribute '{0}' does not match any var: {1}"
-            raise ValueError(err_msg.format(
-                key_name,
-                all_var_names
-            ))
+            raise ValueError(err_msg.format(key_name, all_var_names))
 
     for additional_name in optional_primary_key_names:
         for field in pb_descriptor.fields:
@@ -149,7 +141,7 @@ def sqlite_insert_into_table_fun_from_pb2(
     pb_descriptor: Descriptor,
     fields_to_ignore: List[str],
 ) -> TableInsertionFunc:
-    """ Create a function to insert a proto msg into sqlite
+    """Create a function to insert a proto msg into sqlite
     from a pb2 message descriptor
 
     Parameters
@@ -175,7 +167,7 @@ def sqlite_insert_into_table_fun_from_pb2(
         if field_name not in fields_to_ignore
     ]
 
-    all_attributes = meta_attribute_names+field_names
+    all_attributes = meta_attribute_names + field_names
     all_names = ",".join(all_attributes)
 
     insertion_cmd = (
@@ -183,26 +175,25 @@ def sqlite_insert_into_table_fun_from_pb2(
         + all_names
         + ") "
         + "VALUES("
-        + ",".join("?"*(len(all_attributes)))
+        + ",".join("?" * (len(all_attributes)))
         + ")"
     )
 
     def _table_insertion_function(
-            sql_cursor: sqlite3.Cursor,
-            pb_message: Message,
-            meta_attributes: Dict[str, Any],
+        sql_cursor: sqlite3.Cursor,
+        pb_message: Message,
+        meta_attributes: Dict[str, Any],
     ):
         if pb_message is None:
             return
 
-        pb_message_iter = (pb_message,) \
-            if not isinstance(pb_message, Iterable) \
-            else pb_message
+        pb_message_iter = (
+            (pb_message,) if not isinstance(pb_message, Iterable) else pb_message
+        )
 
         # this must not fail
         meta_attribute_values = (
-            meta_attributes[attribute_name]
-            for attribute_name in meta_attribute_names
+            meta_attributes[attribute_name] for attribute_name in meta_attribute_names
         )
 
         attributes = []
@@ -214,7 +205,7 @@ def sqlite_insert_into_table_fun_from_pb2(
                         pb_entry,
                         pb_descriptor,
                         fields_to_ignore=fields_to_ignore,
-                    )
+                    ),
                 )
             )
 
@@ -231,7 +222,7 @@ def sqlite_delete_in_table_fun_from_pb2(
     meta_attribute_names: List[str],
     pb_descriptor: Descriptor,
 ) -> TableDeletionFunc:
-    """ Create a function to delete a proto msg in a sqlite table
+    """Create a function to delete a proto msg in a sqlite table
     from a pb2 message descriptor
 
     Parameters
@@ -266,28 +257,24 @@ def sqlite_delete_in_table_fun_from_pb2(
     deletion_cmd = (
         f"DELETE FROM {table_name} "
         + " WHERE "
-        + " AND ".join(
-            f"{name}=?"
-            for name in deletion_attributes
-        )
+        + " AND ".join(f"{name}=?" for name in deletion_attributes)
     )
 
     def _table_insertion_function(
-            sql_cursor: sqlite3.Cursor,
-            pb_message: Message,
-            meta_attributes: Dict[str, Any],
+        sql_cursor: sqlite3.Cursor,
+        pb_message: Message,
+        meta_attributes: Dict[str, Any],
     ):
         if pb_message is None:
             return
 
-        pb_message_iter = (pb_message,) \
-            if not isinstance(pb_message, Iterable) \
-            else pb_message
+        pb_message_iter = (
+            (pb_message,) if not isinstance(pb_message, Iterable) else pb_message
+        )
 
         # this must not fail
         meta_attribute_values: Tuple[Any, ...] = tuple(
-            meta_attributes[attribute_name]
-            for attribute_name in meta_attribute_names
+            meta_attributes[attribute_name] for attribute_name in meta_attribute_names
         )
 
         attributes = []
@@ -298,7 +285,7 @@ def sqlite_delete_in_table_fun_from_pb2(
                     *meta_attribute_values,
                     *_get_pb2_id(
                         pb_entry,
-                    )
+                    ),
                 )
             )
 
@@ -315,7 +302,7 @@ def get_pb2_attributes_as_list(
     pb_descriptor: Descriptor,
     fields_to_ignore: List[str],
 ) -> List[Any]:
-    """ Extract the attributes of a proto message into a list
+    """Extract the attributes of a proto message into a list
 
     Parameters
     ----------
@@ -343,7 +330,7 @@ def get_table_insertion_function_for_nested_messages(
     meta_attribute_names: List[str],
     pb_descriptor: Descriptor,
 ) -> TableInsertionFunc:
-    """ Get command to insert nested submessages into their tables
+    """Get command to insert nested submessages into their tables
 
     Parameters
     ----------
@@ -366,19 +353,19 @@ def get_table_insertion_function_for_nested_messages(
     """
     msgs_insertion_functions = {
         field.number: sqlite_insert_into_table_fun_from_pb2(
-            field.message_type.name+table_suffix,
+            field.message_type.name + table_suffix,
             meta_attribute_names,
             field.message_type,
-            []
+            [],
         )
         for field in pb_descriptor.fields
         if field.type == ProtoType.MESSAGE.value
     }
 
     def _insertion_function(
-            sql_cursor: sqlite3.Cursor,
-            pb_message: Any,
-            meta_attributes: Dict[str, Any],
+        sql_cursor: sqlite3.Cursor,
+        pb_message: Any,
+        meta_attributes: Dict[str, Any],
     ):
 
         field_name, pb_submessage = get_update_even_data(pb_message)
@@ -395,9 +382,9 @@ def get_table_insertion_function_for_nested_messages(
 
 
 def get_event_table_insertion_cmds_for_nested_messages(
-    pb_descriptor: Descriptor
+    pb_descriptor: Descriptor,
 ) -> TableInsertionFunc:
-    """ Get command to insert nested submessages into their tables
+    """Get command to insert nested submessages into their tables
 
     Parameters
     ----------
@@ -416,25 +403,26 @@ def get_event_table_insertion_cmds_for_nested_messages(
     """
     return get_table_insertion_function_for_nested_messages(
         table_suffix="Events",
-        meta_attribute_names=[
-            name for name, _ in EVENT_TABLE_META_ATTRIBUTES
-        ],
+        meta_attribute_names=[name for name, _ in EVENT_TABLE_META_ATTRIBUTES],
         pb_descriptor=pb_descriptor,
     )
 
 
 StateModificationFun = Callable[
-    [sqlite3.dbapi2.Cursor,
-     Any,
-     Dict[str, Any],
-     int,
-     ], Any]
+    [
+        sqlite3.dbapi2.Cursor,
+        Any,
+        Dict[str, Any],
+        int,
+    ],
+    Any,
+]
 
 
 def get_state_table_modification_fun_for_nested_messages(
-    pb_descriptor: Descriptor
+    pb_descriptor: Descriptor,
 ) -> StateModificationFun:
-    """ Get command to insert nested submessages into their tables
+    """Get command to insert nested submessages into their tables
 
     Parameters
     ----------
@@ -449,13 +437,11 @@ def get_state_table_modification_fun_for_nested_messages(
         first.
     """
     table_suffix = ""
-    meta_attribute_names = [
-        name for name, _ in STATE_TABLE_META_ATTRIBUTES
-    ]
+    meta_attribute_names = [name for name, _ in STATE_TABLE_META_ATTRIBUTES]
 
     msgs_insertion_functions = {
         field.number: sqlite_insert_into_table_fun_from_pb2(
-            field.message_type.name+table_suffix,
+            field.message_type.name + table_suffix,
             meta_attribute_names,
             field.message_type,
             [],
@@ -466,18 +452,19 @@ def get_state_table_modification_fun_for_nested_messages(
 
     msgs_deletion_functions = {
         field.number: sqlite_delete_in_table_fun_from_pb2(
-            field.message_type.name+table_suffix,
+            field.message_type.name + table_suffix,
             meta_attribute_names,
-            field.message_type)
+            field.message_type,
+        )
         for field in pb_descriptor.fields
         if field.type == ProtoType.MESSAGE.value
     }
 
     def _deletion_function(
-            sql_cursor: sqlite3.Cursor,
-            pb_message: Any,
-            meta_attributes: Dict[str, Any],
-            event_type: int,
+        sql_cursor: sqlite3.Cursor,
+        pb_message: Any,
+        meta_attributes: Dict[str, Any],
+        event_type: int,
     ):
 
         if event_type == NONE:
@@ -504,9 +491,8 @@ def get_function_to_retrieve_pb2_from_sqlite_db(
     table_suffix: str,
     pb_class: Any,
     key_names_and_ops: List[Tuple[str, str]],
-) -> Callable[[sqlite3.Cursor, List[Any]],
-              Tuple[List[Message], List[Dict[str, Any]]]]:
-    """ Get a function to read entries from the sqlite db
+) -> Callable[[sqlite3.Cursor, List[Any]], Tuple[List[Message], List[Dict[str, Any]]]]:
+    """Get a function to read entries from the sqlite db
     and convert them abck into pb2 messages
 
     Parameters
@@ -529,17 +515,12 @@ def get_function_to_retrieve_pb2_from_sqlite_db(
     table_name = pb_descriptor.name + table_suffix
 
     selectors = " AND ".join(
-        f"{name}{operation}?"
-        for name, operation in key_names_and_ops
+        f"{name}{operation}?" for name, operation in key_names_and_ops
     )
 
     comparison_word = " WHERE " if selectors else ""
 
-    cmd = (
-        f"SELECT * FROM {table_name}" +
-        comparison_word +
-        selectors
-    )
+    cmd = f"SELECT * FROM {table_name}" + comparison_word + selectors
 
     def _get_state_as_pb(
         cursor: sqlite3.Cursor,
@@ -553,10 +534,7 @@ def get_function_to_retrieve_pb2_from_sqlite_db(
         # found this is none
         description = cursor.description or tuple()
 
-        entry_names = tuple(
-            entry[0]
-            for entry in description
-        )
+        entry_names = tuple(entry[0] for entry in description)
 
         pb_messages: List[Message] = []
         attributes = []
@@ -581,7 +559,7 @@ def get_fun_to_collect_pb2_messages_for_nested_submessages(
     key_names_and_ops: List[Tuple[str, str]],
     table_suffix: str,
 ) -> Callable[[sqlite3.Cursor, List[Any]], Message]:
-    """ Get a function to get a proto message with nested messages
+    """Get a function to get a proto message with nested messages
 
     Parameters
     ----------
@@ -619,13 +597,14 @@ def get_fun_to_collect_pb2_messages_for_nested_submessages(
         module = importlib.import_module(module_name)
         class_constructor = getattr(module, class_name)
 
-        msgs_retrieve_functions[field.number] = \
-            get_function_to_retrieve_pb2_from_sqlite_db(
-                table_suffix=table_suffix,
-                pb_class=class_constructor,
-                key_names_and_ops=key_names_and_ops)
-        msg_is_iterable[field.number] = \
-            field_descriptor_is_list(field)
+        msgs_retrieve_functions[
+            field.number
+        ] = get_function_to_retrieve_pb2_from_sqlite_db(
+            table_suffix=table_suffix,
+            pb_class=class_constructor,
+            key_names_and_ops=key_names_and_ops,
+        )
+        msg_is_iterable[field.number] = field_descriptor_is_list(field)
 
     def _retrieve_function(
         cursor: sqlite3.Cursor,
@@ -661,7 +640,7 @@ def get_fun_to_collect_latest_update_events_from_db(
     key_names_and_ops: List[Tuple[str, str]],
     table_suffix: str,
 ) -> Callable[[sqlite3.Cursor, Dict[str, Any]], Dict[int, List[UpdateEvent]]]:
-    """ Get a function to get a proto message with nested messages
+    """Get a function to get a proto message with nested messages
 
     Parameters
     ----------
@@ -698,11 +677,13 @@ def get_fun_to_collect_latest_update_events_from_db(
         module = importlib.import_module(module_name)
         class_constructor = getattr(module, class_name)
 
-        msgs_retrieve_functions[field.number] = \
-            get_function_to_retrieve_pb2_from_sqlite_db(
-                table_suffix=table_suffix,
-                pb_class=class_constructor,
-                key_names_and_ops=key_names_and_ops)
+        msgs_retrieve_functions[
+            field.number
+        ] = get_function_to_retrieve_pb2_from_sqlite_db(
+            table_suffix=table_suffix,
+            pb_class=class_constructor,
+            key_names_and_ops=key_names_and_ops,
+        )
 
     def _retrieve_function(
         cursor: sqlite3.Cursor,
@@ -720,9 +701,7 @@ def get_fun_to_collect_latest_update_events_from_db(
             messages, attributes = fun(cursor, *key_values)
 
             for pb_submsg, attribute_dict in zip(messages, attributes):
-                instance = pb_class(**{
-                    field.name: pb_submsg
-                })
+                instance = pb_class(**{field.name: pb_submsg})
 
                 for name, value in attribute_dict.items():
                     if hasattr(instance, name):
@@ -745,7 +724,7 @@ def get_fun_to_update_db_from_pb2_class(
     table_suffix: str,
     attribute_names: List[str],
 ) -> Callable[[sqlite3.Cursor, Message, Dict[str, Any], Dict[str, Any]], None]:
-    """ Get a function to update database entries
+    """Get a function to update database entries
 
     Parameters
     ----------
@@ -768,23 +747,20 @@ def get_fun_to_update_db_from_pb2_class(
     pb_descriptor = pb_class.DESCRIPTOR
     table_name = pb_descriptor.name + table_suffix
 
-    setter_fields = [
-        f"{field.name}=?" for field in pb_descriptor.fields
-    ]
+    setter_fields = [f"{field.name}=?" for field in pb_descriptor.fields]
     all_fields = attribute_names + setter_fields
 
     selectors = " AND ".join(
-        f"{name}{operation}?"
-        for name, operation in key_names_and_ops
+        f"{name}{operation}?" for name, operation in key_names_and_ops
     )
     comparison_word = " WHERE " if selectors else ""
 
     cmd = (
-        f"UPDATE {table_name} " +
-        "SET " +
-        ",".join(all_fields) +
-        comparison_word +
-        selectors
+        f"UPDATE {table_name} "
+        + "SET "
+        + ",".join(all_fields)
+        + comparison_word
+        + selectors
     )
 
     def _update_table_fun(
@@ -797,14 +773,13 @@ def get_fun_to_update_db_from_pb2_class(
         if pb_message is None:
             return
 
-        pb_message_iter = (pb_message,) \
-            if not isinstance(pb_message, Iterable) \
-            else pb_message
+        pb_message_iter = (
+            (pb_message,) if not isinstance(pb_message, Iterable) else pb_message
+        )
 
         # this must not fail
         attribute_values_as_tuple: Tuple[Any, ...] = tuple(
-            attributes[attribute_name]
-            for attribute_name in attribute_names
+            attributes[attribute_name] for attribute_name in attribute_names
         )
 
         values_to_insert_into_cmd = []
@@ -826,10 +801,8 @@ def get_fun_to_update_db_from_pb2_class(
     return _update_table_fun
 
 
-def get_update_even_data(
-    update_event: UpdateEvent
-) -> Tuple[str, Message]:
-    """ Get the data of an update event
+def get_update_even_data(update_event: UpdateEvent) -> Tuple[str, Message]:
+    """Get the data of an update event
 
     Parameters
     ----------
@@ -843,7 +816,7 @@ def get_update_even_data(
     pb_msg : Message
         update event data
     """
-    field_name = update_event.WhichOneof('event_data')
+    field_name = update_event.WhichOneof("event_data")
     sub_msg = getattr(
         update_event,
         field_name,

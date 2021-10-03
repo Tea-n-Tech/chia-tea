@@ -1,4 +1,3 @@
-
 import os
 import tempfile
 import unittest
@@ -13,7 +12,6 @@ from .harvesters import harvesters_cmd
 
 
 class TestHarvestersCmd(unittest.TestCase):
-
     @async_test
     async def test_no_harvesters_case(self) -> None:
 
@@ -38,9 +36,9 @@ class TestHarvestersCmd(unittest.TestCase):
                         event_type=ADD,
                         harvester=dict(
                             is_running=False,
-                        )
+                        ),
                     ),
-                    message=UpdateEvent()
+                    message=UpdateEvent(),
                 )
                 request = DataUpdateRequest(
                     machine_id=2,
@@ -74,9 +72,9 @@ class TestHarvestersCmd(unittest.TestCase):
                             harvester=dict(
                                 is_running=True,
                                 n_proofs=1,
-                            )
+                            ),
                         ),
-                        message=UpdateEvent()
+                        message=UpdateEvent(),
                     ),
                     ParseDict(
                         js_dict=dict(
@@ -84,14 +82,14 @@ class TestHarvestersCmd(unittest.TestCase):
                             harvester_plot=dict(
                                 id="plot1",
                                 filename="/path/to/plot1",
-                                filesize=1E8,
+                                filesize=1e8,
                                 pool_contract_puzzle_hash="pool_contract_puzzle_hash",
                                 pool_public_key="pool_public_key",
                                 size=32,
                                 time_modified=10,
-                            )
+                            ),
                         ),
-                        message=UpdateEvent()
+                        message=UpdateEvent(),
                     ),
                     ParseDict(
                         js_dict=dict(
@@ -99,14 +97,14 @@ class TestHarvestersCmd(unittest.TestCase):
                             harvester_plot=dict(
                                 id="plot1",
                                 filename="/path/to/plot1",
-                                filesize=1E8,
+                                filesize=1e8,
                                 pool_contract_puzzle_hash="pool_contract_puzzle_hash",
                                 pool_public_key="pool_public_key",
                                 size=32,
                                 time_modified=10,
-                            )
+                            ),
                         ),
-                        message=UpdateEvent()
+                        message=UpdateEvent(),
                     ),
                     ParseDict(
                         js_dict=dict(
@@ -114,16 +112,16 @@ class TestHarvestersCmd(unittest.TestCase):
                             disk=dict(
                                 id="disk1",
                                 name="some disk",
-                                total_space=2E8,
-                                used_space=1E8,
+                                total_space=2e8,
+                                used_space=1e8,
                                 device="some device",
                                 mountpoint="/mnt/plots",
                                 fstype="ext4",
                                 mount_options="ro",
-                            )
+                            ),
                         ),
-                        message=UpdateEvent()
-                    )
+                        message=UpdateEvent(),
+                    ),
                 ]
                 request = DataUpdateRequest(
                     machine_id=1,

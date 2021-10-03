@@ -1,4 +1,3 @@
-
 import sqlite3
 from io import StringIO
 from typing import Iterable, List
@@ -13,7 +12,7 @@ ROW_LIMIT = 5
 
 
 async def format_sql_rows(rows: list, names: Iterable[str]) -> str:
-    """ Format the sql rows as a table
+    """Format the sql rows as a table
 
     Parameters
     ----------
@@ -59,7 +58,7 @@ async def format_sql_rows(rows: list, names: Iterable[str]) -> str:
 
 @catch_errors_as_message
 async def sql_cmd(db_filepath: str, cmd: str) -> List[str]:
-    """ Execute an sql command and return the results as text
+    """Execute an sql command and return the results as text
 
     Parameters
     ----------
@@ -85,10 +84,7 @@ async def sql_cmd(db_filepath: str, cmd: str) -> List[str]:
             # this contains the names but if nothing is
             # found this is none
             description = sql_cursor.description or tuple()
-            entry_names = tuple(
-                entry[0]
-                for entry in description
-            )
+            entry_names = tuple(entry[0] for entry in description)
 
             msg = await format_sql_rows(rows, entry_names)
             if msg:

@@ -1,4 +1,3 @@
-
 from typing import Any, Dict, List
 
 from chia.rpc.farmer_rpc_client import FarmerRpcClient
@@ -34,17 +33,13 @@ async def _get_farmer_harvesters(
             harvester_kwargs[node_id]["n_plots"] = n_plots
 
     for kwargs in harvester_kwargs.values():
-        harvesters.append(
-            FarmerHarvesterAPI(
-                **kwargs
-            )
-        )
+        harvesters.append(FarmerHarvesterAPI(**kwargs))
 
     return harvesters
 
 
 async def update_from_farmer(chia_dog: ChiaWatchdog):
-    """ Updates the chia dog with harvester data
+    """Updates the chia dog with harvester data
 
     Parameters
     ----------
@@ -54,8 +49,7 @@ async def update_from_farmer(chia_dog: ChiaWatchdog):
     # pylint: disable=duplicate-code
 
     try:
-        config = load_config(
-            DEFAULT_ROOT_PATH, "config.yaml", exit_on_error=False)
+        config = load_config(DEFAULT_ROOT_PATH, "config.yaml", exit_on_error=False)
         self_hostname = config["self_hostname"]
         farmer_rpc_port = config["farmer"]["rpc_port"]
         farmer_client = await FarmerRpcClient.create(

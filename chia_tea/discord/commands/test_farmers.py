@@ -1,4 +1,3 @@
-
 import os
 import tempfile
 import unittest
@@ -13,7 +12,6 @@ from .farmers import farmers_cmd
 
 
 class TestFarmersCmd(unittest.TestCase):
-
     @async_test
     async def test_no_farmers_case(self) -> None:
 
@@ -38,9 +36,9 @@ class TestFarmersCmd(unittest.TestCase):
                         event_type=ADD,
                         farmer=dict(
                             is_running=False,
-                        )
+                        ),
                     ),
-                    message=UpdateEvent()
+                    message=UpdateEvent(),
                 )
                 request = DataUpdateRequest(
                     machine_id=2,
@@ -69,9 +67,9 @@ class TestFarmersCmd(unittest.TestCase):
                             event_type=ADD,
                             farmer=dict(
                                 is_running=True,
-                            )
+                            ),
                         ),
-                        message=UpdateEvent()
+                        message=UpdateEvent(),
                     ),
                     ParseDict(
                         js_dict=dict(
@@ -83,10 +81,10 @@ class TestFarmersCmd(unittest.TestCase):
                                 ip_address="1.2.3.4",
                                 missed_challenges=1,
                                 n_plots=784,
-                            )
+                            ),
                         ),
-                        message=UpdateEvent()
-                    )
+                        message=UpdateEvent(),
+                    ),
                 ]
                 request = DataUpdateRequest(
                     machine_id=1,
@@ -103,8 +101,6 @@ class TestFarmersCmd(unittest.TestCase):
                 self.assertFalse(messages[0].startswith("No farmers"))
                 # display online harvester
                 self.assertTrue(any("machine A" in msg for msg in messages))
-                self.assertEqual(
-                    sum("Harvester" in msg for msg in messages), 1)
+                self.assertEqual(sum("Harvester" in msg for msg in messages), 1)
                 # offline harvesters must not be displayed
-                self.assertTrue(
-                    all("machine B" not in msg for msg in messages))
+                self.assertTrue(all("machine B" not in msg for msg in messages))

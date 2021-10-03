@@ -9,11 +9,13 @@ from .MonitoringClient import MonitoringClient
 
 
 def main():
-    """ This function starts the chia tea client """
+    """This function starts the chia tea client"""
     args = parse_args(
         name="Chia Tea Monitoring Client",
-        description=("This tool collects data about chia and the machine" +
-                     "and sends them to the monitoring server.")
+        description=(
+            "This tool collects data about chia and the machine"
+            + "and sends them to the monitoring server."
+        ),
     )
 
     # load config
@@ -26,8 +28,7 @@ def main():
     # we disable auth during testing
     is_testing = config.development.testing
 
-    cert = get_credentials_cert(is_testing, config) \
-        if not is_testing else ""
+    cert = get_credentials_cert(is_testing, config) if not is_testing else ""
 
     # create client
     client = MonitoringClient(

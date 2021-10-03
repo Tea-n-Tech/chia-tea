@@ -1,4 +1,3 @@
-
 import asyncio
 import logging
 import sqlite3
@@ -10,9 +9,11 @@ import discord
 
 from ...protobuf.generated.computer_info_pb2 import ComputerInfo
 from ...protobuf.generated.machine_info_pb2 import MachineInfo
-from ...protobuf.to_sqlite.sql_cmds import (get_computer_info_from_db,
-                                            get_machine_infos_from_db,
-                                            get_update_events_from_db)
+from ...protobuf.to_sqlite.sql_cmds import (
+    get_computer_info_from_db,
+    get_machine_infos_from_db,
+    get_update_events_from_db,
+)
 from ...utils.logger import get_logger
 from ..common import open_database_read_only
 from .computer_info_notifications import get_computer_info_messages_if_any
@@ -25,7 +26,7 @@ async def log_and_send_msg_if_any(
     channel: discord.ChannelType,
     is_testing: bool,
 ):
-    """ Logs and sends the messages if not empty
+    """Logs and sends the messages if not empty
 
     Parameters
     ----------
@@ -45,7 +46,9 @@ async def log_and_send_msg_if_any(
         total_message = "\n".join(messages)
         n_chars_too_long = len(total_message) > discord_msg_limit
         if n_chars_too_long > 0:
-            total_message = f"⚠️  Message too long for discord ({n_chars_too_long} chars)"
+            total_message = (
+                f"⚠️  Message too long for discord ({n_chars_too_long} chars)"
+            )
 
         logger.info(total_message)
         if not is_testing:
@@ -53,9 +56,9 @@ async def log_and_send_msg_if_any(
 
 
 def get_current_computer_and_machine_infos_from_db(
-        cursor: sqlite3.Cursor
+    cursor: sqlite3.Cursor,
 ) -> Dict[str, Tuple[MachineInfo, ComputerInfo]]:
-    """ Get all current computer infos from the database
+    """Get all current computer infos from the database
 
     Parameters
     ----------
@@ -72,13 +75,12 @@ def get_current_computer_and_machine_infos_from_db(
 
     computer_and_machine_infos = {}
     for machine in machine_info_list:
-        computer_and_machine_infos[machine.machine_id] = \
-            (
-                machine,
-                get_computer_info_from_db(
-                    cursor,
-                    machine.machine_id,
-                )
+        computer_and_machine_infos[machine.machine_id] = (
+            machine,
+            get_computer_info_from_db(
+                cursor,
+                machine.machine_id,
+            ),
         )
 
     return computer_and_machine_infos
@@ -89,7 +91,7 @@ async def run_notifiers(
     channel: discord.ChannelType,
     is_testing: bool,
 ):
-    """ Notify channel in case a harvester got lost
+    """Notify channel in case a harvester got lost
 
     Parameters
     ----------
@@ -112,8 +114,8 @@ async def run_notifiers(
             with open_database_read_only(db_filepath) as cursor:
 
                 # fetch the state of all machines last known
-                old_machine_computer_info_dict = get_current_computer_and_machine_infos_from_db(
-                    cursor
+                old_machine_computer_info_dict = (
+                    get_current_computer_and_machine_infos_from_db(cursor)
                 )
 
                 last_timestamp = int(datetime.now().timestamp())
@@ -141,12 +143,16 @@ async def run_notifiers(
                         )
 
                     # messages by computer info comparison
-                    new_machine_computer_info_dict = get_current_computer_and_machine_infos_from_db(
-                        cursor,
+                    new_machine_computer_info_dict = (
+                        get_current_computer_and_machine_infos_from_db(
+                            cursor,
+                        )
                     )
 
-                    for machine_id, (machine_info, new_computer_info) \
-                            in new_machine_computer_info_dict.items():
+                    for machine_id, (
+                        machine_info,
+                        new_computer_info,
+                    ) in new_machine_computer_info_dict.items():
                         _, old_computer_info = old_machine_computer_info_dict.get(
                             machine_id,
                             ComputerInfo(),

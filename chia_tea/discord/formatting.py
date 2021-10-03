@@ -1,16 +1,18 @@
-
 from datetime import datetime
 from typing import List
 
-from ..protobuf.generated.chia_pb2 import (Harvester, HarvesterPlot,
-                                           HarvesterViewedFromFarmer)
+from ..protobuf.generated.chia_pb2 import (
+    Harvester,
+    HarvesterPlot,
+    HarvesterViewedFromFarmer,
+)
 from ..protobuf.generated.hardware_pb2 import Cpu, Disk, Ram
 from ..protobuf.generated.machine_info_pb2 import MachineInfo
 from ..utils.timing import format_timedelta_from_secs
 
 
-def format_memory_size(n_bytes: float, suffix: str = 'B'):
-    """ Formats a memory size number
+def format_memory_size(n_bytes: float, suffix: str = "B"):
+    """Formats a memory size number
 
     Parameters
     ----------
@@ -24,15 +26,15 @@ def format_memory_size(n_bytes: float, suffix: str = 'B'):
         Thanks Fred @ Stackoverflow:
         https://stackoverflow.com/questions/1094841/get-human-readable-version-of-file-size
     """
-    for unit in ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi']:
+    for unit in ["", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"]:
         if abs(n_bytes) < 1024.0:
             return "%3.1f%s%s" % (n_bytes, unit, suffix)
         n_bytes /= 1024.0
-    return "%.1f%s%s" % (n_bytes, 'Yi', suffix)
+    return "%.1f%s%s" % (n_bytes, "Yi", suffix)
 
 
 def cpu_pb2_as_markdown(cpu: Cpu) -> str:
-    """ Formats a protobuf cpu as markdown
+    """Formats a protobuf cpu as markdown
 
     Parameters
     ----------
@@ -60,7 +62,7 @@ def cpu_pb2_as_markdown(cpu: Cpu) -> str:
 
 
 def ram_pb2_as_markdown(ram: Ram) -> str:
-    """ Formats a protobuf ram as markdown
+    """Formats a protobuf ram as markdown
 
     Parameters
     ----------
@@ -73,12 +75,12 @@ def ram_pb2_as_markdown(ram: Ram) -> str:
         ram info as markdown string
     """
 
-    used_percent = 0.
+    used_percent = 0.0
     try:
         used_percent = ram.used_ram / ram.total_ram * 100
     except ZeroDivisionError:
         pass
-    swap_percent = 0.
+    swap_percent = 0.0
     try:
         swap_percent = ram.used_swap / ram.total_swap * 100
     except ZeroDivisionError:
@@ -96,7 +98,7 @@ def ram_pb2_as_markdown(ram: Ram) -> str:
 
 
 def farmer_harvester_pb2_as_markdown(harvester: HarvesterViewedFromFarmer) -> str:
-    """ Formats a protobuf HarvesterViewedFromFarmer as markdown
+    """Formats a protobuf HarvesterViewedFromFarmer as markdown
 
     Parameters
     ----------
@@ -118,7 +120,8 @@ def farmer_harvester_pb2_as_markdown(harvester: HarvesterViewedFromFarmer) -> st
      🌾 plots: {n_plots}""".format(
         ip_address=harvester.ip_address,
         last_answer=format_timedelta_from_secs(
-            now_timestamp - harvester.time_last_msg_received),
+            now_timestamp - harvester.time_last_msg_received
+        ),
         harvester_id=harvester.id[:8],
         missed_challenges=harvester.missed_challenges,
         n_plots=harvester.n_plots,
@@ -126,7 +129,7 @@ def farmer_harvester_pb2_as_markdown(harvester: HarvesterViewedFromFarmer) -> st
 
 
 def disk_pb2_as_markdown(disk: Disk) -> str:
-    """ Formats a protobuf HarvesterViewedFromFarmer as markdown
+    """Formats a protobuf HarvesterViewedFromFarmer as markdown
 
     Parameters
     ----------
@@ -153,7 +156,7 @@ def harvester_pb2_as_markdown(
     plots: List[HarvesterPlot],
     disks: List[Disk],
 ) -> str:
-    """ Formats a protobuf Harvester as markdown
+    """Formats a protobuf Harvester as markdown
 
     Parameters
     ----------
@@ -173,9 +176,7 @@ def harvester_pb2_as_markdown(
     """
 
     total_size = sum(plot.filesize for plot in plots)
-    disk_msgs = [
-        disk_pb2_as_markdown(disk) for disk in disks
-    ]
+    disk_msgs = [disk_pb2_as_markdown(disk) for disk in disks]
 
     return """
   🚜 Harvester {machine}
@@ -188,12 +189,12 @@ def harvester_pb2_as_markdown(
         n_plots=len(plots),
         n_proofs=harvester.n_proofs,
         total_size=format_memory_size(total_size),
-        disk_msgs="\n".join(disk_msgs)
+        disk_msgs="\n".join(disk_msgs),
     )
 
 
 def get_machine_info_name(machine: MachineInfo) -> str:
-    """ Get a nicely formatted name for a machine info
+    """Get a nicely formatted name for a machine info
 
     Parameters
     ----------

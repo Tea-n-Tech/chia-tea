@@ -1,19 +1,23 @@
-
 from typing import Any, Dict, List
 
 import psutil
 
 from ...chia_watchdog.ChiaWatchdog import ChiaWatchdog
-from ...protobuf.generated.chia_pb2 import (Farmer, Harvester, HarvesterPlot,
-                                            HarvesterViewedFromFarmer, Process,
-                                            Wallet)
+from ...protobuf.generated.chia_pb2 import (
+    Farmer,
+    Harvester,
+    HarvesterPlot,
+    HarvesterViewedFromFarmer,
+    Process,
+    Wallet,
+)
 from ...utils.logger import log_runtime_async
 
 
 async def collect_connected_harvesters_to_farmer(
-    chia_dog: ChiaWatchdog
+    chia_dog: ChiaWatchdog,
 ) -> List[HarvesterViewedFromFarmer]:
-    """ Converts harvester farmer data from watchdog to protobuf
+    """Converts harvester farmer data from watchdog to protobuf
 
     Parameters
     ----------
@@ -33,8 +37,9 @@ async def collect_connected_harvesters_to_farmer(
     harvesters_logfile = chia_dog.harvester_infos
 
     # which harvesters do exist
-    all_harvester_ids = set(harvesters_rpc.keys()) | \
-        set(chia_dog.harvester_infos.keys())
+    all_harvester_ids = set(harvesters_rpc.keys()) | set(
+        chia_dog.harvester_infos.keys()
+    )
 
     connected_harvesters = []
     for harvester_id in all_harvester_ids:
@@ -66,8 +71,10 @@ async def collect_connected_harvesters_to_farmer(
             if not harvester_info.is_connected:
                 continue
             kwargs["missed_challenges"] = harvester_info.n_overdue_responses
-            kwargs["time_last_msg_received"] = harvester_info.time_last_incoming_msg or 0.
-            kwargs["time_last_msg_sent"] = harvester_info.time_last_outgoing_msg or 0.
+            kwargs["time_last_msg_received"] = (
+                harvester_info.time_last_incoming_msg or 0.0
+            )
+            kwargs["time_last_msg_sent"] = harvester_info.time_last_outgoing_msg or 0.0
 
         connected_harvesters.append(
             HarvesterViewedFromFarmer(
@@ -80,7 +87,7 @@ async def collect_connected_harvesters_to_farmer(
 
 @log_runtime_async(__file__)
 async def collect_farmer_info(chia_dog: ChiaWatchdog) -> Farmer:
-    """ Collects info about the farmer
+    """Collects info about the farmer
 
     Parameters
     ----------
@@ -100,10 +107,8 @@ async def collect_farmer_info(chia_dog: ChiaWatchdog) -> Farmer:
 
 
 @log_runtime_async(__file__)
-async def collect_harvester_info(
-    chia_dog: ChiaWatchdog
-) -> Harvester:
-    """ Collects info about the farmer
+async def collect_harvester_info(chia_dog: ChiaWatchdog) -> Harvester:
+    """Collects info about the farmer
 
     Parameters
     ----------
@@ -125,10 +130,8 @@ async def collect_harvester_info(
 
 
 @log_runtime_async(__file__)
-async def collect_harvester_plots(
-    chia_dog: ChiaWatchdog
-) -> List[HarvesterPlot]:
-    """ Collects info about the harvester plots
+async def collect_harvester_plots(chia_dog: ChiaWatchdog) -> List[HarvesterPlot]:
+    """Collects info about the harvester plots
 
     Parameters
     ----------
@@ -161,7 +164,7 @@ async def collect_harvester_plots(
 
 @log_runtime_async(__file__)
 async def collect_wallet_info(chia_dog: ChiaWatchdog) -> Wallet:
-    """ Collects info about the farmer
+    """Collects info about the farmer
 
     Parameters
     ----------
@@ -181,7 +184,7 @@ async def collect_wallet_info(chia_dog: ChiaWatchdog) -> Wallet:
 
 @log_runtime_async(__file__)
 async def collect_process_info() -> List[Process]:
-    """ Collect data about every chia related process
+    """Collect data about every chia related process
     running on the machine
 
     Returns
@@ -226,8 +229,7 @@ async def collect_process_info() -> List[Process]:
                     cpu_usage=process.cpu_percent(),
                     used_physical_ram=meminfo.rss,
                     used_virtual_ram=meminfo.vms,
-                    opened_files=", ".join(
-                        file.path for file in process.open_files()),
+                    opened_files=", ".join(file.path for file in process.open_files()),
                     # network_connections=network_connections,
                 )
             )

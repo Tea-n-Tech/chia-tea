@@ -3,14 +3,19 @@ from typing import Any, Iterable, List, Tuple
 from sortedcontainers import SortedSet
 
 from ..protobuf.data_collection.computer_info import collect_computer_info
-from ..protobuf.generated.computer_info_pb2 import (_UPDATEEVENT, ADD, DELETE,
-                                                    UPDATE, ComputerInfo,
-                                                    UpdateEvent)
+from ..protobuf.generated.computer_info_pb2 import (
+    _UPDATEEVENT,
+    ADD,
+    DELETE,
+    UPDATE,
+    ComputerInfo,
+    UpdateEvent,
+)
 from .ChiaWatchdog import ChiaWatchdog
 
 
 def get_event_type(old_msg: Any, new_msg: Any) -> int:
-    """ Get the event type depending on the objects
+    """Get the event type depending on the objects
 
     Parameters
     ----------
@@ -32,10 +37,10 @@ def get_event_type(old_msg: Any, new_msg: Any) -> int:
 
 
 async def compare_computer_info(
-        old_computer_info: ComputerInfo,
-        new_computer_info: ComputerInfo,
+    old_computer_info: ComputerInfo,
+    new_computer_info: ComputerInfo,
 ) -> UpdateEvent:
-    """ Compares to computer infos and emits events of deltas
+    """Compares to computer infos and emits events of deltas
 
     Parameters
     ----------
@@ -68,8 +73,9 @@ async def compare_computer_info(
         new_msg_or_list = getattr(new_computer_info, field.name)
 
         # bot are already messages ready to be compared
-        if (not isinstance(old_msg_or_list, Iterable) and
-                not isinstance(new_msg_or_list, Iterable)):
+        if not isinstance(old_msg_or_list, Iterable) and not isinstance(
+            new_msg_or_list, Iterable
+        ):
             old_msg = old_msg_or_list
             new_msg = new_msg_or_list
 
@@ -77,22 +83,15 @@ async def compare_computer_info(
                 yield create_update_event(
                     old_msg=old_msg,
                     new_msg=new_msg,
-                    event_type=get_event_type(
-                        old_msg_or_list,
-                        new_msg_or_list
-                    ),
+                    event_type=get_event_type(old_msg_or_list, new_msg_or_list),
                 )
         # both are lists of messages
-        elif (isinstance(old_msg_or_list, Iterable) and
-                isinstance(new_msg_or_list, Iterable)):
-            old_messages = {
-                msg.id: msg for msg in old_msg_or_list
-            }
-            new_messages = {
-                msg.id: msg for msg in new_msg_or_list
-            }
-            all_ids = SortedSet(old_messages.keys()) | SortedSet(
-                new_messages.keys())
+        elif isinstance(old_msg_or_list, Iterable) and isinstance(
+            new_msg_or_list, Iterable
+        ):
+            old_messages = {msg.id: msg for msg in old_msg_or_list}
+            new_messages = {msg.id: msg for msg in new_msg_or_list}
+            all_ids = SortedSet(old_messages.keys()) | SortedSet(new_messages.keys())
 
             for msg_id in all_ids:
                 old_msg = old_messages.get(msg_id)
@@ -101,19 +100,12 @@ async def compare_computer_info(
                     yield create_update_event(
                         old_msg=old_msg,
                         new_msg=new_msg,
-                        event_type=get_event_type(
-                            old_msg,
-                            new_msg
-                        ),
+                        event_type=get_event_type(old_msg, new_msg),
                     )
 
 
-def create_update_event(
-        old_msg: Any,
-        new_msg: Any,
-        event_type: int
-) -> UpdateEvent:
-    """ Creates an update event from the event data
+def create_update_event(old_msg: Any, new_msg: Any, event_type: int) -> UpdateEvent:
+    """Creates an update event from the event data
 
     Parameters
     ----------
@@ -133,18 +125,15 @@ def create_update_event(
 
     for field in _UPDATEEVENT.fields:
         if field.message_type == event_data.DESCRIPTOR:
-            kwargs = {
-                "event_type": event_type,
-                field.name: event_data
-            }
-            return UpdateEvent(
-                **kwargs
-            )
+            kwargs = {"event_type": event_type, field.name: event_data}
+            return UpdateEvent(**kwargs)
 
-    err_msg = ("Could not send update event since the data" +
-               " didn't match any type which can be send" +
-               f" by the message protocol. Event type was '{event_type}'" +
-               f" and data was of type: {type(event_data)}")
+    err_msg = (
+        "Could not send update event since the data"
+        + " didn't match any type which can be send"
+        + f" by the message protocol. Event type was '{event_type}'"
+        + f" and data was of type: {type(event_data)}"
+    )
     raise RuntimeError(err_msg)
 
 
@@ -153,7 +142,7 @@ async def get_update_events(
     initial_state: ComputerInfo,
     chia_dog: ChiaWatchdog,
 ) -> Tuple[List[UpdateEvent], ComputerInfo]:
-    """ Get a continuous stream of update events about what is changing
+    """Get a continuous stream of update events about what is changing
 
     Parameters
     ----------
@@ -176,8 +165,7 @@ async def get_update_events(
     update_events = [
         change_event
         async for change_event in compare_computer_info(
-            old_computer_info=initial_state,
-            new_computer_info=new_computer_info
+            old_computer_info=initial_state, new_computer_info=new_computer_info
         )
     ]
 

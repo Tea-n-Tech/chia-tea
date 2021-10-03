@@ -1,9 +1,6 @@
-
-
 from typing import Callable, List
 
-from ...protobuf.generated.chia_pb2 import (HarvesterPlot,
-                                            HarvesterViewedFromFarmer)
+from ...protobuf.generated.chia_pb2 import HarvesterPlot, HarvesterViewedFromFarmer
 from ...protobuf.generated.computer_info_pb2 import ADD, DELETE, UpdateEvent
 from ...protobuf.generated.hardware_pb2 import Disk, Ram
 from ...protobuf.to_sqlite.custom import get_update_even_data
@@ -15,7 +12,7 @@ def _get_harvester_connection_msg(
     ip_address: str,
     is_connected: bool,
 ) -> str:
-    """ Get the connection msg for a harvester
+    """Get the connection msg for a harvester
 
     Parameters
     ----------
@@ -36,11 +33,11 @@ def _get_harvester_connection_msg(
 
     # send message
     icon = "🟢" if is_connected else "🟠"
-    connection_status = ("connected"
-                         if is_connected
-                         else "disconnected")
+    connection_status = "connected" if is_connected else "disconnected"
 
-    CONNECTION_MSG: str = "{icon} Farmer {farmer_id} {status} to Harvester {harvester_id} ({ip})."
+    CONNECTION_MSG: str = (
+        "{icon} Farmer {farmer_id} {status} to Harvester {harvester_id} ({ip})."
+    )
     msg = CONNECTION_MSG.format(
         icon=icon,
         harvester_id=harvester_id[:10],
@@ -53,10 +50,10 @@ def _get_harvester_connection_msg(
 
 
 def notify_when_farmer_connects_or_disconnects_to_harvester(
-        machine_id: str,
-        update_events: List[UpdateEvent],
+    machine_id: str,
+    update_events: List[UpdateEvent],
 ) -> List[str]:
-    """ notify when a farmer connected to a farmer
+    """notify when a farmer connected to a farmer
 
     Parameters
     ----------
@@ -90,10 +87,10 @@ def notify_when_farmer_connects_or_disconnects_to_harvester(
 
 
 def notify_on_full_ram(
-        machine_id: str,
-        update_events: List[UpdateEvent],
+    machine_id: str,
+    update_events: List[UpdateEvent],
 ) -> List[str]:
-    """ notify if the ram of a machine is full
+    """notify if the ram of a machine is full
 
     Parameters
     ----------
@@ -116,19 +113,20 @@ def notify_on_full_ram(
         if isinstance(pb_msg, Ram):
             ram_usage = pb_msg.used_ram / pb_msg.total_ram
             if ram_usage > 0.95:
-                messages.append("⚠️ Machine {machine_id} uses {usage:.1f}% of RAM".format(
-                    machine_id=machine_id,
-                    usage=ram_usage * 100,
-                ))
+                messages.append(
+                    "⚠️ Machine {machine_id} uses {usage:.1f}% of RAM".format(
+                        machine_id=machine_id,
+                        usage=ram_usage * 100,
+                    )
+                )
 
     return messages
 
 
 def notify_if_a_disk_is_lost(
-    machine_id: str,
-    update_events: List[UpdateEvent]
+    machine_id: str, update_events: List[UpdateEvent]
 ) -> List[str]:
-    """ notify if a machine looses a disk
+    """notify if a machine looses a disk
 
     Parameters
     ----------
@@ -150,8 +148,7 @@ def notify_if_a_disk_is_lost(
             if event.event_type == DELETE:
                 messages.append(
                     "⚠️   Machine {machine_id} lost disk {mountpoint}".format(
-                        machine_id=machine_id,
-                        mountpoint=pb_msg.mountpoint
+                        machine_id=machine_id, mountpoint=pb_msg.mountpoint
                     )
                 )
 
@@ -159,10 +156,9 @@ def notify_if_a_disk_is_lost(
 
 
 def notify_if_plots_are_lost(
-    machine_id: str,
-    update_events: List[UpdateEvent]
+    machine_id: str, update_events: List[UpdateEvent]
 ) -> List[str]:
-    """ notify if a machine looses a disk
+    """notify if a machine looses a disk
 
     Parameters
     ----------
@@ -188,8 +184,7 @@ def notify_if_plots_are_lost(
     if n_deleted_plots:
         messages.append(
             "⚠️ Machine {machine_id} lost {n_plots} plots 🌽".format(
-                machine_id=machine_id,
-                n_plots=n_deleted_plots
+                machine_id=machine_id, n_plots=n_deleted_plots
             )
         )
 
@@ -200,7 +195,7 @@ def get_update_event_messages_if_any(
     machine_id: str,
     update_events: List[UpdateEvent],
 ) -> List[str]:
-    """ Checks if we need to print any messages regarding harvesters
+    """Checks if we need to print any messages regarding harvesters
 
     Parameters
     ----------

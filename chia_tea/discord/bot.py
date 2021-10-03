@@ -26,13 +26,13 @@ channel_id = ""
 
 @bot.command(name="hi")
 async def bot_hi(ctx):
-    """ Says hi to the user """
+    """Says hi to the user"""
     await ctx.send("Hi!")
 
 
 @bot.command(name="wallets")
 async def bot_wallets(ctx):
-    """ Prints all wallets """
+    """Prints all wallets"""
     db_filepath = get_config().monitoring.server.db_filepath
 
     messages = await wallets_cmd(db_filepath)
@@ -47,7 +47,7 @@ async def bot_wallets(ctx):
 
 @bot.command(name="machines")
 async def bot_machines(ctx):
-    """ Prints all machines """
+    """Prints all machines"""
     db_filepath = get_config().monitoring.server.db_filepath
 
     messages = await machines_cmd(db_filepath)
@@ -62,7 +62,7 @@ async def bot_machines(ctx):
 
 @bot.command(name="farmers")
 async def bot_farmers(ctx):
-    """ Prints all farmers """
+    """Prints all farmers"""
     db_filepath = get_config().monitoring.server.db_filepath
 
     messages = await farmers_cmd(db_filepath)
@@ -77,7 +77,7 @@ async def bot_farmers(ctx):
 
 @bot.command(name="harvesters")
 async def bot_harvester(ctx):
-    """ Prints all harvesters """
+    """Prints all harvesters"""
     db_filepath = get_config().monitoring.server.db_filepath
 
     messages = await harvesters_cmd(db_filepath)
@@ -92,7 +92,7 @@ async def bot_harvester(ctx):
 
 @bot.command(name="sql")
 async def bot_sql(ctx, *cmds):
-    """ Let's the user execute arbitrary sql statements """
+    """Let's the user execute arbitrary sql statements"""
     db_filepath = get_config().monitoring.server.db_filepath
 
     cmd = " ".join(cmds)
@@ -107,7 +107,7 @@ async def bot_sql(ctx, *cmds):
 
 
 def get_discord_channel_id() -> int:
-    """ Get the discord channel id from the config
+    """Get the discord channel id from the config
 
     Returns
     -------
@@ -136,8 +136,7 @@ def get_discord_channel_id() -> int:
 
 @bot.event
 async def on_ready():
-    """ Function run when the bot is ready
-    """
+    """Function run when the bot is ready"""
     db_filepath = get_config().monitoring.server.db_filepath
 
     get_logger(module_name).info("Bot started.")
@@ -148,19 +147,14 @@ async def on_ready():
     config = get_config()
     is_testing = config.development.testing
 
-    await run_notifiers(
-        db_filepath,
-        channel,
-        is_testing
-    )
+    await run_notifiers(db_filepath, channel, is_testing)
 
 
 def main():
-    """ Main function for the discord bot
-    """
+    """Main function for the discord bot"""
     args = parse_args(
         name="Chia Tea Discord Bot",
-        description="Start a discord bot to keep an eye on your Chia farm."
+        description="Start a discord bot to keep an eye on your Chia farm.",
     )
 
     # load config

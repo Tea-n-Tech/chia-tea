@@ -10,6 +10,7 @@ from .logfile.FarmerHarvesterLogfile import FarmerHarvesterLogfile
 
 class ChiaWatchdog:
     """Class for watching chia"""
+
     # pylint: disable=too-many-instance-attributes
 
     date_last_reset: date
@@ -25,7 +26,7 @@ class ChiaWatchdog:
     harvester_service: HarvesterAPI
 
     def __init__(self, logfile_filepath: str):
-        """ initialize a chia watchdog
+        """initialize a chia watchdog
 
         Parameters
         ----------
@@ -41,8 +42,8 @@ class ChiaWatchdog:
         self.harvester_service = HarvesterAPI()
         self.farmed_blocks = []
 
-    def copy(self) -> 'ChiaWatchdog':
-        """ Creates a copy of this instance
+    def copy(self) -> "ChiaWatchdog":
+        """Creates a copy of this instance
 
         Returns
         -------
@@ -68,16 +69,17 @@ class ChiaWatchdog:
         return new_instance
 
     async def ready(self):
-        """ Wait for the readiness of the watchdog
-        """
-        while not (self.__logfile_watching_ready and
-                   self.harvester_service.is_ready and
-                   self.farmer_service.is_ready and
-                   self.wallet_service.is_ready):
+        """Wait for the readiness of the watchdog"""
+        while not (
+            self.__logfile_watching_ready
+            and self.harvester_service.is_ready
+            and self.farmer_service.is_ready
+            and self.wallet_service.is_ready
+        ):
             await asyncio.sleep(0.25)
 
     def set_as_ready(self):
-        """ When we scanned the entire logfile once and caught up set this """
+        """When we scanned the entire logfile once and caught up set this"""
         self.__logfile_watching_ready = True
 
     def get_or_create_harvester_info(
@@ -85,7 +87,7 @@ class ChiaWatchdog:
         harvester_id: str,
         ip_address: str,
     ) -> FarmerHarvesterLogfile:
-        """ Get or create a harvester info
+        """Get or create a harvester info
 
         Parameters
         ----------

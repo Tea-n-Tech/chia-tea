@@ -1,4 +1,3 @@
-
 import asyncio
 import traceback
 
@@ -11,8 +10,7 @@ from .regular_checks import run_watchdog_checks
 
 
 async def __start_watchdog_self_checks(chia_dog: ChiaWatchdog):
-    """ Endless checking of the wathcdog such as timeouts
-    """
+    """Endless checking of the wathcdog such as timeouts"""
     await chia_dog.ready()
 
     while True:
@@ -21,16 +19,16 @@ async def __start_watchdog_self_checks(chia_dog: ChiaWatchdog):
 
 
 def __get_on_ready_function(chia_dog: ChiaWatchdog):
-    """ Returns a function setting the watchog to be ready
-    """
+    """Returns a function setting the watchog to be ready"""
+
     async def __on_ready():
         chia_dog.set_as_ready()
+
     return __on_ready
 
 
 async def __start_updating_watchdog_service_infos(chia_dog: ChiaWatchdog):
-    """ Infinite loop to update the service info data of the watchdog regularly
-    """
+    """Infinite loop to update the service info data of the watchdog regularly"""
     while True:
         # contact chia on same machine and update tracking data
         await update_directly_from_chia(chia_dog=chia_dog)
@@ -40,7 +38,7 @@ async def __start_updating_watchdog_service_infos(chia_dog: ChiaWatchdog):
 
 
 def __get_function_to_update_chia_dog_on_line(chia_dog: ChiaWatchdog):
-    """ Wrapper function to bring chia_dog into the context of
+    """Wrapper function to bring chia_dog into the context of
     the line updating function
     """
 
@@ -53,7 +51,7 @@ def __get_function_to_update_chia_dog_on_line(chia_dog: ChiaWatchdog):
 async def run_watchdog(
     chia_dog: ChiaWatchdog,
 ):
-    """ Start observing chia
+    """Start observing chia
 
     Parameters
     ----------
@@ -74,8 +72,7 @@ async def run_watchdog(
                 watch_lines_infinitely(
                     chia_dog.logfile_filepath,
                     on_ready=__get_on_ready_function(chia_dog),
-                    on_line=__get_function_to_update_chia_dog_on_line(
-                        chia_dog),
+                    on_line=__get_function_to_update_chia_dog_on_line(chia_dog),
                 ),
                 # regular checks such as time out
                 __start_watchdog_self_checks(chia_dog),

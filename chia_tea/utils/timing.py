@@ -1,5 +1,3 @@
-
-
 import asyncio
 from datetime import datetime, timedelta
 from functools import wraps
@@ -72,13 +70,14 @@ def format_timedelta(delta_time: Union[timedelta, None]) -> str:
 
 
 async def async_throttle(min_duration: float):
-    """ Logs the time of the function call
+    """Logs the time of the function call
 
     Parameters
     ----------
     min_duration : float
         minimum duration the function will take
     """
+
     def decorator(function):
         @wraps(function)
         async def _throttle_it(*args, **kwargs):
@@ -90,14 +89,14 @@ async def async_throttle(min_duration: float):
                 duration = (end_time - start_time).total_seconds()
                 wait_duration = max(0, min_duration - duration)
                 await asyncio.sleep(wait_duration)
+
         return _throttle_it
+
     return decorator
 
 
-async def wait_at_least(
-        min_duration: float,
-        start_time: Optional[datetime] = None):
-    """ This function delays until at least the duration has
+async def wait_at_least(min_duration: float, start_time: Optional[datetime] = None):
+    """This function delays until at least the duration has
     passed since the specified start time
 
     Parameters

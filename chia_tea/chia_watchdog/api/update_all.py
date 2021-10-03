@@ -7,7 +7,7 @@ from .update_from_wallet import update_from_wallet
 
 
 async def update_directly_from_chia(chia_dog: ChiaWatchdog):
-    """ Update the chia watchdog directly with data received from chia
+    """Update the chia watchdog directly with data received from chia
 
     Parameters
     ----------

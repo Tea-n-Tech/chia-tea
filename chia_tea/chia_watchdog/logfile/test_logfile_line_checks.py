@@ -3,18 +3,19 @@ from datetime import datetime
 
 from ..ChiaWatchdog import ChiaWatchdog
 from .FarmerHarvesterLogfile import FarmerHarvesterLogfile
-from .line_checks import (ActionHarvesterConnected,
-                          ActionHarvesterDisconnected,
-                          ActionHarvesterFoundProof,
-                          ActionMessageFromHarvester,
-                          ActionFinishedSignagePoint,
-                          ActionMessageToHarvester)
+from .line_checks import (
+    ActionHarvesterConnected,
+    ActionHarvesterDisconnected,
+    ActionHarvesterFoundProof,
+    ActionMessageFromHarvester,
+    ActionFinishedSignagePoint,
+    ActionMessageToHarvester,
+)
 
 # pylint: skip-file
 
 
 class TestLineAction(unittest.TestCase):
-
     def test_harvester_disconnected(self):
 
         action = ActionHarvesterDisconnected()
@@ -38,19 +39,10 @@ class TestLineAction(unittest.TestCase):
         action.apply(line, chia_dog)
         self.assertTrue(len(chia_dog.harvester_infos) == 1)
         harvester_info = list(chia_dog.harvester_infos.values())[0]
-        self.assertEqual(
-            harvester_info.ip_address,
-            ip_address
-        )
-        self.assertEqual(
-            harvester_info.harvester_id,
-            node_id
-        )
+        self.assertEqual(harvester_info.ip_address, ip_address)
+        self.assertEqual(harvester_info.harvester_id, node_id)
         self.assertEqual(harvester_info.is_connected, False)
-        self.assertEqual(
-            harvester_info.last_update,
-            timestamp
-        )
+        self.assertEqual(harvester_info.last_update, timestamp)
 
         # check in case harvester exists
         chia_dog.harvester_infos = {
@@ -64,19 +56,10 @@ class TestLineAction(unittest.TestCase):
         action.apply(line, chia_dog)
         self.assertTrue(len(chia_dog.harvester_infos) == 1)
         harvester_info = list(chia_dog.harvester_infos.values())[0]
-        self.assertEqual(
-            harvester_info.ip_address,
-            ip_address
-        )
-        self.assertEqual(
-            harvester_info.harvester_id,
-            node_id
-        )
+        self.assertEqual(harvester_info.ip_address, ip_address)
+        self.assertEqual(harvester_info.harvester_id, node_id)
         self.assertEqual(harvester_info.is_connected, False)
-        self.assertEqual(
-            harvester_info.last_update,
-            timestamp
-        )
+        self.assertEqual(harvester_info.last_update, timestamp)
 
     def test_harvester_connected(self):
 
@@ -88,9 +71,10 @@ class TestLineAction(unittest.TestCase):
         timestamp = datetime.fromisoformat(timestamp_str)
 
         line = (
-            f"{timestamp_str} farmer farmer_server           " +
-            f"   : DEBUG    -> harvester_handshake to peer {ip_address} " +
-            node_id)
+            f"{timestamp_str} farmer farmer_server           "
+            + f"   : DEBUG    -> harvester_handshake to peer {ip_address} "
+            + node_id
+        )
 
         self.assertTrue(action.is_match(line))
 
@@ -100,19 +84,10 @@ class TestLineAction(unittest.TestCase):
         action.apply(line, chia_dog)
         self.assertTrue(len(chia_dog.harvester_infos) == 1)
         harvester_info = list(chia_dog.harvester_infos.values())[0]
-        self.assertEqual(
-            harvester_info.ip_address,
-            ip_address
-        )
-        self.assertEqual(
-            harvester_info.harvester_id,
-            node_id
-        )
+        self.assertEqual(harvester_info.ip_address, ip_address)
+        self.assertEqual(harvester_info.harvester_id, node_id)
         self.assertEqual(harvester_info.is_connected, True)
-        self.assertEqual(
-            harvester_info.last_update,
-            timestamp
-        )
+        self.assertEqual(harvester_info.last_update, timestamp)
 
         # check in case harvester exists
         chia_dog.harvester_infos = {
@@ -126,19 +101,10 @@ class TestLineAction(unittest.TestCase):
         action.apply(line, chia_dog)
         self.assertTrue(len(chia_dog.harvester_infos) == 1)
         harvester_info = list(chia_dog.harvester_infos.values())[0]
-        self.assertEqual(
-            harvester_info.ip_address,
-            ip_address
-        )
-        self.assertEqual(
-            harvester_info.harvester_id,
-            node_id
-        )
+        self.assertEqual(harvester_info.ip_address, ip_address)
+        self.assertEqual(harvester_info.harvester_id, node_id)
         self.assertEqual(harvester_info.is_connected, True)
-        self.assertEqual(
-            harvester_info.last_update,
-            timestamp
-        )
+        self.assertEqual(harvester_info.last_update, timestamp)
 
     def test_farmer_message_to_harvester(self):
 
@@ -189,22 +155,22 @@ class TestLineAction(unittest.TestCase):
         action1 = ActionHarvesterFoundProof()
 
         line = (
-            "2021-06-16T22:44:56.890 " +
-            "harvester chia.harvester.harvester: " +
-            "INFO 0 plots were eligible for farming 65322a31ad... " +
-            "Found 0 proofs. Time: 0.00015 s. Total 0 plots"
+            "2021-06-16T22:44:56.890 "
+            + "harvester chia.harvester.harvester: "
+            + "INFO 0 plots were eligible for farming 65322a31ad... "
+            + "Found 0 proofs. Time: 0.00015 s. Total 0 plots"
         )
         line1Found = (
-            "2021-06-16T22:44:56.890 " +
-            "harvester chia.harvester.harvester: " +
-            "INFO 0 plots were eligible for farming 65322a31ad... " +
-            "Found 1 proofs. Time: 0.00015 s. Total 0 plots"
+            "2021-06-16T22:44:56.890 "
+            + "harvester chia.harvester.harvester: "
+            + "INFO 0 plots were eligible for farming 65322a31ad... "
+            + "Found 1 proofs. Time: 0.00015 s. Total 0 plots"
         )
         line10Found = (
-            "2021-06-16T22:44:56.890 " +
-            "harvester chia.harvester.harvester: " +
-            "INFO 0 plots were eligible for farming 65322a31ad... " +
-            "Found 10 proofs. Time: 0.00015 s. Total 0 plots"
+            "2021-06-16T22:44:56.890 "
+            + "harvester chia.harvester.harvester: "
+            + "INFO 0 plots were eligible for farming 65322a31ad... "
+            + "Found 10 proofs. Time: 0.00015 s. Total 0 plots"
         )
 
         self.assertTrue(action1.is_match(line))
@@ -352,16 +318,16 @@ class TestLineAction(unittest.TestCase):
 
 
 def msg_to_harvester(timestamp_str: str, ip_address: str, node_id: str) -> str:
-    """ Get a fake log msg indicating a send msg to harvester """
+    """Get a fake log msg indicating a send msg to harvester"""
     line = (
-        f"{timestamp_str} farmer farmer_server              : DEBUG" +
-        f"    -> new_signage_point_harvester to peer {ip_address} {node_id}"
+        f"{timestamp_str} farmer farmer_server              : DEBUG"
+        + f"    -> new_signage_point_harvester to peer {ip_address} {node_id}"
     )
     return line
 
 
 def msg_from_harvester(timestamp_str: str, ip_address: str, node_id: str) -> str:
-    """ Get a fake log msg when a farmer receives data from a harvester """
+    """Get a fake log msg when a farmer receives data from a harvester"""
     line = (
         f"{timestamp_str} farmer farmer_server              : DEBUG"
         + f"    <- farming_info from peer {node_id} {ip_address}"
@@ -370,7 +336,7 @@ def msg_from_harvester(timestamp_str: str, ip_address: str, node_id: str) -> str
 
 
 def msg_signage_point(timestamp_str: str) -> str:
-    """ Get a fake log msg in case a new signage point has started """
+    """Get a fake log msg in case a new signage point has started"""
     line = (
         f"{timestamp_str} full_node chia.full_node.full_node: INFO"
         + ":timer:  Finished signage point 19/64: CC: RC:"
@@ -379,7 +345,7 @@ def msg_signage_point(timestamp_str: str) -> str:
 
 
 def msg_disconnect(timestamp_str: str, ip_address: str, node_id: str) -> str:
-    """ Get a fake log msg for a disconnecting harvester to a farmer """
+    """Get a fake log msg for a disconnecting harvester to a farmer"""
     line = (
         f"{timestamp_str} farmer farmer_server              : INFO"
         + f"     Connection closed: {ip_address},"
@@ -389,10 +355,10 @@ def msg_disconnect(timestamp_str: str, ip_address: str, node_id: str) -> str:
 
 
 def msg_connect(timestamp_str: str, ip_address: str, node_id: str) -> str:
-    """ Get a fake log msg for a harvester connecting to a farmer """
+    """Get a fake log msg for a harvester connecting to a farmer"""
     line = (
-        f"{timestamp_str} farmer farmer_server           " +
-        f"   : DEBUG    -> harvester_handshake to peer {ip_address} " +
-        node_id
+        f"{timestamp_str} farmer farmer_server           "
+        + f"   : DEBUG    -> harvester_handshake to peer {ip_address} "
+        + node_id
     )
     return line

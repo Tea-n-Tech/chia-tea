@@ -11,7 +11,7 @@ from ..utils.logger import get_logger
 
 
 def filter_least_used_disks(disk_to_lockfile_count: Dict[str, int]) -> List[str]:
-    """ Filters for the least used disk
+    """Filters for the least used disk
 
     Parameters
     ----------
@@ -26,15 +26,18 @@ def filter_least_used_disks(disk_to_lockfile_count: Dict[str, int]) -> List[str]
     """
     minimum_number_of_lockfiles = min(disk_to_lockfile_count.values())
     available_target_dirpaths = [
-        dirpath for dirpath in disk_to_lockfile_count
-        if disk_to_lockfile_count[dirpath] == minimum_number_of_lockfiles]
+        dirpath
+        for dirpath in disk_to_lockfile_count
+        if disk_to_lockfile_count[dirpath] == minimum_number_of_lockfiles
+    ]
     random.shuffle(available_target_dirpaths)
     return available_target_dirpaths
 
 
-def find_disk_with_space(target_dirs: List[str],
-                         filepath_file: str) -> Union[str, None]:
-    """ Searches for space for a file to be moved
+def find_disk_with_space(
+    target_dirs: List[str], filepath_file: str
+) -> Union[str, None]:
+    """Searches for space for a file to be moved
 
     Parameters
     ----------
@@ -59,9 +62,9 @@ def find_disk_with_space(target_dirs: List[str],
                 os.makedirs(dirpath, exist_ok=True)
             # size check
             n_lockfiles = disk_to_lockfile_count[dirpath]
-            space_after_copying = n_lockfiles*1.08e+11  # 108GB
+            space_after_copying = n_lockfiles * 1.08e11  # 108GB
             space = psutil.disk_usage(dirpath)
-            if space.free > (fstat.st_size+space_after_copying):
+            if space.free > (fstat.st_size + space_after_copying):
                 return dirpath
         except PermissionError:
             warn_msg = "Permission denied to directory '%s'."
@@ -80,7 +83,7 @@ def find_disk_with_space(target_dirs: List[str],
 
 
 def copy_file(source_path: str, target_path: str) -> bool:
-    """ Copies a file from a source path to a target path
+    """Copies a file from a source path to a target path
 
     Parameters
     ----------
@@ -95,10 +98,10 @@ def copy_file(source_path: str, target_path: str) -> bool:
         If the copy was a success.
     """
     print(target_path)
-    with open(source_path, 'rb') as fin:
-        with open(target_path, 'wb') as fout:
+    with open(source_path, "rb") as fin:
+        with open(target_path, "wb") as fout:
             try:
-                shutil.copyfileobj(fin, fout, 128*1024)
+                shutil.copyfileobj(fin, fout, 128 * 1024)
             except (Exception, ConnectionResetError):
                 trace = traceback.format_stack()
                 get_logger(__file__).error(trace)
@@ -106,9 +109,8 @@ def copy_file(source_path: str, target_path: str) -> bool:
     return True
 
 
-def collect_files_from_folders(folder_list: List[str],
-                               pattern: str) -> List[str]:
-    """ Collect files from folders
+def collect_files_from_folders(folder_list: List[str], pattern: str) -> List[str]:
+    """Collect files from folders
 
     Parameters
     ----------
@@ -142,7 +144,7 @@ def collect_files_from_folders(folder_list: List[str],
 
 
 def update_lockfile_count(target_dirs: List[str]) -> Dict[str, int]:
-    """ Get the lockfile count for the specified directories
+    """Get the lockfile count for the specified directories
 
     Parameters
     ----------

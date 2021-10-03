@@ -1,4 +1,3 @@
-
 import sqlite3
 import traceback
 from contextlib import contextmanager
@@ -6,7 +5,7 @@ from typing import Generator, List
 
 
 def catch_errors_as_message(function):
-    """ Catches errors as a list of messages
+    """Catches errors as a list of messages
 
     Parameters
     ----------
@@ -14,20 +13,22 @@ def catch_errors_as_message(function):
         Function to wrap. In case of an error
         the message is returned.
     """
+
     async def wrapper(*args, **kwargs) -> List[str]:
         try:
             return await function(*args, **kwargs)
         except Exception:
             trace = traceback.format_exc()
             return [trace]
+
     return wrapper
 
 
 @contextmanager
 def open_database_read_only(
-    db_filepath: str
+    db_filepath: str,
 ) -> Generator[sqlite3.dbapi2.Cursor, None, None]:
-    """ Open a sqlite database read only
+    """Open a sqlite database read only
 
     Parameters
     ----------
