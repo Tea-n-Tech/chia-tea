@@ -19,6 +19,11 @@ tasks:
       - poetry run python -m grpc.tools.protoc -I./protocol --python_out=. protocol/chia_tea/protobuf/generated/config.proto
       - poetry run python -m grpc.tools.protoc -I./protocol --python_out=. --grpc_python_out=. protocol/chia_tea/protobuf/generated/monitoring_service.proto
 
+  format:
+    desc: Formats the source code
+    cmds:
+      - poetry run black chia_tea
+
   lint:
     desc: Lints the code and reports on issues.
     cmds:
