@@ -21,10 +21,7 @@ class TestMonitoringClient(unittest.TestCase):
         old_computer_info = ComputerInfo()
         new_computer_info = ComputerInfo()
         events = [
-            event
-            async for event in compare_computer_info(
-                old_computer_info, new_computer_info
-            )
+            event async for event in compare_computer_info(old_computer_info, new_computer_info)
         ]
         self.assertListEqual(list(events), [])
 
@@ -36,10 +33,7 @@ class TestMonitoringClient(unittest.TestCase):
         old_computer_info = ComputerInfo()
         new_computer_info = ComputerInfo(cpu=event_data)
         events = [
-            event
-            async for event in compare_computer_info(
-                old_computer_info, new_computer_info
-            )
+            event async for event in compare_computer_info(old_computer_info, new_computer_info)
         ]
         expected = [
             UpdateEvent(
@@ -70,10 +64,7 @@ class TestMonitoringClient(unittest.TestCase):
             ]
         )
         events = [
-            event
-            async for event in compare_computer_info(
-                old_computer_info, new_computer_info
-            )
+            event async for event in compare_computer_info(old_computer_info, new_computer_info)
         ]
         expected = [
             UpdateEvent(
@@ -84,9 +75,7 @@ class TestMonitoringClient(unittest.TestCase):
             ),
             UpdateEvent(
                 event_type=UPDATE,
-                harvester_plot=HarvesterPlot(
-                    id="changed", filename="something changed"
-                ),
+                harvester_plot=HarvesterPlot(id="changed", filename="something changed"),
             ),
             UpdateEvent(
                 event_type=DELETE,
@@ -106,9 +95,7 @@ class TestMonitoringClient(unittest.TestCase):
             if field.name not in ("timestamp", "machine_id")
         ]
         update_event_type = [
-            field.message_type
-            for field in _COMPUTERINFO.fields
-            if field.name != "event_type"
+            field.message_type for field in _COMPUTERINFO.fields if field.name != "event_type"
         ]
 
         for field_type1 in computer_info_field_types:

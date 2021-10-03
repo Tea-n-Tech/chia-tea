@@ -73,9 +73,7 @@ async def compare_computer_info(
         new_msg_or_list = getattr(new_computer_info, field.name)
 
         # bot are already messages ready to be compared
-        if not isinstance(old_msg_or_list, Iterable) and not isinstance(
-            new_msg_or_list, Iterable
-        ):
+        if not isinstance(old_msg_or_list, Iterable) and not isinstance(new_msg_or_list, Iterable):
             old_msg = old_msg_or_list
             new_msg = new_msg_or_list
 
@@ -86,9 +84,7 @@ async def compare_computer_info(
                     event_type=get_event_type(old_msg_or_list, new_msg_or_list),
                 )
         # both are lists of messages
-        elif isinstance(old_msg_or_list, Iterable) and isinstance(
-            new_msg_or_list, Iterable
-        ):
+        elif isinstance(old_msg_or_list, Iterable) and isinstance(new_msg_or_list, Iterable):
             old_messages = {msg.id: msg for msg in old_msg_or_list}
             new_messages = {msg.id: msg for msg in new_msg_or_list}
             all_ids = SortedSet(old_messages.keys()) | SortedSet(new_messages.keys())

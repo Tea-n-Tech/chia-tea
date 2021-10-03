@@ -51,9 +51,7 @@ def __get_database_filepath(config: ChiaTeaConfig) -> str:
     filepath = config.monitoring.server.db_filepath
 
     if not filepath:
-        raise ValueError(
-            "Config entry 'monitoring.server.db_filepath' may not be empty."
-        )
+        raise ValueError("Config entry 'monitoring.server.db_filepath' may not be empty.")
 
     return filepath
 
@@ -142,9 +140,7 @@ def main():
     try:
         args = parse_args(
             name="Chia Tea Monitoring Server",
-            description=(
-                "Start a server collecting data from" + "from monitoring clients."
-            ),
+            description=("Start a server collecting data from" + "from monitoring clients."),
         )
 
         # load config

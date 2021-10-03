@@ -43,9 +43,7 @@ def parse_args(name: str, description: str) -> argparse.Namespace:
 
     parser = argparse.ArgumentParser(prog=name, description=description)
 
-    parser.add_argument(
-        "--config", default="./config.yml", help="Path to the config file"
-    )
+    parser.add_argument("--config", default="./config.yml", help="Path to the config file")
 
     if len(sys.argv) < 1:
         parser.print_help()

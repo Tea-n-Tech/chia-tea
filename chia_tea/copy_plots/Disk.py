@@ -34,9 +34,7 @@ def filter_least_used_disks(disk_to_lockfile_count: Dict[str, int]) -> List[str]
     return available_target_dirpaths
 
 
-def find_disk_with_space(
-    target_dirs: List[str], filepath_file: str
-) -> Union[str, None]:
+def find_disk_with_space(target_dirs: List[str], filepath_file: str) -> Union[str, None]:
     """Searches for space for a file to be moved
 
     Parameters

@@ -31,8 +31,7 @@ class MonitoringDatabase:
     def __check_if_initialized(self):
         if self.connection is None or self.cursor is None:
             err_msg = (
-                "MonitoringDatabase needs to be initialized by"
-                " a 'with' statement in python."
+                "MonitoringDatabase needs to be initialized by" " a 'with' statement in python."
             )
             raise ValueError(err_msg)
 

@@ -119,9 +119,7 @@ def farmer_harvester_pb2_as_markdown(harvester: HarvesterViewedFromFarmer) -> st
      🚆 missed challenges: {missed_challenges}
      🌾 plots: {n_plots}""".format(
         ip_address=harvester.ip_address,
-        last_answer=format_timedelta_from_secs(
-            now_timestamp - harvester.time_last_msg_received
-        ),
+        last_answer=format_timedelta_from_secs(now_timestamp - harvester.time_last_msg_received),
         harvester_id=harvester.id[:8],
         missed_challenges=harvester.missed_challenges,
         n_plots=harvester.n_plots,

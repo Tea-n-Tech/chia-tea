@@ -119,9 +119,7 @@ class TestUpdateEventNotifications(unittest.TestCase):
             message=UpdateEvent(),
         )
 
-        messages = notify_if_a_disk_is_lost(
-            "some machine id", update_events=[update_event]
-        )
+        messages = notify_if_a_disk_is_lost("some machine id", update_events=[update_event])
         self.assertEqual(len(messages), 1)
 
     def test_no_msg_if_disk_is_added_or_updated(self):
@@ -136,15 +134,11 @@ class TestUpdateEventNotifications(unittest.TestCase):
             message=UpdateEvent(),
         )
 
-        messages = notify_if_a_disk_is_lost(
-            "some machine id", update_events=[update_event]
-        )
+        messages = notify_if_a_disk_is_lost("some machine id", update_events=[update_event])
         self.assertEqual(len(messages), 0)
 
         update_event.event_type = UPDATE
-        messages = notify_if_a_disk_is_lost(
-            "some machine id", update_events=[update_event]
-        )
+        messages = notify_if_a_disk_is_lost("some machine id", update_events=[update_event])
         self.assertEqual(len(messages), 0)
 
     def test_msg_if_plots_are_lost(self):
@@ -159,9 +153,7 @@ class TestUpdateEventNotifications(unittest.TestCase):
             message=UpdateEvent(),
         )
 
-        messages = notify_if_plots_are_lost(
-            "some machine id", update_events=[update_event]
-        )
+        messages = notify_if_plots_are_lost("some machine id", update_events=[update_event])
         self.assertEqual(len(messages), 1)
         self.assertTrue("1" in messages[0])
 
@@ -177,13 +169,9 @@ class TestUpdateEventNotifications(unittest.TestCase):
             message=UpdateEvent(),
         )
 
-        messages = notify_if_plots_are_lost(
-            "some machine id", update_events=[update_event]
-        )
+        messages = notify_if_plots_are_lost("some machine id", update_events=[update_event])
         self.assertEqual(len(messages), 0)
 
         update_event.event_type = UPDATE
-        messages = notify_if_plots_are_lost(
-            "some machine id", update_events=[update_event]
-        )
+        messages = notify_if_plots_are_lost("some machine id", update_events=[update_event])
         self.assertEqual(len(messages), 0)

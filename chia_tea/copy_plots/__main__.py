@@ -54,9 +54,7 @@ def main():
             start = time.time()
 
             # lockfile
-            path_to_lockfile = os.path.join(
-                target_dir, filename.replace(".plot", ".copying")
-            )
+            path_to_lockfile = os.path.join(target_dir, filename.replace(".plot", ".copying"))
 
             with create_lockfile(path_to_lockfile):
                 successful_copy = copy_file(filepath, target_path)

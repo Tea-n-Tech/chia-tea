@@ -139,9 +139,7 @@ class MonitoringClient:
         # no field name found, that is odd. Do a warning and
         # continue
         if not field_name:
-            warn_msg = (
-                "Could not identify which field" + " was set in an update event: %s"
-            )
+            warn_msg = "Could not identify which field" + " was set in an update event: %s"
             get_logger(__file__).warning(warn_msg, MessageToDict(pb_msg))
             self.last_time_sent[field_key] = datetime.now()
             return True
@@ -250,9 +248,7 @@ class MonitoringClient:
 
             previous_state = current_state
 
-            await wait_at_least(
-                min_duration=self.config.collect_data_every, start_time=start_time
-            )
+            await wait_at_least(min_duration=self.config.collect_data_every, start_time=start_time)
 
     async def start_sending_updates(self):
         """Starts sending updates to the server"""

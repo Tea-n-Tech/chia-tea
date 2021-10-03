@@ -49,9 +49,7 @@ def __parse_loglevel(level: str) -> int:
     raise ValueError(msg.format(level))
 
 
-def __add_handler_only_once(
-    logger: logging.Logger, handler: logging.Handler, handler_type: type
-):
+def __add_handler_only_once(logger: logging.Logger, handler: logging.Handler, handler_type: type):
     """Adds a handler only if there is none of the same class yet
 
     Parameters

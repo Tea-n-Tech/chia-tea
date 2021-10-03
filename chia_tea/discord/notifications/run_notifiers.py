@@ -46,9 +46,7 @@ async def log_and_send_msg_if_any(
         total_message = "\n".join(messages)
         n_chars_too_long = len(total_message) > discord_msg_limit
         if n_chars_too_long > 0:
-            total_message = (
-                f"⚠️  Message too long for discord ({n_chars_too_long} chars)"
-            )
+            total_message = f"⚠️  Message too long for discord ({n_chars_too_long} chars)"
 
         logger.info(total_message)
         if not is_testing:
@@ -114,8 +112,8 @@ async def run_notifiers(
             with open_database_read_only(db_filepath) as cursor:
 
                 # fetch the state of all machines last known
-                old_machine_computer_info_dict = (
-                    get_current_computer_and_machine_infos_from_db(cursor)
+                old_machine_computer_info_dict = get_current_computer_and_machine_infos_from_db(
+                    cursor
                 )
 
                 last_timestamp = int(datetime.now().timestamp())
@@ -143,10 +141,8 @@ async def run_notifiers(
                         )
 
                     # messages by computer info comparison
-                    new_machine_computer_info_dict = (
-                        get_current_computer_and_machine_infos_from_db(
-                            cursor,
-                        )
+                    new_machine_computer_info_dict = get_current_computer_and_machine_infos_from_db(
+                        cursor,
                     )
 
                     for machine_id, (

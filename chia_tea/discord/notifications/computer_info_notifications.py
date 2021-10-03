@@ -77,9 +77,7 @@ def get_msg_if_farmer_harvester_timed_out(
         didn't time out.
     """
 
-    new_harvester_timed_out = (
-        new_timestamp - harvester.time_last_msg_received >= HARVESTER_TIMOUT
-    )
+    new_harvester_timed_out = new_timestamp - harvester.time_last_msg_received >= HARVESTER_TIMOUT
     previously_notified = (
         last_timestamp - harvester.time_last_msg_received >= HARVESTER_TIMOUT
         # we assume on startup that we already notified on a timeout

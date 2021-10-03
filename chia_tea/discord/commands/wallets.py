@@ -22,9 +22,7 @@ async def wallets_cmd(db_filepath: str) -> List[str]:
     messages = []
 
     with open_database_read_only(db_filepath) as cursor:
-        machine_and_computer_info_dict = get_current_computer_and_machine_infos_from_db(
-            cursor
-        )
+        machine_and_computer_info_dict = get_current_computer_and_machine_infos_from_db(cursor)
         messages = []
 
         for _, (machine, computer_info) in machine_and_computer_info_dict.items():

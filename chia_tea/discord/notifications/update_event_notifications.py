@@ -35,9 +35,7 @@ def _get_harvester_connection_msg(
     icon = "🟢" if is_connected else "🟠"
     connection_status = "connected" if is_connected else "disconnected"
 
-    CONNECTION_MSG: str = (
-        "{icon} Farmer {farmer_id} {status} to Harvester {harvester_id} ({ip})."
-    )
+    CONNECTION_MSG: str = "{icon} Farmer {farmer_id} {status} to Harvester {harvester_id} ({ip})."
     msg = CONNECTION_MSG.format(
         icon=icon,
         harvester_id=harvester_id[:10],
@@ -123,9 +121,7 @@ def notify_on_full_ram(
     return messages
 
 
-def notify_if_a_disk_is_lost(
-    machine_id: str, update_events: List[UpdateEvent]
-) -> List[str]:
+def notify_if_a_disk_is_lost(machine_id: str, update_events: List[UpdateEvent]) -> List[str]:
     """notify if a machine looses a disk
 
     Parameters
@@ -155,9 +151,7 @@ def notify_if_a_disk_is_lost(
     return messages
 
 
-def notify_if_plots_are_lost(
-    machine_id: str, update_events: List[UpdateEvent]
-) -> List[str]:
+def notify_if_plots_are_lost(machine_id: str, update_events: List[UpdateEvent]) -> List[str]:
     """notify if a machine looses a disk
 
     Parameters

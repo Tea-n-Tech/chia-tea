@@ -107,13 +107,8 @@ class FarmerHarvesterLogfile:
         HARVESTER_TIMOUT = 60  # seconds
 
         if not self.timed_out:
-            if (
-                self.time_last_incoming_msg is not None
-                and self.time_last_outgoing_msg is not None
-            ):
-                delta_seconds = (
-                    current_time - self.time_last_incoming_msg
-                ).total_seconds()
+            if self.time_last_incoming_msg is not None and self.time_last_outgoing_msg is not None:
+                delta_seconds = (current_time - self.time_last_incoming_msg).total_seconds()
                 if delta_seconds > CHALLENGE_TIMEOUT:
                     self.n_overdue_responses += 1
                 if delta_seconds > HARVESTER_TIMOUT:

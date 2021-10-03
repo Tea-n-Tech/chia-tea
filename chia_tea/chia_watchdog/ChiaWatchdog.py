@@ -52,8 +52,7 @@ class ChiaWatchdog:
         """
         new_instance = ChiaWatchdog(self.logfile_filepath)
         new_instance.harvester_infos = {
-            id: harvester_info.copy()
-            for id, harvester_info in self.harvester_infos.items()
+            id: harvester_info.copy() for id, harvester_info in self.harvester_infos.items()
         }
         # date is immutable thus safe to share
         new_instance.date_last_reset = self.date_last_reset

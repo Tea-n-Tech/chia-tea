@@ -23,9 +23,7 @@ async def harvesters_cmd(db_filepath: str) -> List[str]:
 
     with open_database_read_only(db_filepath) as cursor:
 
-        machine_and_computer_info_dict = get_current_computer_and_machine_infos_from_db(
-            cursor
-        )
+        machine_and_computer_info_dict = get_current_computer_and_machine_infos_from_db(cursor)
 
         for _, (machine, computer_info) in machine_and_computer_info_dict.items():
             if computer_info.harvester.is_running:

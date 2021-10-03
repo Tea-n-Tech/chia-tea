@@ -52,9 +52,7 @@ class MonitoringServer(MonitoringServicer):
         while True:
             try:
                 # check for a response
-                data_update_request: Union[
-                    DataUpdateRequest, grpc.aio.EOF
-                ] = await context.read()
+                data_update_request: Union[DataUpdateRequest, grpc.aio.EOF] = await context.read()
 
                 # last stream ended (batch of messages)
                 if data_update_request == grpc.aio.EOF:

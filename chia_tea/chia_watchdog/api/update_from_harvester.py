@@ -38,13 +38,9 @@ async def update_from_harvester(chia_dog: ChiaWatchdog):
             chia_dog.harvester_service.failed_to_open_filenames = plots_response[
                 "failed_to_open_filenames"
             ]
-            chia_dog.harvester_service.not_found_filenames = plots_response[
-                "not_found_filenames"
-            ]
+            chia_dog.harvester_service.not_found_filenames = plots_response["not_found_filenames"]
 
-        chia_dog.harvester_service.plot_directories = (
-            await harvester_client.get_plot_directories()
-        )
+        chia_dog.harvester_service.plot_directories = await harvester_client.get_plot_directories()
 
     # pylint: disable=catching-non-exception
     except API_EXCEPTIONS:
