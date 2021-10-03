@@ -96,3 +96,6 @@ overgeneral-exceptions=[
 [tool.black]
 exclude="chia_tea/protobuf"
 line-length=100
+
+[tool.mypy]
+exclude="test_*"

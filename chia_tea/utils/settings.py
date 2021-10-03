@@ -6,7 +6,7 @@ settings_dir = os.path.expanduser("~/.chia_tea")
 path_to_settings = os.path.join(settings_dir, "settings.json")
 
 # for caching settings locally
-SETTINGS_CACHE = {}
+SETTINGS_CACHE: Dict[str, str] = {}
 SETTINGS_ARE_LOADED = False
 
 
