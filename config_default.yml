@@ -32,6 +32,10 @@ copy:
 chia:
   # Filepath at which the chia logfile resides.
   logfile_filepath: ~/.chia/mainnet/log/debug.log
+  # Filepath to the logfile of the madmax plotter.
+  # This tracks the plotting progress. Leave empty
+  # if not used.
+  madmax_logfile: ""
 
 discord:
   token: YOUR_DISCORD_TOKEN

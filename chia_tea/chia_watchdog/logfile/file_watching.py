@@ -24,9 +24,11 @@ async def watch_lines_infinitely(
         been found in the file
     """
 
-    logger = get_logger(__name__)
+    if not filepath:
+        return
 
-    logger.debug("Searching chia logfile: %s", filepath)
+    logger = get_logger(__name__)
+    logger.debug("Searching logfile: %s", filepath)
 
     # try to watch file
     line_generator: Union[None, AsyncGenerator[str, None]] = None

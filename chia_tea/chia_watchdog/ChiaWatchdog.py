@@ -1,11 +1,11 @@
 import asyncio
-from datetime import date
 from typing import Dict, List
 
 from .api.FarmerAPI import FarmerAPI
 from .api.HarvesterAPI import HarvesterAPI
 from .api.WalletAPI import WalletAPI
 from .logfile.FarmerHarvesterLogfile import FarmerHarvesterLogfile
+from .madmax.MadMaxPlotInProgress import MadMaxPlotInProgress
 
 
 class ChiaWatchdog:
@@ -13,29 +13,33 @@ class ChiaWatchdog:
 
     # pylint: disable=too-many-instance-attributes
 
-    date_last_reset: date
     __logfile_watching_ready: bool
 
     # members related to logfile checking
     harvester_infos: Dict[str, FarmerHarvesterLogfile]
     farmed_blocks: List[str]
 
+    # members related to madmax plotter
+    plots_in_progress: List[MadMaxPlotInProgress]
+
     # members for contacting chia directly
     farmer_service: FarmerAPI
     wallet_service: WalletAPI
     harvester_service: HarvesterAPI
 
-    def __init__(self, logfile_filepath: str):
+    def __init__(self, logfile_filepath: str, madmax_logfile: str):
         """initialize a chia watchdog
 
         Parameters
         ----------
         logfile_filepath : str
             path to the logfile to watch
+        madmax_logfile : str
+            path to the madmax logfile to watch
         """
         self.logfile_filepath = logfile_filepath
+        self.madmax_logfile = madmax_logfile
         self.harvester_infos = {}
-        self.date_last_reset = date.today()
         self.__logfile_watching_ready = False
         self.farmer_service = FarmerAPI()
         self.wallet_service = WalletAPI()
@@ -50,12 +54,11 @@ class ChiaWatchdog:
         new_instance : ChiaWatchdog
             copy of the instance
         """
-        new_instance = ChiaWatchdog(self.logfile_filepath)
+        new_instance = ChiaWatchdog(self.logfile_filepath, self.madmax_logfile)
         new_instance.harvester_infos = {
             id: harvester_info.copy() for id, harvester_info in self.harvester_infos.items()
         }
-        # date is immutable thus safe to share
-        new_instance.date_last_reset = self.date_last_reset
+        new_instance.plots_in_progress = [plot.copy() for plot in self.plots_in_progress]
         # not sure about this one but ok
         # pylint: disable=protected-access
         # pylint: disable=unused-private-member

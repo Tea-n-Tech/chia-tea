@@ -28,7 +28,7 @@ class TestChiaWatchdog(unittest.TestCase):
         self.assertTrue(action1.is_match(lineFirstRewardFound))
         self.assertTrue(action1.is_match(lineSecondRewardFound))
 
-        chia_dog = ChiaWatchdog("")
+        chia_dog = ChiaWatchdog("", "")
         chia_dog.harvester_infos = {
             node_id: FarmerHarvesterLogfile(
                 node_id,

@@ -68,11 +68,17 @@ async def run_watchdog(
     while True:
         try:
             await asyncio.gather(
-                # infinite watching of the logfile
+                # infinite watching of the chia logfile
                 watch_lines_infinitely(
                     chia_dog.logfile_filepath,
                     on_ready=__get_on_ready_function(chia_dog),
                     on_line=__get_function_to_update_chia_dog_on_line(chia_dog),
+                ),
+                # infinite watchig of the madmax logfile
+                watch_lines_infinitely(
+                    chia_dog.madmax_logfile,
+                    # on_ready=,
+                    # on_line=,
                 ),
                 # regular checks such as time out
                 __start_watchdog_self_checks(chia_dog),
