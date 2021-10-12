@@ -45,6 +45,7 @@ class ChiaWatchdog:
         self.wallet_service = WalletAPI()
         self.harvester_service = HarvesterAPI()
         self.farmed_blocks = []
+        self.plots_in_progress = []
 
     def copy(self) -> "ChiaWatchdog":
         """Creates a copy of this instance

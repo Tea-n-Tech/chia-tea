@@ -27,7 +27,7 @@ class AbstractLineAction(ABC):
 
     @abstractmethod
     def apply(
-        self: str,
+        self: "AbstractLineAction",
         line: str,
         chia_dog: ChiaWatchdog,
     ):

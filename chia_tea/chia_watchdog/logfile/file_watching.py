@@ -7,6 +7,7 @@ from ...utils.logger import get_logger
 
 async def watch_lines_infinitely(
     filepath: str,
+    on_file_found: Optional[Coroutine] = None,
     on_ready: Optional[Coroutine] = None,
     on_line: Optional[Callable[[str], Awaitable[None]]] = None,
 ):
@@ -16,6 +17,8 @@ async def watch_lines_infinitely(
     ----------
     filepath : str
         filepath to the file to be watched
+    on_file_found: Optional[Coroutine]
+        function to be called when a file was found
     on_ready : Optional[Coroutine]
         function to be called when the initial startup
         has been completed (all current lines read)
@@ -43,6 +46,9 @@ async def watch_lines_infinitely(
             # wait gently for one to appear
             logger.info("Logfile %s not found, waiting for one to appear.", filepath)
             await asyncio.sleep(3)
+
+    if on_file_found is not None:
+        await on_file_found()
 
     logger.debug("Logfile '%s' found. Starting to watch it.", filepath)
 
@@ -82,7 +88,7 @@ async def watch_logfile_generator(
     # and making a new one in-place.
     # To keep track we need to reopen the new file
     while True:
-        logger.debug("Reopening chia logfile: %s", filepath)
+        logger.debug("(Re)opening logfile: %s", filepath)
         with open(filepath, "r", encoding="utf8") as fp:
             while True:
 
