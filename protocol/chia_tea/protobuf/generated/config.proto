@@ -29,6 +29,7 @@ message CopyConfig {
 
 message ChiaConfig {
     string logfile_filepath = 1;
+    string madmax_logfile = 2;
 }
 
 message DiscordConfig {

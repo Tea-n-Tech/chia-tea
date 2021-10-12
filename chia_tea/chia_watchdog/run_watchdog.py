@@ -6,6 +6,7 @@ from .api.update_all import update_directly_from_chia
 from .ChiaWatchdog import ChiaWatchdog
 from .logfile.file_watching import watch_lines_infinitely
 from .logfile.line_checks import run_line_checks
+from .madmax.line_checks import run_line_checks as run_line_checks_madmax
 from .regular_checks import run_watchdog_checks
 
 
@@ -48,6 +49,17 @@ def __get_function_to_update_chia_dog_on_line(chia_dog: ChiaWatchdog):
     return _on_line_function
 
 
+def __get_function_to_update_chia_dog_on_madmax_line(chia_dog: ChiaWatchdog):
+    """Wrapper function to bring chia_dog into the context of
+    the line updating function
+    """
+
+    async def _on_line_function(line: str):
+        await run_line_checks_madmax(chia_dog, line)
+
+    return _on_line_function
+
+
 async def run_watchdog(
     chia_dog: ChiaWatchdog,
 ):
@@ -68,11 +80,18 @@ async def run_watchdog(
     while True:
         try:
             await asyncio.gather(
-                # infinite watching of the logfile
+                # infinite watching of the chia logfile
                 watch_lines_infinitely(
                     chia_dog.logfile_filepath,
                     on_ready=__get_on_ready_function(chia_dog),
                     on_line=__get_function_to_update_chia_dog_on_line(chia_dog),
+                ),
+                # infinite watchig of the madmax logfile
+                watch_lines_infinitely(
+                    chia_dog.madmax_logfile,
+                    # on_file_found=,
+                    # on_ready=,
+                    on_line=__get_function_to_update_chia_dog_on_madmax_line(chia_dog),
                 ),
                 # regular checks such as time out
                 __start_watchdog_self_checks(chia_dog),
