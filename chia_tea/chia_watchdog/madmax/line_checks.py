@@ -6,7 +6,7 @@ from typing import Tuple
 from ...utils.logger import get_logger
 from ..ChiaWatchdog import ChiaWatchdog
 from ..logfile.line_checks import AbstractLineAction
-from .MadMaxPlotInProgress import MadMaxPlotInProgress
+from .MadMaxPlotInProgress import MadMaxPercentages, MadMaxPlotInProgress
 
 
 class AddNewPlotInProgress(AbstractLineAction):
@@ -37,7 +37,8 @@ class SetPoolPublicKeyForLatestPlot(AbstractLineAction):
         return line.startswith(self.LINE_START)
 
     def apply(self, line: str, chia_dog: ChiaWatchdog):
-        line = line[len(self.LINE_START) :].strip()
+        # Formatter conflict with space before :
+        line = line[len(self.LINE_START) :].strip()  # noqa: E203
 
         if chia_dog.plots_in_progress:
             latest_plot = chia_dog.plots_in_progress[-1]
@@ -51,7 +52,8 @@ class SetFarmerPublicKeyForLatestPlot(AbstractLineAction):
         return line.startswith(self.LINE_START)
 
     def apply(self, line: str, chia_dog: ChiaWatchdog):
-        line = line[len(self.LINE_START) :].strip()
+        # Formatter conflict with space before :
+        line = line[len(self.LINE_START) :].strip()  # noqa: E203
 
         if chia_dog.plots_in_progress:
             latest_plot = chia_dog.plots_in_progress[-1]
@@ -65,7 +67,8 @@ class SetPlotDataForLatestPlot(AbstractLineAction):
         return line.startswith(self.LINE_START)
 
     def apply(self, line: str, chia_dog: ChiaWatchdog):
-        line = line[len(self.LINE_START) :].strip()
+        # Formatter conflict with space before :
+        line = line[len(self.LINE_START) :].strip()  # noqa: E203
 
         if chia_dog.plots_in_progress:
             plot_name_split = line.split("-")
@@ -82,17 +85,19 @@ class SetPlotDataForLatestPlot(AbstractLineAction):
             latest_plot.state = "Plotting Phase1"
 
 
-class SetLatestPlotAsFinished(AbstractLineAction):
-    LINE_START = "Total plot creation time was"
+class SetLatestPlotProgressForPhase1(AbstractLineAction):
+    LINE_START = "[P1] Table"
 
     def is_match(self, line: str) -> bool:
         return line.startswith(self.LINE_START)
 
     def apply(self, line: str, chia_dog: ChiaWatchdog):
         if chia_dog.plots_in_progress:
+            line_split = line.split()
+            table_index = int(line_split[2]) - 1
+
             latest_plot = chia_dog.plots_in_progress[-1]
-            latest_plot.end_time = datetime.now()
-            latest_plot.state = "Plotting Done"
+            latest_plot.progress = MadMaxPercentages.phase1[table_index]
 
 
 class LatestPlotEnteringPhase2(AbstractLineAction):
@@ -107,6 +112,40 @@ class LatestPlotEnteringPhase2(AbstractLineAction):
             latest_plot.state = "Plotting Phase2"
 
 
+class SetLatestPlotProgressForPhase2(AbstractLineAction):
+    """Sets the progress for phase 2
+
+    Steps are:
+    [P2] Table 7 scan ...
+    [P2] Table 7 rewrite ...
+    [P2] Table 6 scan ...
+    [P2] Table 6 rewrite ...
+    [P2] Table 5 scan ...
+    [P2] Table 5 rewrite ...
+    [P2] Table 4 scan ...
+    [P2] Table 4 rewrite ...
+    [P2] Table 3 scan ...
+    [P2] Table 3 rewrite ...
+    [P2] Table 2 scan ...
+    [P2] Table 2 rewrite ...
+    """
+
+    LINE_START = "[P2] Table"
+
+    def is_match(self, line: str) -> bool:
+        return line.startswith(self.LINE_START)
+
+    def apply(self, line: str, chia_dog: ChiaWatchdog):
+        if chia_dog.plots_in_progress:
+            line_split = line.split()
+            table_index = int(line_split[2]) - 1
+            one_more = line_split[3] == "rewrite"
+            phase2_index = 2 * table_index - one_more - 1
+
+            latest_plot = chia_dog.plots_in_progress[-1]
+            latest_plot.progress = MadMaxPercentages.phase2[phase2_index]
+
+
 class LatestPlotEnteringPhase3(AbstractLineAction):
     LINE_START = "Wrote plot header with"
 
@@ -119,6 +158,41 @@ class LatestPlotEnteringPhase3(AbstractLineAction):
             latest_plot.state = "Plotting Phase3"
 
 
+class SetLatestPlotProgressForPhase3(AbstractLineAction):
+    """Sets the progress for phase 2
+
+    Steps are:
+    [P3-1] Table 2 ...
+    [P3-2] Table 2 ...
+    [P3-1] Table 3 ...
+    [P3-2] Table 3 ...
+    [P3-1] Table 4 ...
+    [P3-2] Table 4 ...
+    [P3-1] Table 5 ...
+    [P3-2] Table 5 ...
+    [P3-1] Table 6 ...
+    [P3-2] Table 6 ...
+    [P3-1] Table 7 ...
+    [P3-2] Table 7 ...
+    """
+
+    LINE_START = "[P2] Table"
+
+    def is_match(self, line: str) -> bool:
+        return line.startswith(self.LINE_START)
+
+    def apply(self, line: str, chia_dog: ChiaWatchdog):
+        if chia_dog.plots_in_progress:
+            line_split = line.split()
+            offset = 2
+            table_index = int(line_split[1]) - offset
+            one_more = line_split[0][4] == "2"
+            phase3_index = 2 * table_index + one_more
+
+            latest_plot = chia_dog.plots_in_progress[-1]
+            latest_plot.progress = MadMaxPercentages.phase3[phase3_index]
+
+
 class LatestPlotEnteringPhase4(AbstractLineAction):
     LINE_START = "[P4] Starting to write"
 
@@ -129,6 +203,20 @@ class LatestPlotEnteringPhase4(AbstractLineAction):
         if chia_dog.plots_in_progress:
             latest_plot = chia_dog.plots_in_progress[-1]
             latest_plot.state = "Plotting Phase4"
+
+
+class SetLatestPlotAsFinished(AbstractLineAction):
+    LINE_START = "Total plot creation time was"
+
+    def is_match(self, line: str) -> bool:
+        return line.startswith(self.LINE_START)
+
+    def apply(self, line: str, chia_dog: ChiaWatchdog):
+        if chia_dog.plots_in_progress:
+            latest_plot = chia_dog.plots_in_progress[-1]
+            latest_plot.end_time = datetime.now()
+            latest_plot.state = "Plotting Done"
+            latest_plot.progress = 1
 
 
 class StartCopyOfPlot(AbstractLineAction):
@@ -192,10 +280,13 @@ ALL_LINE_ACTIONS: Tuple[AbstractLineAction, ...] = (
     SetPoolPublicKeyForLatestPlot(),
     SetFarmerPublicKeyForLatestPlot(),
     SetPlotDataForLatestPlot(),
-    SetLatestPlotAsFinished(),
-    FinishedCopyOfPlot(),
+    SetLatestPlotProgressForPhase1(),
     LatestPlotEnteringPhase2(),
+    SetLatestPlotProgressForPhase2(),
     LatestPlotEnteringPhase3(),
+    SetLatestPlotProgressForPhase3(),
     LatestPlotEnteringPhase4(),
+    SetLatestPlotAsFinished(),
     StartCopyOfPlot(),
+    FinishedCopyOfPlot(),
 )

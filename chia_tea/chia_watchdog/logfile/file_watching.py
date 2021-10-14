@@ -7,7 +7,7 @@ from ...utils.logger import get_logger
 
 async def watch_lines_infinitely(
     filepath: str,
-    on_file_found: Optional[Coroutine] = None,
+    on_file_missing: Optional[Coroutine] = None,
     on_ready: Optional[Coroutine] = None,
     on_line: Optional[Callable[[str], Awaitable[None]]] = None,
 ):
@@ -17,8 +17,9 @@ async def watch_lines_infinitely(
     ----------
     filepath : str
         filepath to the file to be watched
-    on_file_found: Optional[Coroutine]
-        function to be called when a file was found
+    on_file_missing: Optional[Coroutine]
+        function to be called when the specified logfile
+        does not exist
     on_ready : Optional[Coroutine]
         function to be called when the initial startup
         has been completed (all current lines read)
@@ -34,6 +35,7 @@ async def watch_lines_infinitely(
     logger.debug("Searching logfile: %s", filepath)
 
     # try to watch file
+    file_missing_was_run = False
     line_generator: Union[None, AsyncGenerator[str, None]] = None
     while line_generator is None:
         try:
@@ -46,9 +48,9 @@ async def watch_lines_infinitely(
             # wait gently for one to appear
             logger.info("Logfile %s not found, waiting for one to appear.", filepath)
             await asyncio.sleep(3)
-
-    if on_file_found is not None:
-        await on_file_found()
+            if on_file_missing is not None and not file_missing_was_run:
+                await on_file_missing()
+                file_missing_was_run = True
 
     logger.debug("Logfile '%s' found. Starting to watch it.", filepath)
 

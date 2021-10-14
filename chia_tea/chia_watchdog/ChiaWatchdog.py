@@ -13,7 +13,8 @@ class ChiaWatchdog:
 
     # pylint: disable=too-many-instance-attributes
 
-    __logfile_watching_ready: bool
+    __logfile_chia_ready: bool = False
+    __logfile_madmax_ready: bool = False
 
     # members related to logfile checking
     harvester_infos: Dict[str, FarmerHarvesterLogfile]
@@ -40,7 +41,6 @@ class ChiaWatchdog:
         self.logfile_filepath = logfile_filepath
         self.madmax_logfile = madmax_logfile
         self.harvester_infos = {}
-        self.__logfile_watching_ready = False
         self.farmer_service = FarmerAPI()
         self.wallet_service = WalletAPI()
         self.harvester_service = HarvesterAPI()
@@ -63,7 +63,8 @@ class ChiaWatchdog:
         # not sure about this one but ok
         # pylint: disable=protected-access
         # pylint: disable=unused-private-member
-        new_instance.__logfile_watching_ready = self.__logfile_watching_ready
+        new_instance.__logfile_chia_ready = self.__logfile_chia_ready
+        new_instance.__logfile_madmax_ready = self.__logfile_madmax_ready
         new_instance.farmer_service = self.farmer_service.copy()
         new_instance.wallet_service = self.wallet_service.copy()
         new_instance.harvester_service = self.harvester_service.copy()
@@ -74,16 +75,21 @@ class ChiaWatchdog:
     async def ready(self):
         """Wait for the readiness of the watchdog"""
         while not (
-            self.__logfile_watching_ready
+            self.__logfile_chia_ready
+            and self.__logfile_madmax_ready
             and self.harvester_service.is_ready
             and self.farmer_service.is_ready
             and self.wallet_service.is_ready
         ):
             await asyncio.sleep(0.25)
 
-    def set_as_ready(self):
-        """When we scanned the entire logfile once and caught up set this"""
-        self.__logfile_watching_ready = True
+    def set_chia_logfile_is_ready(self):
+        """When the chia logfile scanner has done its init, this gets called"""
+        self.__logfile_chia_ready = True
+
+    def set_madmax_logfile_is_ready(self):
+        """When the madmax logfile scanner has done its init, this gets called"""
+        self.__logfile_madmax_ready = True
 
     def get_or_create_harvester_info(
         self,

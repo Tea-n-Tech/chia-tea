@@ -1,5 +1,6 @@
 import asyncio
 import traceback
+from typing import Callable
 
 from ..utils.logger import get_logger
 from .api.update_all import update_directly_from_chia
@@ -19,11 +20,11 @@ async def __start_watchdog_self_checks(chia_dog: ChiaWatchdog):
         await asyncio.sleep(0.8)
 
 
-def __get_on_ready_function(chia_dog: ChiaWatchdog):
+def __get_on_ready_function(fn: Callable[[], None]):
     """Returns a function setting the watchog to be ready"""
 
     async def __on_ready():
-        chia_dog.set_as_ready()
+        fn()
 
     return __on_ready
 
@@ -83,14 +84,21 @@ async def run_watchdog(
                 # infinite watching of the chia logfile
                 watch_lines_infinitely(
                     chia_dog.logfile_filepath,
-                    on_ready=__get_on_ready_function(chia_dog),
+                    # the watchdog is set ready if the logfile is missing
+                    # this might just mean that the machine doesn't run
+                    # chia.
+                    on_file_missing=__get_on_ready_function(chia_dog.set_chia_logfile_is_ready),
+                    on_ready=__get_on_ready_function(chia_dog.set_chia_logfile_is_ready),
                     on_line=__get_function_to_update_chia_dog_on_line(chia_dog),
                 ),
                 # infinite watchig of the madmax logfile
                 watch_lines_infinitely(
                     chia_dog.madmax_logfile,
-                    # on_file_found=,
-                    # on_ready=,
+                    # the watchdog is set ready if the logfile is missing
+                    # this might just mean that the machine doesn't run
+                    # madmax.
+                    on_file_missing=__get_on_ready_function(chia_dog.set_madmax_logfile_is_ready),
+                    on_ready=__get_on_ready_function(chia_dog.set_madmax_logfile_is_ready),
                     on_line=__get_function_to_update_chia_dog_on_madmax_line(chia_dog),
                 ),
                 # regular checks such as time out
