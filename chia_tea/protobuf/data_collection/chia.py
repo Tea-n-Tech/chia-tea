@@ -8,10 +8,38 @@ from ...protobuf.generated.chia_pb2 import (
     Harvester,
     HarvesterPlot,
     HarvesterViewedFromFarmer,
+    PlotInProgress,
     Process,
     Wallet,
 )
 from ...utils.logger import log_runtime_async
+
+
+async def collect_plots_in_progress(chia_dog: ChiaWatchdog) -> List[PlotInProgress]:
+    """Converts partially finished plots from the watchdog to protobuf
+
+    Parameters
+    ----------
+    chia_dog : ChiaWatchdog
+        watchdog instance to get data from
+
+    Returns
+    -------
+    plots_in_progress : List[PlotInProgress]
+        plots in progress converted to protobuf
+    """
+    plots_in_progress = []
+    for plot in chia_dog.plots_in_progress:
+        plot_pb2 = PlotInProgress(
+            id=plot.public_key,
+            pool_public_key=plot.pool_public_key,
+            start_time=plot.start_time.timestamp(),
+            end_time=plot.end_time.timestamp() if plot.end_time is not None else 0.0,
+            plottingProgress=plot.progress,
+            state=plot.state,
+        )
+        plots_in_progress.append(plot_pb2)
+    return plots_in_progress
 
 
 async def collect_connected_harvesters_to_farmer(
@@ -37,9 +65,7 @@ async def collect_connected_harvesters_to_farmer(
     harvesters_logfile = chia_dog.harvester_infos
 
     # which harvesters do exist
-    all_harvester_ids = set(harvesters_rpc.keys()) | set(
-        chia_dog.harvester_infos.keys()
-    )
+    all_harvester_ids = set(harvesters_rpc.keys()) | set(chia_dog.harvester_infos.keys())
 
     connected_harvesters = []
     for harvester_id in all_harvester_ids:
@@ -71,9 +97,7 @@ async def collect_connected_harvesters_to_farmer(
             if not harvester_info.is_connected:
                 continue
             kwargs["missed_challenges"] = harvester_info.n_overdue_responses
-            kwargs["time_last_msg_received"] = (
-                harvester_info.time_last_incoming_msg or 0.0
-            )
+            kwargs["time_last_msg_received"] = harvester_info.time_last_incoming_msg or 0.0
             kwargs["time_last_msg_sent"] = harvester_info.time_last_outgoing_msg or 0.0
 
         connected_harvesters.append(

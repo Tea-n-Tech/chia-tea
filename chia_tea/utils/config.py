@@ -140,6 +140,9 @@ def get_default_config() -> ChiaTeaConfig:
                     ram=60,
                     disk=60,
                     process=60,
+                    # If a plot finished we'd like to know within
+                    # 5 seconds.
+                    plotting_plot=5,
                     # Chia data is not limited by default since
                     # we want to know asap if something is up.
                     # Note though that 'collect_data_every'

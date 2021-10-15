@@ -176,16 +176,14 @@ class SetLatestPlotProgressForPhase3(AbstractLineAction):
     [P3-2] Table 7 ...
     """
 
-    LINE_START = "[P2] Table"
-
     def is_match(self, line: str) -> bool:
-        return line.startswith(self.LINE_START)
+        return line.startswith("[P3-1]") or line.startswith("[P3-2]")
 
     def apply(self, line: str, chia_dog: ChiaWatchdog):
         if chia_dog.plots_in_progress:
             line_split = line.split()
             offset = 2
-            table_index = int(line_split[1]) - offset
+            table_index = int(line_split[2]) - offset
             one_more = line_split[0][4] == "2"
             phase3_index = 2 * table_index + one_more
 
@@ -218,7 +216,7 @@ class SetLatestPlotAsFinished(AbstractLineAction):
             latest_plot.state = "Plotting Done"
             latest_plot.progress = 1
 
-
+"""
 class StartCopyOfPlot(AbstractLineAction):
     LINE_START = "Started copy to"
 
@@ -235,8 +233,9 @@ class StartCopyOfPlot(AbstractLineAction):
             if plot.public_key == public_key:
                 plot.state = "Copying"
                 break
+"""
 
-
+"""
 class FinishedCopyOfPlot(AbstractLineAction):
     LINE_START = "Copy to"
 
@@ -253,7 +252,7 @@ class FinishedCopyOfPlot(AbstractLineAction):
             if plot.public_key == public_key:
                 plot.end_time_copy = datetime.now()
                 break
-
+"""
 
 async def run_line_checks(chia_dog: ChiaWatchdog, line: str):
     """Processes a line from the logfile
@@ -287,6 +286,6 @@ ALL_LINE_ACTIONS: Tuple[AbstractLineAction, ...] = (
     SetLatestPlotProgressForPhase3(),
     LatestPlotEnteringPhase4(),
     SetLatestPlotAsFinished(),
-    StartCopyOfPlot(),
-    FinishedCopyOfPlot(),
+    # StartCopyOfPlot(),
+    # FinishedCopyOfPlot(),
 )

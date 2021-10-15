@@ -67,7 +67,7 @@ message MonitoringConfig {
             double farmer_harvester = 6;
             double harvester = 7;
             double wallet = 8;
-            // double plotting_job = 9;
+            double plotting_plot = 9;
             double harvester_plot = 10;
         }
     }

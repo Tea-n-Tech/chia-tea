@@ -69,6 +69,7 @@ message PlotInProgress {
     double start_time = 3;
     double end_time = 4;
     float plottingProgress = 5;
+    string state = 6;
 }
 
 // TODO would be nice tracking copying of data

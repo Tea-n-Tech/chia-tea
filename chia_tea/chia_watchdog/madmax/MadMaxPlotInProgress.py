@@ -84,7 +84,6 @@ class MadMaxPlotInProgress:
         self.start_time = start_time
         self.end_time = end_time
         self.progress = progress
-        self.end_time_copy = end_time_copy
         self.plot_type = plot_type
         self.state = state
 
