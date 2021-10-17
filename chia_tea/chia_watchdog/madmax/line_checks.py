@@ -10,66 +10,43 @@ from ..logfile.line_checks import AbstractLineAction
 from .MadMaxPlotInProgress import MadMaxPercentages, MadMaxPlotInProgress
 
 
-def madmax_process_is_running(chia_dog: ChiaWatchdog):
-    """Checks if madmax is really running since a plot
-    in a logfile might be a remnant from a previous run.
-
-    Parameters
-    ----------
-    chia_dog : ChiaWatchdog
-        watchdog observing chia
-
-    Returns
-    -------
-    is_running : bool
-
-    Notes
-    -----
-        Checks process id and executable name (contains chia_plot).
-    """
-    for plot in chia_dog.plots_in_progress:
-        if plot.process_id > 0:
-            try:
-                process = psutil.Process(plot.process_id)
-                return process.is_running() and "chia_plot" in process.exe()
-            except psutil.NoSuchProcess:
-                return False
-
-
 class AddNewPlotInProgress(AbstractLineAction):
-    LINE_START = "Crafting plot "
+    """Add a new plot in progress
 
-    def is_match(self, line: str) -> bool:
-        return line.startswith(self.LINE_START)
+    Example Line:
+    Process ID: 1374
 
-    def apply(self, line: str, chia_dog: ChiaWatchdog):
-        plot_in_progress = MadMaxPlotInProgress(
-            process_id=-1,
-            start_time=datetime.now(),
-            pool_public_key="",
-            farmer_public_key="",
-            public_key="",
-            progress=0,
-            plot_type=0,
-            state="Init",
-        )
-        chia_dog.plots_in_progress.append(plot_in_progress)
+    Note
+    ----
+        We could add a new plot on the log cmd before
+        but we don't have a process id then and if the
+        plotting process dies we can't verify this and
+        have zombie plots in progress.
+    """
 
-
-class SetProcessIdForLatestPlot(AbstractLineAction):
     LINE_START = "Process ID:"
 
     def is_match(self, line: str) -> bool:
         return line.startswith(self.LINE_START)
 
     def apply(self, line: str, chia_dog: ChiaWatchdog):
+
         # Formatter conflict with space before :
         line = line[len(self.LINE_START) :].strip()  # noqa: E203
-        process_id = int(1)
+        process_id = int(line)
 
-        if chia_dog.plots_in_progress:
-            latest_plot = chia_dog.plots_in_progress[-1]
-            latest_plot.process_id = process_id
+        chia_dog.plots_in_progress.append(
+            MadMaxPlotInProgress(
+                process_id=process_id,
+                public_key="",
+                pool_public_key="",
+                farmer_public_key="",
+                start_time=datetime.now(),
+                progress=0,
+                plot_type=0,
+                state="Init",
+            )
+        )
 
 
 class SetPoolPublicKeyForLatestPlot(AbstractLineAction):

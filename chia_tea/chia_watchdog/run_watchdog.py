@@ -12,7 +12,7 @@ from .regular_checks import run_watchdog_checks
 
 
 async def __start_watchdog_self_checks(chia_dog: ChiaWatchdog):
-    """Endless checking of the wathcdog such as timeouts"""
+    """Endless checking of the watchdog"""
     await chia_dog.ready()
 
     while True:
