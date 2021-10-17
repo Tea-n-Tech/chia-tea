@@ -1,12 +1,39 @@
+import psutil
 import os
 import traceback
 from datetime import datetime
-from typing import Tuple
+from typing import Optional, Tuple
 
 from ...utils.logger import get_logger
 from ..ChiaWatchdog import ChiaWatchdog
 from ..logfile.line_checks import AbstractLineAction
 from .MadMaxPlotInProgress import MadMaxPercentages, MadMaxPlotInProgress
+
+
+def madmax_process_is_running(chia_dog: ChiaWatchdog):
+    """Checks if madmax is really running since a plot
+    in a logfile might be a remnant from a previous run.
+
+    Parameters
+    ----------
+    chia_dog : ChiaWatchdog
+        watchdog observing chia
+
+    Returns
+    -------
+    is_running : bool
+
+    Notes
+    -----
+        Checks process id and executable name (contains chia_plot).
+    """
+    for plot in chia_dog.plots_in_progress:
+        if plot.process_id > 0:
+            try:
+                process = psutil.Process(plot.process_id)
+                return process.is_running() and "chia_plot" in process.exe()
+            except psutil.NoSuchProcess:
+                return False
 
 
 class AddNewPlotInProgress(AbstractLineAction):
@@ -17,17 +44,32 @@ class AddNewPlotInProgress(AbstractLineAction):
 
     def apply(self, line: str, chia_dog: ChiaWatchdog):
         plot_in_progress = MadMaxPlotInProgress(
+            process_id=-1,
             start_time=datetime.now(),
-            end_time=None,
             pool_public_key="",
             farmer_public_key="",
             public_key="",
             progress=0,
-            end_time_copy=None,
             plot_type=0,
-            state="initialization",
+            state="Init",
         )
         chia_dog.plots_in_progress.append(plot_in_progress)
+
+
+class SetProcessIdForLatestPlot(AbstractLineAction):
+    LINE_START = "Process ID:"
+
+    def is_match(self, line: str) -> bool:
+        return line.startswith(self.LINE_START)
+
+    def apply(self, line: str, chia_dog: ChiaWatchdog):
+        # Formatter conflict with space before :
+        line = line[len(self.LINE_START) :].strip()  # noqa: E203
+        process_id = int(1)
+
+        if chia_dog.plots_in_progress:
+            latest_plot = chia_dog.plots_in_progress[-1]
+            latest_plot.process_id = process_id
 
 
 class SetPoolPublicKeyForLatestPlot(AbstractLineAction):
@@ -212,12 +254,16 @@ class SetLatestPlotAsFinished(AbstractLineAction):
     def apply(self, line: str, chia_dog: ChiaWatchdog):
         if chia_dog.plots_in_progress:
             latest_plot = chia_dog.plots_in_progress[-1]
-            latest_plot.end_time = datetime.now()
             latest_plot.state = "Plotting Done"
             latest_plot.progress = 1
 
-"""
+
 class StartCopyOfPlot(AbstractLineAction):
+    """
+    Example line:
+    Started copy to /some/drive/plot-k32-2021-10-06-00-53-{public_key}.plot
+    """
+
     LINE_START = "Started copy to"
 
     def is_match(self, line: str) -> bool:
@@ -225,15 +271,20 @@ class StartCopyOfPlot(AbstractLineAction):
 
     def apply(self, line: str, chia_dog: ChiaWatchdog):
         line_split = line.split()
+        # get plot filepath from line
         plot_filepath = line_split[3]
+        # isolate the plot name
         plot_name = os.path.basename(plot_filepath)
-        public_key = plot_name.split("-")[7]
+        # cut out the public key
+        public_key_with_file_ending = plot_name.split("-")[7]
+        # remove file ending from public key string
+        public_key, _ = os.path.splitext(public_key_with_file_ending)
 
-        for plot in chia_dog.plots_in_progress:
-            if plot.public_key == public_key:
-                plot.state = "Copying"
-                break
-"""
+        # remove plot from plotting list
+        chia_dog.plots_in_progress = [
+            plot for plot in chia_dog.plots_in_progress if plot.public_key != public_key
+        ]
+
 
 """
 class FinishedCopyOfPlot(AbstractLineAction):
@@ -253,6 +304,7 @@ class FinishedCopyOfPlot(AbstractLineAction):
                 plot.end_time_copy = datetime.now()
                 break
 """
+
 
 async def run_line_checks(chia_dog: ChiaWatchdog, line: str):
     """Processes a line from the logfile
@@ -286,6 +338,6 @@ ALL_LINE_ACTIONS: Tuple[AbstractLineAction, ...] = (
     SetLatestPlotProgressForPhase3(),
     LatestPlotEnteringPhase4(),
     SetLatestPlotAsFinished(),
-    # StartCopyOfPlot(),
+    StartCopyOfPlot(),
     # FinishedCopyOfPlot(),
 )

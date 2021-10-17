@@ -94,7 +94,7 @@ monitoring:
       # connected_harvester: 2
       # harvester: 2
       # wallet: 2
-      # plotting_job: 2
+      # plotting_plot: 2
       # harvester_plot: 2
 
 # Enables development mode. This currently disables

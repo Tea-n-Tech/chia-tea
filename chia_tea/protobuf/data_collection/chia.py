@@ -34,7 +34,6 @@ async def collect_plots_in_progress(chia_dog: ChiaWatchdog) -> List[PlotInProgre
             id=plot.public_key,
             pool_public_key=plot.pool_public_key,
             start_time=plot.start_time.timestamp(),
-            end_time=plot.end_time.timestamp() if plot.end_time is not None else 0.0,
             plottingProgress=plot.progress,
             state=plot.state,
         )
