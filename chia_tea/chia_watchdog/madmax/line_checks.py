@@ -1,8 +1,7 @@
-import psutil
 import os
 import traceback
 from datetime import datetime
-from typing import Optional, Tuple
+from typing import Tuple
 
 from ...utils.logger import get_logger
 from ..ChiaWatchdog import ChiaWatchdog
