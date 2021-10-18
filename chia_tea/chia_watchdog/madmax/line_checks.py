@@ -49,6 +49,8 @@ class AddNewPlotInProgress(AbstractLineAction):
 
 
 class SetPoolPublicKeyForLatestPlot(AbstractLineAction):
+    """Set the public key for the latest plot in progress"""
+
     LINE_START = "Pool Public Key:"
 
     def is_match(self, line: str) -> bool:

@@ -2,6 +2,12 @@ from datetime import datetime
 
 
 class MadMaxPercentages:
+    """This class contains the "rough" progress percentages for plotting
+
+    In the future these percentages will be dynamically computed
+    and estimated.
+    """
+
     phase1 = (
         0.02232820817,
         0.08422978293,
@@ -43,6 +49,8 @@ class MadMaxPercentages:
 
 
 class MadMaxPlotInProgress:
+    """This class represents a plot in progress created by the madmax plotter"""
+
     def __init__(
         self,
         process_id: int,
