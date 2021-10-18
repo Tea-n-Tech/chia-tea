@@ -7,8 +7,13 @@ from chia_tea.chia_watchdog.madmax.MadMaxPlotInProgress import (
 )
 from .line_checks import (
     AddNewPlotInProgress,
+    LatestPlotEnteringPhase2,
+    LatestPlotEnteringPhase3,
+    LatestPlotEnteringPhase4,
     SetFarmerPublicKeyForLatestPlot,
     SetLatestPlotProgressForPhase1,
+    SetLatestPlotProgressForPhase2,
+    SetLatestPlotProgressForPhase3,
     SetPlotDataForLatestPlot,
     SetPoolPublicKeyForLatestPlot,
     StartCopyOfPlot,
@@ -168,3 +173,146 @@ class TestLineAction(unittest.TestCase):
             action.apply(line=line, chia_dog=dog)
             self.assertEqual(dog.plots_in_progress, [plot])
             self.assertEqual(plot.progress, MadMaxPercentages.phase1[i_line])
+
+    def test_plot_entering_phase2(self):
+
+        logfile_line = "[P2] max_table_size = 4295062806"
+
+        dog = ChiaWatchdog("", "")
+        plot = MadMaxPlotInProgress(
+            process_id=1,
+            public_key=self.public_key,
+            farmer_public_key="",
+            pool_public_key="",
+            start_time=datetime.datetime.now(),
+            progress=0.0,
+            plot_type=0,
+            state="",
+        )
+        dog.plots_in_progress.append(plot)
+
+        action = LatestPlotEnteringPhase2()
+        self.assertTrue(action.is_match(logfile_line))
+        action.apply(line=logfile_line, chia_dog=dog)
+        self.assertEqual(dog.plots_in_progress, [plot])
+        self.assertEqual(plot.state, "Plotting Phase2")
+
+    def test_update_progress_for_phase2(self):
+
+        lines = [
+            "[P2] Table 7 scan took 39.6447 sec",
+            "[P2] Table 7 rewrite took 134.675 sec, dropped 0 entries (0 %)",
+            "[P2] Table 6 scan took 49.1251 sec",
+            "[P2] Table 6 rewrite took 120.439 sec, dropped 581252134 entries (13.5333 %)",
+            "[P2] Table 5 scan took 47.7513 sec",
+            "[P2] Table 5 rewrite took 108.784 sec, dropped 761979853 entries (17.7412 %)",
+            "[P2] Table 4 scan took 44.9049 sec",
+            "[P2] Table 4 rewrite took 105.015 sec, dropped 828797543 entries (19.2969 %)",
+            "[P2] Table 3 scan took 48.4281 sec",
+            "[P2] Table 3 rewrite took 111.87 sec, dropped 855125503 entries (19.9095 %)",
+            "[P2] Table 2 scan took 44.8467 sec",
+            "[P2] Table 2 rewrite took 106.716 sec, dropped 865599957 entries (20.1538 %)",
+        ]
+
+        dog = ChiaWatchdog("", "")
+        plot = MadMaxPlotInProgress(
+            process_id=1,
+            public_key=self.public_key,
+            farmer_public_key="",
+            pool_public_key="",
+            start_time=datetime.datetime.now(),
+            progress=0.0,
+            plot_type=32,
+            state="",
+        )
+        dog.plots_in_progress.append(plot)
+
+        action = SetLatestPlotProgressForPhase2()
+        for i_line, line in enumerate(lines):
+            self.assertTrue(action.is_match(line))
+            action.apply(line=line, chia_dog=dog)
+            self.assertEqual(dog.plots_in_progress, [plot])
+            self.assertEqual(plot.progress, MadMaxPercentages.phase2[i_line])
+
+    def test_plot_entering_phase3(self):
+
+        logfile_line = "Wrote plot header with 268 bytes"
+
+        dog = ChiaWatchdog("", "")
+        plot = MadMaxPlotInProgress(
+            process_id=1,
+            public_key=self.public_key,
+            farmer_public_key="",
+            pool_public_key="",
+            start_time=datetime.datetime.now(),
+            progress=0.0,
+            plot_type=0,
+            state="",
+        )
+        dog.plots_in_progress.append(plot)
+
+        action = LatestPlotEnteringPhase3()
+        self.assertTrue(action.is_match(logfile_line))
+        action.apply(line=logfile_line, chia_dog=dog)
+        self.assertEqual(dog.plots_in_progress, [plot])
+        self.assertEqual(plot.state, "Plotting Phase3")
+
+    def test_update_progress_for_phase3(self):
+
+        lines = [
+            "[P3-1] Table 2 took 119.469 sec, wrote 3429382107 right entries",
+            "[P3-2] Table 2 took 114.577 sec, wrote 3429382107 left entries, 3429382107 final",
+            "[P3-1] Table 3 took 143.732 sec, wrote 3439937303 right entries",
+            "[P3-2] Table 3 took 131.013 sec, wrote 3439937303 left entries, 3439937303 final",
+            "[P3-1] Table 4 took 132.11 sec, wrote 3466170141 right entries",
+            "[P3-2] Table 4 took 158.274 sec, wrote 3466170141 left entries, 3466170141 final",
+            "[P3-1] Table 5 took 133.552 sec, wrote 3532993351 right entries",
+            "[P3-2] Table 5 took 140.348 sec, wrote 3532993351 left entries, 3532993351 final",
+            "[P3-1] Table 6 took 141.1 sec, wrote 3713716370 right entries",
+            "[P3-2] Table 6 took 145.006 sec, wrote 3713716370 left entries, 3713716370 final",
+            "[P3-1] Table 7 took 177.476 sec, wrote 4294916656 right entries",
+            "[P3-2] Table 7 took 162.498 sec, wrote 4294916656 left entries, 4294916656 final",
+        ]
+
+        dog = ChiaWatchdog("", "")
+        plot = MadMaxPlotInProgress(
+            process_id=1,
+            public_key=self.public_key,
+            farmer_public_key="",
+            pool_public_key="",
+            start_time=datetime.datetime.now(),
+            progress=0.0,
+            plot_type=32,
+            state="",
+        )
+        dog.plots_in_progress.append(plot)
+
+        action = SetLatestPlotProgressForPhase3()
+        for i_line, line in enumerate(lines):
+            self.assertTrue(action.is_match(line))
+            action.apply(line=line, chia_dog=dog)
+            self.assertEqual(dog.plots_in_progress, [plot])
+            self.assertEqual(plot.progress, MadMaxPercentages.phase3[i_line])
+
+    def test_plot_entering_phase4(self):
+
+        logfile_line = "[P4] Starting to write C1 and C3 tables"
+
+        dog = ChiaWatchdog("", "")
+        plot = MadMaxPlotInProgress(
+            process_id=1,
+            public_key=self.public_key,
+            farmer_public_key="",
+            pool_public_key="",
+            start_time=datetime.datetime.now(),
+            progress=0.0,
+            plot_type=0,
+            state="",
+        )
+        dog.plots_in_progress.append(plot)
+
+        action = LatestPlotEnteringPhase4()
+        self.assertTrue(action.is_match(logfile_line))
+        action.apply(line=logfile_line, chia_dog=dog)
+        self.assertEqual(dog.plots_in_progress, [plot])
+        self.assertEqual(plot.state, "Plotting Phase4")

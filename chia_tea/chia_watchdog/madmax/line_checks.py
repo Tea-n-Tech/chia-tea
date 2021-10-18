@@ -160,7 +160,7 @@ class SetLatestPlotProgressForPhase2(AbstractLineAction):
             line_split = line.split()
             table_index = int(line_split[2]) - 1
             one_more = line_split[3] == "rewrite"
-            phase2_index = 2 * table_index - one_more - 1
+            phase2_index = 11 - 2 * table_index + one_more + 1
 
             latest_plot = chia_dog.plots_in_progress[-1]
             latest_plot.progress = MadMaxPercentages.phase2[phase2_index]
