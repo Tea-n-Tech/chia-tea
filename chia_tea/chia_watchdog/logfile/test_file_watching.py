@@ -1,4 +1,3 @@
-import asyncio
 import unittest
 
 from mock import mock_open, patch
@@ -11,18 +10,13 @@ class TestChiaWatchdog(unittest.TestCase):
     @async_test
     async def test_watch_logfile_generator_startup(self):
 
-        ready = False
-
-        async def set_ready():
-            ready = True
-
         lines = [
             "A",
             "B",
         ]
 
-        with patch("builtins.open", mock_open(read_data="\n".join(lines))) as mock_file:
-            line_generator = watch_logfile_generator("", on_ready=set_ready)
+        with patch("builtins.open", mock_open(read_data="\n".join(lines))):
+            line_generator = watch_logfile_generator("", on_ready=None)
 
             i_line = 0
             async for line in line_generator:
