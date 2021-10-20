@@ -1,6 +1,7 @@
 import asyncio
+from io import TextIOWrapper
 import os
-from typing import AsyncGenerator, Awaitable, Callable, Coroutine, Optional, Union
+from typing import AsyncGenerator, Awaitable, Callable, Coroutine, Optional, TextIO, Union
 
 from ...utils.logger import get_logger
 
@@ -94,27 +95,32 @@ async def watch_logfile_generator(
         with open(filepath, "r", encoding="utf8") as fp:
             while True:
 
-                # check if the outside wants to terminate
-                terminate = yield
-                if terminate:
-                    break
-
                 # yield as many lines as there are
                 new_line = fp.readline()
                 while new_line:
-                    yield new_line
+                    terminate = yield new_line
+                    if terminate:
+                        raise StopAsyncIteration()
                     new_line = fp.readline()
 
-                    # after startup we caught up
-                if on_ready is not None:
+                # after startup we caught up
+                if _end_of_file(fp):
                     await on_ready()
 
                 # sleep to give it a rest
                 await asyncio.sleep(interval_seconds)
 
                 # check if file was replaced, then rewind
-                if fp.tell() > os.stat(filepath).st_size:
+                if _file_was_replaced_or_cleared(fp):
                     break
 
         if terminate:
             break
+
+
+def _end_of_file(fp: TextIO) -> bool:
+    return fp.tell() == os.stat(fp.fileno()).st_size
+
+
+def _file_was_replaced_or_cleared(fp: TextIO) -> bool:
+    return fp.tell() > os.stat(fp.fileno()).st_size
