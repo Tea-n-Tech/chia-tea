@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "chia-tea"
-version = "0.1.0"
+version = "0.2.0"
 description = "A library dedicated to chia-blockchain farmer."
 authors = ["Tea n Tech"]
 license = "BSD-3"
