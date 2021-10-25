@@ -40,7 +40,11 @@ tasks:
   test:
     desc: Runs the test suite.
     cmds:
-      - poetry run pytest
+      - |
+        poetry run pytest \
+        --cov-report html:cov_html \
+        --cov-report term:skip-covered \
+        --cov=chia_tea
 
   copy:
     desc: Starts the copy cli tool.
