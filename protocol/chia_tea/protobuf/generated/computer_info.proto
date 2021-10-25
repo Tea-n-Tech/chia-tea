@@ -22,7 +22,7 @@ message ComputerInfo {
     repeated hardware_pb2.Disk disks = 5;
     
     // plotting
-    // chia_pb2.PlottingJob plotting_progress = 6;
+    repeated chia_pb2.PlotInProgress plotting_plots = 6;
 
     // farmer
     chia_pb2.Farmer farmer = 7;
@@ -85,6 +85,6 @@ message UpdateEvent {
         chia_pb2.Harvester harvester = 9;
         chia_pb2.Wallet wallet = 10;
         chia_pb2.Process process = 11;
-        // chia_pb2.PlottingJob plotting_job = 12;
+        chia_pb2.PlotInProgress plotting_plot = 12;
     }
 }

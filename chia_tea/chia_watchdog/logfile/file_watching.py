@@ -1,12 +1,13 @@
 import asyncio
 import os
-from typing import AsyncGenerator, Awaitable, Callable, Coroutine, Optional, Union
+from typing import AsyncGenerator, Awaitable, Callable, Coroutine, Optional, TextIO, Union
 
 from ...utils.logger import get_logger
 
 
 async def watch_lines_infinitely(
     filepath: str,
+    on_file_missing: Optional[Coroutine] = None,
     on_ready: Optional[Coroutine] = None,
     on_line: Optional[Callable[[str], Awaitable[None]]] = None,
 ):
@@ -16,6 +17,9 @@ async def watch_lines_infinitely(
     ----------
     filepath : str
         filepath to the file to be watched
+    on_file_missing: Optional[Coroutine]
+        function to be called when the specified logfile
+        does not exist
     on_ready : Optional[Coroutine]
         function to be called when the initial startup
         has been completed (all current lines read)
@@ -24,11 +28,14 @@ async def watch_lines_infinitely(
         been found in the file
     """
 
-    logger = get_logger(__name__)
+    if not filepath:
+        return
 
-    logger.debug("Searching chia logfile: %s", filepath)
+    logger = get_logger(__name__)
+    logger.debug("Searching logfile: %s", filepath)
 
     # try to watch file
+    file_missing_was_run = False
     line_generator: Union[None, AsyncGenerator[str, None]] = None
     while line_generator is None:
         try:
@@ -41,6 +48,9 @@ async def watch_lines_infinitely(
             # wait gently for one to appear
             logger.info("Logfile %s not found, waiting for one to appear.", filepath)
             await asyncio.sleep(3)
+            if on_file_missing is not None and not file_missing_was_run:
+                await on_file_missing()
+                file_missing_was_run = True
 
     logger.debug("Logfile '%s' found. Starting to watch it.", filepath)
 
@@ -80,31 +90,38 @@ async def watch_logfile_generator(
     # and making a new one in-place.
     # To keep track we need to reopen the new file
     while True:
-        logger.debug("Reopening chia logfile: %s", filepath)
+        logger.debug("(Re)opening logfile: %s", filepath)
         with open(filepath, "r", encoding="utf8") as fp:
             while True:
-
-                # check if the outside wants to terminate
-                terminate = yield
-                if terminate:
-                    break
 
                 # yield as many lines as there are
                 new_line = fp.readline()
                 while new_line:
-                    yield new_line
-                    new_line = fp.readline()
 
-                    # after startup we caught up
-                if on_ready is not None:
-                    await on_ready()
+                    # must be placed here so when we yielded
+                    # the last line we caught up
+                    if _end_of_file(fp):
+                        await on_ready()
+
+                    terminate = yield new_line
+                    if terminate:
+                        raise StopAsyncIteration()
+                    new_line = fp.readline()
 
                 # sleep to give it a rest
                 await asyncio.sleep(interval_seconds)
 
                 # check if file was replaced, then rewind
-                if fp.tell() > os.stat(filepath).st_size:
+                if _file_was_replaced_or_cleared(fp):
                     break
 
         if terminate:
             break
+
+
+def _end_of_file(fp: TextIO) -> bool:
+    return fp.tell() == os.stat(fp.fileno()).st_size
+
+
+def _file_was_replaced_or_cleared(fp: TextIO) -> bool:
+    return fp.tell() > os.stat(fp.fileno()).st_size

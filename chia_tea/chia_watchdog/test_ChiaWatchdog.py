@@ -1,12 +1,34 @@
+import asyncio
 import unittest
 from datetime import datetime
 
+from ..utils.testing import async_test
 from .ChiaWatchdog import ChiaWatchdog
 from .logfile.FarmerHarvesterLogfile import FarmerHarvesterLogfile
 from .logfile.line_checks import ActionFarmedUnfinishedBlock
 
 
 class TestChiaWatchdog(unittest.TestCase):
+    @async_test
+    async def test_readiness(self):
+        dog = ChiaWatchdog("", "")
+
+        async def assert_not_ready():
+            with self.assertRaises(asyncio.TimeoutError):
+                await asyncio.wait_for(dog.ready(), timeout=0.5)
+
+        dog.set_chia_logfile_is_ready()
+        await assert_not_ready()
+        dog.set_madmax_logfile_is_ready()
+        await assert_not_ready()
+        dog.farmer_service.is_ready = True
+        await assert_not_ready()
+        dog.harvester_service.is_ready = True
+        await assert_not_ready()
+        dog.wallet_service.is_ready = True
+        # raising an exception is an error case here
+        await asyncio.wait_for(dog.ready(), timeout=0.5)
+
     def test_reward_found(self):
         action1 = ActionFarmedUnfinishedBlock()
         node_id = "65322a31ad01f3aa3fc04f3e43231d35c3a1ddd4"
@@ -28,7 +50,7 @@ class TestChiaWatchdog(unittest.TestCase):
         self.assertTrue(action1.is_match(lineFirstRewardFound))
         self.assertTrue(action1.is_match(lineSecondRewardFound))
 
-        chia_dog = ChiaWatchdog("")
+        chia_dog = ChiaWatchdog("", "")
         chia_dog.harvester_infos = {
             node_id: FarmerHarvesterLogfile(
                 node_id,
