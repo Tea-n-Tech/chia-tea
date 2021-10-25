@@ -9,6 +9,7 @@ from .chia import (
     collect_farmer_info,
     collect_harvester_info,
     collect_harvester_plots,
+    collect_plots_in_progress,
     collect_process_info,
     collect_wallet_info,
 )
@@ -16,9 +17,7 @@ from .hardware import collect_cpu_info, collect_disk_info, collect_ram_info
 
 
 @log_runtime_async(__file__)
-async def collect_computer_info(
-    machine_id: str, chia_dog: ChiaWatchdog
-) -> ComputerInfo:
+async def collect_computer_info(machine_id: str, chia_dog: ChiaWatchdog) -> ComputerInfo:
     """Collects all the info about the machine
 
     Parameters
@@ -44,6 +43,7 @@ async def collect_computer_info(
         wallet_info,
         chia_processes,
         connected_harvesters,
+        plots_in_progress,
     ) = await asyncio.gather(
         collect_cpu_info(),
         collect_disk_info(),
@@ -54,6 +54,7 @@ async def collect_computer_info(
         collect_wallet_info(chia_dog),
         collect_process_info(),
         collect_connected_harvesters_to_farmer(chia_dog),
+        collect_plots_in_progress(chia_dog),
     )
 
     computer_info = ComputerInfo(
@@ -62,13 +63,13 @@ async def collect_computer_info(
         cpu=cpu_info,
         disks=disks,
         ram=ram_info,
-        # plotting_progress=,
         farmer_harvesters=connected_harvesters,
         farmer=farmer_info,
         harvester=harvester_info,
         harvester_plots=harvester_plots,
         wallet=wallet_info,
         processes=chia_processes,
+        plotting_plots=plots_in_progress,
     )
 
     return computer_info

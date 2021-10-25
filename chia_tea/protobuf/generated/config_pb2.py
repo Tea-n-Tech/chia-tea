@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n(chia_tea/protobuf/generated/config.proto\x12&chia_tea.protobuf.generated.config_pb2\"\x1d\n\rMachineConfig\x12\x0c\n\x04name\x18\x01 \x01(\t\"\xb3\x01\n\rLoggingConfig\x12\x42\n\x08loglevel\x18\x01 \x01(\x0e\x32\x30.chia_tea.protobuf.generated.config_pb2.LogLevel\x12\x16\n\x0elog_to_console\x18\x02 \x01(\x08\x12\x13\n\x0blog_to_file\x18\x03 \x01(\x08\x12\x14\n\x0cmax_logfiles\x18\x04 \x01(\x05\x12\x1b\n\x13max_logfile_size_mb\x18\x05 \x01(\x05\"<\n\nCopyConfig\x12\x16\n\x0esource_folders\x18\x01 \x03(\t\x12\x16\n\x0etarget_folders\x18\x02 \x03(\t\"&\n\nChiaConfig\x12\x18\n\x10logfile_filepath\x18\x01 \x01(\t\"2\n\rDiscordConfig\x12\r\n\x05token\x18\x01 \x01(\t\x12\x12\n\nchannel_id\x18\x02 \x01(\x03\"\xf1\x05\n\x10MonitoringConfig\x12Q\n\x04\x61uth\x18\x01 \x01(\x0b\x32\x43.chia_tea.protobuf.generated.config_pb2.MonitoringConfig.AuthConfig\x12U\n\x06server\x18\x02 \x01(\x0b\x32\x45.chia_tea.protobuf.generated.config_pb2.MonitoringConfig.ServerConfig\x12U\n\x06\x63lient\x18\x03 \x01(\x0b\x32\x45.chia_tea.protobuf.generated.config_pb2.MonitoringConfig.ClientConfig\x1a\x39\n\nAuthConfig\x12\x15\n\rcert_filepath\x18\x01 \x01(\t\x12\x14\n\x0ckey_filepath\x18\x02 \x01(\t\x1a\x31\n\x0cServerConfig\x12\x0c\n\x04port\x18\x01 \x01(\x05\x12\x13\n\x0b\x64\x62_filepath\x18\x02 \x01(\t\x1a\xed\x02\n\x0c\x43lientConfig\x12\x0f\n\x07\x61\x64\x64ress\x18\x01 \x01(\t\x12\x0c\n\x04port\x18\x02 \x01(\x05\x12\x1a\n\x12\x63ollect_data_every\x18\x03 \x01(\x01\x12p\n\x11send_update_every\x18\x04 \x01(\x0b\x32U.chia_tea.protobuf.generated.config_pb2.MonitoringConfig.ClientConfig.SendUpdateEvery\x1a\xaf\x01\n\x0fSendUpdateEvery\x12\x0b\n\x03\x63pu\x18\x01 \x01(\x01\x12\x0b\n\x03ram\x18\x02 \x01(\x01\x12\x0c\n\x04\x64isk\x18\x03 \x01(\x01\x12\x0f\n\x07process\x18\x04 \x01(\x01\x12\x0e\n\x06\x66\x61rmer\x18\x05 \x01(\x01\x12\x18\n\x10\x66\x61rmer_harvester\x18\x06 \x01(\x01\x12\x11\n\tharvester\x18\x07 \x01(\x01\x12\x0e\n\x06wallet\x18\x08 \x01(\x01\x12\x16\n\x0eharvester_plot\x18\n \x01(\x01\"$\n\x11\x44\x65velopmentConfig\x12\x0f\n\x07testing\x18\x01 \x01(\x08\"\x9a\x04\n\rChiaTeaConfig\x12\x0f\n\x07version\x18\x01 \x01(\x05\x12\x46\n\x07machine\x18\x08 \x01(\x0b\x32\x35.chia_tea.protobuf.generated.config_pb2.MachineConfig\x12\x46\n\x07logging\x18\x02 \x01(\x0b\x32\x35.chia_tea.protobuf.generated.config_pb2.LoggingConfig\x12@\n\x04\x63opy\x18\x03 \x01(\x0b\x32\x32.chia_tea.protobuf.generated.config_pb2.CopyConfig\x12@\n\x04\x63hia\x18\x04 \x01(\x0b\x32\x32.chia_tea.protobuf.generated.config_pb2.ChiaConfig\x12\x46\n\x07\x64iscord\x18\x05 \x01(\x0b\x32\x35.chia_tea.protobuf.generated.config_pb2.DiscordConfig\x12L\n\nmonitoring\x18\x06 \x01(\x0b\x32\x38.chia_tea.protobuf.generated.config_pb2.MonitoringConfig\x12N\n\x0b\x64\x65velopment\x18\x07 \x01(\x0b\x32\x39.chia_tea.protobuf.generated.config_pb2.DevelopmentConfig*B\n\x08LogLevel\x12\t\n\x05TRACE\x10\x00\x12\t\n\x05\x44\x45\x42UG\x10\x01\x12\x08\n\x04INFO\x10\x02\x12\x0b\n\x07WARNING\x10\x03\x12\t\n\x05\x45RROR\x10\x04\x62\x06proto3'
+  serialized_pb=b'\n(chia_tea/protobuf/generated/config.proto\x12&chia_tea.protobuf.generated.config_pb2\"\x1d\n\rMachineConfig\x12\x0c\n\x04name\x18\x01 \x01(\t\"\xb3\x01\n\rLoggingConfig\x12\x42\n\x08loglevel\x18\x01 \x01(\x0e\x32\x30.chia_tea.protobuf.generated.config_pb2.LogLevel\x12\x16\n\x0elog_to_console\x18\x02 \x01(\x08\x12\x13\n\x0blog_to_file\x18\x03 \x01(\x08\x12\x14\n\x0cmax_logfiles\x18\x04 \x01(\x05\x12\x1b\n\x13max_logfile_size_mb\x18\x05 \x01(\x05\"<\n\nCopyConfig\x12\x16\n\x0esource_folders\x18\x01 \x03(\t\x12\x16\n\x0etarget_folders\x18\x02 \x03(\t\">\n\nChiaConfig\x12\x18\n\x10logfile_filepath\x18\x01 \x01(\t\x12\x16\n\x0emadmax_logfile\x18\x02 \x01(\t\"2\n\rDiscordConfig\x12\r\n\x05token\x18\x01 \x01(\t\x12\x12\n\nchannel_id\x18\x02 \x01(\x03\"\x88\x06\n\x10MonitoringConfig\x12Q\n\x04\x61uth\x18\x01 \x01(\x0b\x32\x43.chia_tea.protobuf.generated.config_pb2.MonitoringConfig.AuthConfig\x12U\n\x06server\x18\x02 \x01(\x0b\x32\x45.chia_tea.protobuf.generated.config_pb2.MonitoringConfig.ServerConfig\x12U\n\x06\x63lient\x18\x03 \x01(\x0b\x32\x45.chia_tea.protobuf.generated.config_pb2.MonitoringConfig.ClientConfig\x1a\x39\n\nAuthConfig\x12\x15\n\rcert_filepath\x18\x01 \x01(\t\x12\x14\n\x0ckey_filepath\x18\x02 \x01(\t\x1a\x31\n\x0cServerConfig\x12\x0c\n\x04port\x18\x01 \x01(\x05\x12\x13\n\x0b\x64\x62_filepath\x18\x02 \x01(\t\x1a\x84\x03\n\x0c\x43lientConfig\x12\x0f\n\x07\x61\x64\x64ress\x18\x01 \x01(\t\x12\x0c\n\x04port\x18\x02 \x01(\x05\x12\x1a\n\x12\x63ollect_data_every\x18\x03 \x01(\x01\x12p\n\x11send_update_every\x18\x04 \x01(\x0b\x32U.chia_tea.protobuf.generated.config_pb2.MonitoringConfig.ClientConfig.SendUpdateEvery\x1a\xc6\x01\n\x0fSendUpdateEvery\x12\x0b\n\x03\x63pu\x18\x01 \x01(\x01\x12\x0b\n\x03ram\x18\x02 \x01(\x01\x12\x0c\n\x04\x64isk\x18\x03 \x01(\x01\x12\x0f\n\x07process\x18\x04 \x01(\x01\x12\x0e\n\x06\x66\x61rmer\x18\x05 \x01(\x01\x12\x18\n\x10\x66\x61rmer_harvester\x18\x06 \x01(\x01\x12\x11\n\tharvester\x18\x07 \x01(\x01\x12\x0e\n\x06wallet\x18\x08 \x01(\x01\x12\x15\n\rplotting_plot\x18\t \x01(\x01\x12\x16\n\x0eharvester_plot\x18\n \x01(\x01\"$\n\x11\x44\x65velopmentConfig\x12\x0f\n\x07testing\x18\x01 \x01(\x08\"\x9a\x04\n\rChiaTeaConfig\x12\x0f\n\x07version\x18\x01 \x01(\x05\x12\x46\n\x07machine\x18\x08 \x01(\x0b\x32\x35.chia_tea.protobuf.generated.config_pb2.MachineConfig\x12\x46\n\x07logging\x18\x02 \x01(\x0b\x32\x35.chia_tea.protobuf.generated.config_pb2.LoggingConfig\x12@\n\x04\x63opy\x18\x03 \x01(\x0b\x32\x32.chia_tea.protobuf.generated.config_pb2.CopyConfig\x12@\n\x04\x63hia\x18\x04 \x01(\x0b\x32\x32.chia_tea.protobuf.generated.config_pb2.ChiaConfig\x12\x46\n\x07\x64iscord\x18\x05 \x01(\x0b\x32\x35.chia_tea.protobuf.generated.config_pb2.DiscordConfig\x12L\n\nmonitoring\x18\x06 \x01(\x0b\x32\x38.chia_tea.protobuf.generated.config_pb2.MonitoringConfig\x12N\n\x0b\x64\x65velopment\x18\x07 \x01(\x0b\x32\x39.chia_tea.protobuf.generated.config_pb2.DevelopmentConfig*B\n\x08LogLevel\x12\t\n\x05TRACE\x10\x00\x12\t\n\x05\x44\x45\x42UG\x10\x01\x12\x08\n\x04INFO\x10\x02\x12\x0b\n\x07WARNING\x10\x03\x12\t\n\x05\x45RROR\x10\x04\x62\x06proto3'
 )
 
 _LOGLEVEL = _descriptor.EnumDescriptor(
@@ -58,8 +58,8 @@ _LOGLEVEL = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1786,
-  serialized_end=1852,
+  serialized_start=1833,
+  serialized_end=1899,
 )
 _sym_db.RegisterEnumDescriptor(_LOGLEVEL)
 
@@ -218,6 +218,13 @@ _CHIACONFIG = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='madmax_logfile', full_name='chia_tea.protobuf.generated.config_pb2.ChiaConfig.madmax_logfile', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -231,7 +238,7 @@ _CHIACONFIG = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=359,
-  serialized_end=397,
+  serialized_end=421,
 )
 
 
@@ -269,8 +276,8 @@ _DISCORDCONFIG = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=399,
-  serialized_end=449,
+  serialized_start=423,
+  serialized_end=473,
 )
 
 
@@ -308,8 +315,8 @@ _MONITORINGCONFIG_AUTHCONFIG = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=729,
-  serialized_end=786,
+  serialized_start=753,
+  serialized_end=810,
 )
 
 _MONITORINGCONFIG_SERVERCONFIG = _descriptor.Descriptor(
@@ -346,8 +353,8 @@ _MONITORINGCONFIG_SERVERCONFIG = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=788,
-  serialized_end=837,
+  serialized_start=812,
+  serialized_end=861,
 )
 
 _MONITORINGCONFIG_CLIENTCONFIG_SENDUPDATEEVERY = _descriptor.Descriptor(
@@ -415,7 +422,14 @@ _MONITORINGCONFIG_CLIENTCONFIG_SENDUPDATEEVERY = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='harvester_plot', full_name='chia_tea.protobuf.generated.config_pb2.MonitoringConfig.ClientConfig.SendUpdateEvery.harvester_plot', index=8,
+      name='plotting_plot', full_name='chia_tea.protobuf.generated.config_pb2.MonitoringConfig.ClientConfig.SendUpdateEvery.plotting_plot', index=8,
+      number=9, type=1, cpp_type=5, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='harvester_plot', full_name='chia_tea.protobuf.generated.config_pb2.MonitoringConfig.ClientConfig.SendUpdateEvery.harvester_plot', index=9,
       number=10, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
@@ -433,8 +447,8 @@ _MONITORINGCONFIG_CLIENTCONFIG_SENDUPDATEEVERY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1030,
-  serialized_end=1205,
+  serialized_start=1054,
+  serialized_end=1252,
 )
 
 _MONITORINGCONFIG_CLIENTCONFIG = _descriptor.Descriptor(
@@ -485,8 +499,8 @@ _MONITORINGCONFIG_CLIENTCONFIG = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=840,
-  serialized_end=1205,
+  serialized_start=864,
+  serialized_end=1252,
 )
 
 _MONITORINGCONFIG = _descriptor.Descriptor(
@@ -530,8 +544,8 @@ _MONITORINGCONFIG = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=452,
-  serialized_end=1205,
+  serialized_start=476,
+  serialized_end=1252,
 )
 
 
@@ -562,8 +576,8 @@ _DEVELOPMENTCONFIG = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1207,
-  serialized_end=1243,
+  serialized_start=1254,
+  serialized_end=1290,
 )
 
 
@@ -643,8 +657,8 @@ _CHIATEACONFIG = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1246,
-  serialized_end=1784,
+  serialized_start=1293,
+  serialized_end=1831,
 )
 
 _LOGGINGCONFIG.fields_by_name['loglevel'].enum_type = _LOGLEVEL

@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n&chia_tea/protobuf/generated/chia.proto\x12$chia_tea.protobuf.generated.chia_pb2\"\xd8\x01\n\x07Process\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x12\n\nexecutable\x18\x02 \x01(\t\x12\x0f\n\x07\x63ommand\x18\x03 \x01(\t\x12\x13\n\x0b\x63reate_time\x18\x04 \x01(\x01\x12\n\n\x02id\x18\x05 \x01(\x03\x12\x11\n\tcpu_usage\x18\x06 \x01(\x02\x12\x19\n\x11used_physical_ram\x18\x07 \x01(\x02\x12\x18\n\x10used_virtual_ram\x18\x08 \x01(\x02\x12\x14\n\x0copened_files\x18\t \x01(\t\x12\x1b\n\x13network_connections\x18\n \x01(\t\"\xc4\x01\n\rHarvesterPlot\x12\n\n\x02id\x18\n \x01(\t\x12\x10\n\x08\x66ilename\x18\x03 \x01(\t\x12\x10\n\x08\x66ilesize\x18\x04 \x01(\x03\x12!\n\x19pool_contract_puzzle_hash\x18\x06 \x01(\t\x12\x17\n\x0fpool_public_key\x18\x07 \x01(\t\x12\x0c\n\x04size\x18\x08 \x01(\x03\x12\x15\n\rtime_modified\x18\t \x01(\x01\x12\x11\n\tplot_seed\x18\x01 \x01(\t\x12\x0f\n\x07\x64isk_id\x18\x02 \x01(\t\"1\n\tHarvester\x12\x12\n\nis_running\x18\x02 \x01(\x08\x12\x10\n\x08n_proofs\x18\x03 \x01(\x03\"\xbc\x01\n\x19HarvesterViewedFromFarmer\x12\n\n\x02id\x18\x01 \x01(\t\x12\x17\n\x0f\x63onnection_time\x18\x08 \x01(\x01\x12\x1e\n\x16time_last_msg_received\x18\x03 \x01(\x01\x12\x1a\n\x12time_last_msg_sent\x18\t \x01(\x01\x12\x12\n\nip_address\x18\n \x01(\t\x12\x19\n\x11missed_challenges\x18\x06 \x01(\x03\x12\x0f\n\x07n_plots\x18\x02 \x01(\x03\"6\n\x06\x46\x61rmer\x12\x12\n\nis_running\x18\x01 \x01(\x08\x12\x18\n\x10total_challenges\x18\x02 \x01(\x03\"/\n\x06Wallet\x12\x12\n\nis_running\x18\x01 \x01(\x08\x12\x11\n\tis_synced\x18\x02 \x01(\x08\x62\x06proto3'
+  serialized_pb=b'\n&chia_tea/protobuf/generated/chia.proto\x12$chia_tea.protobuf.generated.chia_pb2\"\xd8\x01\n\x07Process\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x12\n\nexecutable\x18\x02 \x01(\t\x12\x0f\n\x07\x63ommand\x18\x03 \x01(\t\x12\x13\n\x0b\x63reate_time\x18\x04 \x01(\x01\x12\n\n\x02id\x18\x05 \x01(\x03\x12\x11\n\tcpu_usage\x18\x06 \x01(\x02\x12\x19\n\x11used_physical_ram\x18\x07 \x01(\x02\x12\x18\n\x10used_virtual_ram\x18\x08 \x01(\x02\x12\x14\n\x0copened_files\x18\t \x01(\t\x12\x1b\n\x13network_connections\x18\n \x01(\t\"\xc4\x01\n\rHarvesterPlot\x12\n\n\x02id\x18\n \x01(\t\x12\x10\n\x08\x66ilename\x18\x03 \x01(\t\x12\x10\n\x08\x66ilesize\x18\x04 \x01(\x03\x12!\n\x19pool_contract_puzzle_hash\x18\x06 \x01(\t\x12\x17\n\x0fpool_public_key\x18\x07 \x01(\t\x12\x0c\n\x04size\x18\x08 \x01(\x03\x12\x15\n\rtime_modified\x18\t \x01(\x01\x12\x11\n\tplot_seed\x18\x01 \x01(\t\x12\x0f\n\x07\x64isk_id\x18\x02 \x01(\t\"1\n\tHarvester\x12\x12\n\nis_running\x18\x02 \x01(\x08\x12\x10\n\x08n_proofs\x18\x03 \x01(\x03\"\xbc\x01\n\x19HarvesterViewedFromFarmer\x12\n\n\x02id\x18\x01 \x01(\t\x12\x17\n\x0f\x63onnection_time\x18\x08 \x01(\x01\x12\x1e\n\x16time_last_msg_received\x18\x03 \x01(\x01\x12\x1a\n\x12time_last_msg_sent\x18\t \x01(\x01\x12\x12\n\nip_address\x18\n \x01(\t\x12\x19\n\x11missed_challenges\x18\x06 \x01(\x03\x12\x0f\n\x07n_plots\x18\x02 \x01(\x03\"6\n\x06\x46\x61rmer\x12\x12\n\nis_running\x18\x01 \x01(\x08\x12\x18\n\x10total_challenges\x18\x02 \x01(\x03\"/\n\x06Wallet\x12\x12\n\nis_running\x18\x01 \x01(\x08\x12\x11\n\tis_synced\x18\x02 \x01(\x08\"r\n\x0ePlotInProgress\x12\n\n\x02id\x18\x01 \x01(\t\x12\x17\n\x0fpool_public_key\x18\x02 \x01(\t\x12\x12\n\nstart_time\x18\x03 \x01(\x01\x12\x18\n\x10plottingProgress\x18\x05 \x01(\x02\x12\r\n\x05state\x18\x06 \x01(\tb\x06proto3'
 )
 
 
@@ -398,12 +398,73 @@ _WALLET = _descriptor.Descriptor(
   serialized_end=843,
 )
 
+
+_PLOTINPROGRESS = _descriptor.Descriptor(
+  name='PlotInProgress',
+  full_name='chia_tea.protobuf.generated.chia_pb2.PlotInProgress',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='id', full_name='chia_tea.protobuf.generated.chia_pb2.PlotInProgress.id', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='pool_public_key', full_name='chia_tea.protobuf.generated.chia_pb2.PlotInProgress.pool_public_key', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='start_time', full_name='chia_tea.protobuf.generated.chia_pb2.PlotInProgress.start_time', index=2,
+      number=3, type=1, cpp_type=5, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='plottingProgress', full_name='chia_tea.protobuf.generated.chia_pb2.PlotInProgress.plottingProgress', index=3,
+      number=5, type=2, cpp_type=6, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='state', full_name='chia_tea.protobuf.generated.chia_pb2.PlotInProgress.state', index=4,
+      number=6, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=845,
+  serialized_end=959,
+)
+
 DESCRIPTOR.message_types_by_name['Process'] = _PROCESS
 DESCRIPTOR.message_types_by_name['HarvesterPlot'] = _HARVESTERPLOT
 DESCRIPTOR.message_types_by_name['Harvester'] = _HARVESTER
 DESCRIPTOR.message_types_by_name['HarvesterViewedFromFarmer'] = _HARVESTERVIEWEDFROMFARMER
 DESCRIPTOR.message_types_by_name['Farmer'] = _FARMER
 DESCRIPTOR.message_types_by_name['Wallet'] = _WALLET
+DESCRIPTOR.message_types_by_name['PlotInProgress'] = _PLOTINPROGRESS
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 Process = _reflection.GeneratedProtocolMessageType('Process', (_message.Message,), {
@@ -447,6 +508,13 @@ Wallet = _reflection.GeneratedProtocolMessageType('Wallet', (_message.Message,),
   # @@protoc_insertion_point(class_scope:chia_tea.protobuf.generated.chia_pb2.Wallet)
   })
 _sym_db.RegisterMessage(Wallet)
+
+PlotInProgress = _reflection.GeneratedProtocolMessageType('PlotInProgress', (_message.Message,), {
+  'DESCRIPTOR' : _PLOTINPROGRESS,
+  '__module__' : 'chia_tea.protobuf.generated.chia_pb2'
+  # @@protoc_insertion_point(class_scope:chia_tea.protobuf.generated.chia_pb2.PlotInProgress)
+  })
+_sym_db.RegisterMessage(PlotInProgress)
 
 
 # @@protoc_insertion_point(module_scope)

@@ -87,7 +87,10 @@ def get_default_config() -> ChiaTeaConfig:
         # General chia-related settings
         chia=ChiaConfig(
             # Filepath at which the chia logfile resides.
-            logfile_filepath="~/.chia/mainnet/log/debug.log"
+            logfile_filepath="~/.chia/mainnet/log/debug.log",
+            # Filepath to the logfile of the madmax plotter.
+            # Leave empty if unused
+            madmax_logfile="",
         ),
         # Settings to connect to the discord bot and channel
         discord=DiscordConfig(

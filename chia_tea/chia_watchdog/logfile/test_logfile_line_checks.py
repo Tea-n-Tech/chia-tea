@@ -34,7 +34,7 @@ class TestLineAction(unittest.TestCase):
         self.assertTrue(action.is_match(line))
 
         # check case that harvester does not exist yet
-        chia_dog = ChiaWatchdog("")
+        chia_dog = ChiaWatchdog("", "")
 
         action.apply(line, chia_dog)
         self.assertTrue(len(chia_dog.harvester_infos) == 1)
@@ -79,7 +79,7 @@ class TestLineAction(unittest.TestCase):
         self.assertTrue(action.is_match(line))
 
         # check case that harvester does not exist yet
-        chia_dog = ChiaWatchdog("")
+        chia_dog = ChiaWatchdog("", "")
 
         action.apply(line, chia_dog)
         self.assertTrue(len(chia_dog.harvester_infos) == 1)
@@ -119,7 +119,7 @@ class TestLineAction(unittest.TestCase):
         self.assertTrue(action.is_match(line))
 
         # check correct modification
-        chia_dog = ChiaWatchdog("")
+        chia_dog = ChiaWatchdog("", "")
         action.apply(line, chia_dog)
 
         self.assertEqual(len(chia_dog.harvester_infos), 1)
@@ -142,7 +142,7 @@ class TestLineAction(unittest.TestCase):
         self.assertTrue(action.is_match(line))
 
         # check correct modification
-        chia_dog = ChiaWatchdog("")
+        chia_dog = ChiaWatchdog("", "")
         action.apply(line, chia_dog)
 
         self.assertEqual(len(chia_dog.harvester_infos), 1)
@@ -177,7 +177,7 @@ class TestLineAction(unittest.TestCase):
         self.assertTrue(action1.is_match(line1Found))
         self.assertTrue(action1.is_match(line10Found))
 
-        chia_dog = ChiaWatchdog("")
+        chia_dog = ChiaWatchdog("", "")
 
         action1.apply(line, chia_dog)
         harvester_service = chia_dog.harvester_service
@@ -193,7 +193,7 @@ class TestLineAction(unittest.TestCase):
         """
         # pylint: disable=too-many-locals
 
-        chia_dog = ChiaWatchdog("")
+        chia_dog = ChiaWatchdog("", "")
 
         node_id = "d46fb9aaaa01f3aa3fc04f3e43231d35c3a1ddd4"
         ip_address = "57.22.39.97"
@@ -269,7 +269,7 @@ class TestLineAction(unittest.TestCase):
         timestamp = datetime.fromisoformat(timestamp1_str)
 
         # pylint: disable=duplicate-code
-        chia_dog = ChiaWatchdog("")
+        chia_dog = ChiaWatchdog("", "")
         chia_dog.harvester_infos = {
             node_id: FarmerHarvesterLogfile(
                 node_id,

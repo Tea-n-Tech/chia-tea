@@ -22,8 +22,10 @@ def main():
     config = read_config(args.config)
 
     # create the watchdog
-    chia_logfile_path = config.chia.logfile_filepath
-    watchdog = ChiaWatchdog(chia_logfile_path)
+    watchdog = ChiaWatchdog(
+        config.chia.logfile_filepath,
+        config.chia.madmax_logfile,
+    )
 
     # we disable auth during testing
     is_testing = config.development.testing

@@ -31,9 +31,9 @@ to see all commands.
 Notify on:
 
 - [x] Farmer: Harvester connection/disconnection
-- [x] Harvester timeouts
+- [x] Harvester timeout
 - [x] Harvester looses plots
-- [x] Harvester: Notify if reward found
+- [x] Harvester: Notify on reward
 - [x] Wallet connects/disconnects
 - [x] Wallet syncing or loosing sync
 - [x] Computer has full RAM
@@ -42,10 +42,11 @@ Notify on:
 
 Commands:
 
-- [x] `$machines`: short info about all machines known to the monitoring
+- [x] `$machines`: info about all machines known to the monitoring
 - [x] `$harvesters`: reports the status of all connected harvesters
 - [x] `$wallets`: reports the status of all wallets
 - [x] `$farmers`: reports the status of all farmers
+- [x] `$sql`: execute an arbitrary sql cmd on the database (read only)
 
 # How does the monitoring work?
 
@@ -123,9 +124,14 @@ Briefly answered, everything relevant. Hardware information such as CPU, RAM, Di
   - Wallet
     - [x] is running
     - [x] is synced
-  - Plotters (todo)
-    - [ ] number of plots in progress
-    - [ ] number of plots completed today
+  - Plotters (MadMax supported)
+    - [x] plotting process
+    - [x] plots in process
+      - [x] public key (id)
+      - [x] pool_public_key
+      - [x] start time
+      - [x] progress in percent
+      - [x] plotting stage name
   - Chia-related processes
     - [x] process name, executable, command
     - [x] process id
