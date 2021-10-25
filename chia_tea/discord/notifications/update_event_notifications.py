@@ -111,12 +111,7 @@ def notify_on_full_ram(
         if isinstance(pb_msg, Ram):
             ram_usage = pb_msg.used_ram / pb_msg.total_ram
             if ram_usage > 0.95:
-                messages.append(
-                    "⚠️ Machine {machine_id} uses {usage:.1f}% of RAM".format(
-                        machine_id=machine_id,
-                        usage=ram_usage * 100,
-                    )
-                )
+                messages.append(f"⚠️ Machine {machine_id} uses {ram_usage * 100:.1f}% of RAM")
 
     return messages
 
@@ -142,11 +137,7 @@ def notify_if_a_disk_is_lost(machine_id: str, update_events: List[UpdateEvent]) 
         _, pb_msg = get_update_even_data(event)
         if isinstance(pb_msg, Disk):
             if event.event_type == DELETE:
-                messages.append(
-                    "⚠️   Machine {machine_id} lost disk {mountpoint}".format(
-                        machine_id=machine_id, mountpoint=pb_msg.mountpoint
-                    )
-                )
+                messages.append(f"⚠️   Machine {machine_id} lost disk {pb_msg.mountpoint}")
 
     return messages
 
@@ -176,11 +167,7 @@ def notify_if_plots_are_lost(machine_id: str, update_events: List[UpdateEvent]) 
 
     messages = []
     if n_deleted_plots:
-        messages.append(
-            "⚠️ Machine {machine_id} lost {n_plots} plots 🌽".format(
-                machine_id=machine_id, n_plots=n_deleted_plots
-            )
-        )
+        messages.append(f"⚠️ Machine {machine_id} lost f{n_deleted_plots} plots 🌽")
 
     return messages
 

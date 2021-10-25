@@ -71,7 +71,9 @@ disable=[
     # as discord commands. Thus not very useful
     # since some code simply repeats, especially
     # in a modular code such as this one.
-    "duplicate-code"
+    "duplicate-code",
+    # Enforcing f-strings is too strict
+    "consider-using-f-string",
 ]
 
 [tool.pylint.basic]
