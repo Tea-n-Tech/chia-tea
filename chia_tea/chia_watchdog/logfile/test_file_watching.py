@@ -1,6 +1,6 @@
+import os
+import tempfile
 import unittest
-
-from mock import mock_open, patch
 
 from ...utils.testing import async_test
 from .file_watching import watch_logfile_generator
@@ -10,21 +10,27 @@ class TestChiaWatchdog(unittest.TestCase):
     @async_test
     async def test_watch_logfile_generator_startup(self):
 
+        some_list = []
+
+        async def set_ready():
+            some_list.append("something")
+
         lines = [
             "A",
             "B",
         ]
 
-        with patch("builtins.open", mock_open(read_data="\n".join(lines))):
-            line_generator = watch_logfile_generator("", on_ready=None)
+        with tempfile.TemporaryDirectory() as dir_path:
+            filepath = os.path.join(dir_path, "test.log")
+            with open(filepath, "w", encoding="utf-8") as fp:
+                for line in lines:
+                    fp.write(line + "\n")
 
-            i_line = 0
-            async for line in line_generator:
+            line_generator = watch_logfile_generator(filepath, on_ready=set_ready)
+
+            for result_line in lines:
+                line = await line_generator.asend(None)
                 line = line.replace("\n", "")
-                self.assertEqual(line, lines[i_line])
-                i_line += 1
+                self.assertEqual(line, result_line)
 
-                if i_line == len(lines):
-                    break
-
-            # TODO test on ready and file replacement
+            self.assertTrue(len(some_list) != 0)

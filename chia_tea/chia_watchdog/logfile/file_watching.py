@@ -97,14 +97,16 @@ async def watch_logfile_generator(
                 # yield as many lines as there are
                 new_line = fp.readline()
                 while new_line:
+
+                    # must be placed here so when we yielded
+                    # the last line we caught up
+                    if _end_of_file(fp):
+                        await on_ready()
+
                     terminate = yield new_line
                     if terminate:
                         raise StopAsyncIteration()
                     new_line = fp.readline()
-
-                # after startup we caught up
-                if _end_of_file(fp):
-                    await on_ready()
 
                 # sleep to give it a rest
                 await asyncio.sleep(interval_seconds)

@@ -49,7 +49,11 @@ class AddNewPlotInProgress(AbstractLineAction):
 
 
 class SetPoolPublicKeyForLatestPlot(AbstractLineAction):
-    """Set the public key for the latest plot in progress"""
+    """Set the public key for the latest plot in progress
+
+    Example Line:
+    Pool Public Key:   ...
+    """
 
     LINE_START = "Pool Public Key:"
 
@@ -66,6 +70,12 @@ class SetPoolPublicKeyForLatestPlot(AbstractLineAction):
 
 
 class SetFarmerPublicKeyForLatestPlot(AbstractLineAction):
+    """Set the farmer public key for the latest plot
+
+    Example Line:
+    Farmer Public Key: ...
+    """
+
     LINE_START = "Farmer Public Key:"
 
     def is_match(self, line: str) -> bool:
@@ -81,6 +91,12 @@ class SetFarmerPublicKeyForLatestPlot(AbstractLineAction):
 
 
 class SetPlotDataForLatestPlot(AbstractLineAction):
+    """Extracts plot data from plot name
+
+    Example Line:
+    Plot Name: plot-k32-2021-10-05-22-02-{public key}
+    """
+
     LINE_START = "Plot Name:"
 
     def is_match(self, line: str) -> bool:
@@ -106,6 +122,18 @@ class SetPlotDataForLatestPlot(AbstractLineAction):
 
 
 class SetLatestPlotProgressForPhase1(AbstractLineAction):
+    """Set the progress for updates during phase 1
+
+    Example Lines:
+    [P1] Table 1 took 149.086 sec
+    [P1] Table 2 took 313.995 sec, found 4294938576 matches
+    [P1] Table 3 took 453.323 sec, found 4294895885 matches
+    [P1] Table 4 took 435.455 sec, found 4294851544 matches
+    [P1] Table 5 took 392.077 sec, found 4294722099 matches
+    [P1] Table 6 took 352.225 sec, found 4294381733 matches
+    [P1] Table 7 took 260.078 sec, found 4293784356 matches
+    """
+
     LINE_START = "[P1] Table"
 
     def is_match(self, line: str) -> bool:
@@ -121,6 +149,12 @@ class SetLatestPlotProgressForPhase1(AbstractLineAction):
 
 
 class LatestPlotEnteringPhase2(AbstractLineAction):
+    """Set the progress for updates during phase 2
+
+    Example Line:
+    [P2] max_table_size = 4294967296
+    """
+
     LINE_START = "[P2] max_table_size"
 
     def is_match(self, line: str) -> bool:
@@ -167,6 +201,12 @@ class SetLatestPlotProgressForPhase2(AbstractLineAction):
 
 
 class LatestPlotEnteringPhase3(AbstractLineAction):
+    """Update that the latest plot is entering phase 3
+
+    Example Line:
+    Wrote plot header with 268 bytes
+    """
+
     LINE_START = "Wrote plot header with"
 
     def is_match(self, line: str) -> bool:
@@ -212,6 +252,12 @@ class SetLatestPlotProgressForPhase3(AbstractLineAction):
 
 
 class LatestPlotEnteringPhase4(AbstractLineAction):
+    """Set latest plot entering phase 4
+
+    Example Line:
+    [P4] Starting to write C1 and C3 tables
+    """
+
     LINE_START = "[P4] Starting to write"
 
     def is_match(self, line: str) -> bool:
@@ -224,6 +270,12 @@ class LatestPlotEnteringPhase4(AbstractLineAction):
 
 
 class SetLatestPlotAsFinished(AbstractLineAction):
+    """Mark the latest plot as finished
+
+    Example Line:
+    Total plot creation time was 5129.61 sec (85.4936 min)
+    """
+
     LINE_START = "Total plot creation time was"
 
     def is_match(self, line: str) -> bool:
@@ -264,24 +316,22 @@ class StartCopyOfPlot(AbstractLineAction):
         ]
 
 
-"""
-class FinishedCopyOfPlot(AbstractLineAction):
-    LINE_START = "Copy to"
+# class FinishedCopyOfPlot(AbstractLineAction):
+#     LINE_START = "Copy to"
 
-    def is_match(self, line: str) -> bool:
-        return line.startswith(self.LINE_START)
+#     def is_match(self, line: str) -> bool:
+#         return line.startswith(self.LINE_START)
 
-    def apply(self, line: str, chia_dog: ChiaWatchdog):
-        line_split = line.split()
-        plot_filepath = line_split[2]
-        plot_name = os.path.basename(plot_filepath)
-        public_key = plot_name.split("-")[7]
+#     def apply(self, line: str, chia_dog: ChiaWatchdog):
+#         line_split = line.split()
+#         plot_filepath = line_split[2]
+#         plot_name = os.path.basename(plot_filepath)
+#         public_key = plot_name.split("-")[7]
 
-        for plot in chia_dog.plots_in_progress:
-            if plot.public_key == public_key:
-                plot.end_time_copy = datetime.now()
-                break
-"""
+#         for plot in chia_dog.plots_in_progress:
+#             if plot.public_key == public_key:
+#                 plot.end_time_copy = datetime.now()
+#                 break
 
 
 async def run_line_checks(chia_dog: ChiaWatchdog, line: str):
