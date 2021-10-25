@@ -62,6 +62,7 @@ tasks:
       - rm -f chia_tea/protobuf/generated/*_.pb2.py
       - rm -f chia_tea/protobuf/generated/*_.pb2_grpc.py
       - rm -f ./monitoring.db
+      - rm -rf ./cov_html
 
   server:
     desc: Starts the monitoring main server collecting data from clients.
