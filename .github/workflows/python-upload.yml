@@ -30,6 +30,13 @@ jobs:
         with:
           python-version: 3.9
 
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+
       - name: Install Task
         run: |
           sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d
@@ -63,7 +70,7 @@ jobs:
           if-no-files-found: error
 
       - name: Publish package to Test-PyPi
-        if: ${{ github.ref != 'refs/heads/staging' }}
+        if: ${{ github.ref == 'refs/heads/staging' }}
         env:
           PYPI_URL: https://test.pypi.org/legacy/
           PYPI_USERNAME: __token__
@@ -73,7 +80,7 @@ jobs:
           poetry publish --build -r testpypi --username $PYPI_USERNAME --password $PYPI_TOKEN
 
       - name: Publish package to PyPi
-        if: startsWith(github.event.ref, 'refs/heads/main') || startsWith(github.event.ref, 'refs/tags')
+        if: ${{ github.ref == 'refs/heads/staging' }} || ${{ github.ref == 'refs/tags' }}
         env:
           TWINE_USERNAME: __token__
           TWINE_NON_INTERACTIVE: 1
