@@ -75,12 +75,7 @@ jobs:
           PYPI_TOKEN: ${{ secrets.TEST_PYPI_API_TOKEN }}
         run: |
           poetry config repositories.testpypi $PYPI_URL
-          poetry publish \
-          --build \
-          --no-interaction \
-          --repository testpypi \
-          --username $PYPI_USERNAME \
-          --password $PYPI_TOKEN
+          poetry publish --build --no-interaction --repository testpypi --username $PYPI_USERNAME --password $PYPI_TOKEN
 
       - name: Publish package to PyPi
         if: ${{ github.ref == 'refs/heads/staging' }} || ${{ github.ref == 'refs/tags' }}
