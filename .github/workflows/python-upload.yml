@@ -15,6 +15,8 @@ defaults:
 jobs:
   upload:
     runs-on: ubuntu-latest
+    environment:
+      name: staging
 
     steps:
       - name: Cancel previous runs on the same branch
@@ -67,8 +69,6 @@ jobs:
 
       - name: Publish package to Test-PyPi
         if: ${{ github.ref == 'refs/heads/staging' }}
-        environment:
-          name: staging
         env:
           PYPI_URL: https://test.pypi.org/legacy/
           PYPI_USERNAME: __token__
