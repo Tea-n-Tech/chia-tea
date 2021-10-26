@@ -62,34 +62,18 @@ jobs:
           path: dist
           if-no-files-found: error
 
-      - name: Test for PyPi Test Secret
-        id: check_secrets
-        shell: bash
-        run: |
-          unset HAS_TEST_SECRET
-          if [ -n "$PYPI_TEST_TOKEN" ]; then HAS_TEST_SECRET='true' ; fi
-          echo ::set-output name=HAS_TEST_SECRET::${HAS_TEST_SECRET}
-
-          unset HAS_SECRET
-          if [ -n "$PYPI_TOKEN" ]; then HAS_SECRET='true' ; fi
-          echo ::set-output name=HAS_SECRET::${HAS_SECRET}
-        env:
-          PYPI_TEST_TOKEN: "${{ secrets.TEST_PYPI_API_TOKEN }}"
-          PYPI_TOKEN: "${{ secrets.PYPI_API_TOKEN }}"
-
       - name: Publish package to Test-PyPi
-        # if: ${{ github.ref != 'refs/heads/staging' }}
-        if: steps.check_secrets.outputs.HAS_TEST_SECRET
+        if: ${{ github.ref != 'refs/heads/staging' }}
         env:
-          TWINE_REPOSITORY_URL: https://test.pypi.org/legacy/
-          TWINE_USERNAME: __token__
-          TWINE_NON_INTERACTIVE: 1
-          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
-        run: twine upload --non-interactive --skip-existing --verbose 'dist/*'
+          PYPI_URL: https://test.pypi.org/legacy/
+          PYPI_USERNAME: __token__
+          PYPI_TOKEN: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        run: |
+          poetry config repositories.testpypi $PYPI_URL
+          poetry publish --build -r testpypi --username $PYPI_USERNAME --password $PYPI_TOKEN
 
       - name: Publish package to PyPi
-        # if: ${{ github.ref != 'refs/heads/main' }}
-        if: steps.check_secrets.outputs.HAS_SECRET && startsWith(github.event.ref, 'refs/tags')
+        if: startsWith(github.event.ref, 'refs/heads/main') || startsWith(github.event.ref, 'refs/tags')
         env:
           TWINE_USERNAME: __token__
           TWINE_NON_INTERACTIVE: 1
