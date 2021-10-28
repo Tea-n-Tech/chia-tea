@@ -71,8 +71,6 @@ jobs:
         if: ${{ github.ref == 'refs/heads/staging' }}
         env:
           REPO_ALIAS: test-pypi
-          PYPI_URL: https://test.pypi.org/legacy/
-          PYPI_USERNAME: __token__
           PYPI_TOKEN: ${{ secrets.TEST_PYPI_API_TOKEN }}
         run: |
           poetry config repositories.$REPO_ALIAS "https://test.pypi.org/legacy/"
@@ -82,7 +80,8 @@ jobs:
       - name: Publish package to PyPi
         if: ${{ github.ref == 'refs/tags' }}
         env:
-          TWINE_USERNAME: __token__
-          TWINE_NON_INTERACTIVE: 1
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: twine upload --non-interactive --skip-existing --verbose 'dist/*'
+          REPO_ALIAS: pypi
+          PYPI_TOKEN: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        run: |
+          poetry config http-basic.$REPO_ALIAS "__token__" "$PYPI_TOKEN"
+          poetry publish --no-interaction --repository $REPO_ALIAS
