@@ -67,6 +67,21 @@ jobs:
           path: dist
           if-no-files-found: error
 
+      - name: Test for secrets access
+        id: check_secrets
+        shell: bash
+        env:
+          PYPI_TOKEN: "${{ secrets.PYPI_API_TOKEN }}"
+          TEST_PYPI_TOKEN: "${{ secrets.TEST_PYPI_API_TOKEN }}"
+        run: |
+          unset HAS_SECRET
+          if [ -n "$PYPI_TOKEN" ]; then HAS_SECRET='true' ; fi
+          echo ::set-output name=HAS_SECRET::${HAS_SECRET}
+
+          unset HAS_TEST_SECRET
+          if [ -n "$TEST_PYPI_TOKEN" ]; then HAS_TEST_SECRET='true' ; fi
+          echo ::set-output name=HAS_TEST_SECRET::${HAS_TEST_SECRET}
+
       - name: Publish distribution to Test PyPI
         if: steps.check_secrets.outputs.HAS_SECRET
         env:
