@@ -67,21 +67,19 @@ jobs:
           path: dist
           if-no-files-found: error
 
-      - name: Publish package to Test-PyPi
-        if: ${{ github.ref == 'refs/heads/staging' }}
+      - name: Publish distribution to Test PyPI
+        if: steps.check_secrets.outputs.HAS_SECRET
         env:
-          REPO_ALIAS: test-pypi
-          PYPI_TOKEN: ${{ secrets.TEST_PYPI_API_TOKEN }}
-        run: |
-          poetry config repositories.$REPO_ALIAS "https://test.pypi.org/legacy/"
-          poetry config http-basic.$REPO_ALIAS "__token__" "$PYPI_TOKEN"
-          poetry publish --no-interaction --repository $REPO_ALIAS
+          TWINE_REPOSITORY_URL: https://test.pypi.org/legacy/
+          TWINE_USERNAME: __token__
+          TWINE_NON_INTERACTIVE: 1
+          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        run: twine upload --skip-existing --verbose 'dist/*'
 
-      - name: Publish package to PyPi
-        if: ${{ github.ref == 'refs/tags' }}
+      - name: Publish distribution to PyPI
+        if: steps.check_secrets.outputs.HAS_SECRET && startsWith(github.event.ref, 'refs/tags')
         env:
-          REPO_ALIAS: pypi
-          PYPI_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
-        run: |
-          poetry config http-basic.$REPO_ALIAS "__token__" "$PYPI_TOKEN"
-          poetry publish --no-interaction --repository $REPO_ALIAS
+          TWINE_USERNAME: __token__
+          TWINE_NON_INTERACTIVE: 1
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: twine upload --skip-existing --verbose 'dist/*'
