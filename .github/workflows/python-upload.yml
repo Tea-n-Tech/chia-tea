@@ -74,6 +74,7 @@ jobs:
           PYPI_USERNAME: __token__
           PYPI_TOKEN: ${{ secrets.TEST_PYPI_API_TOKEN }}
         run: |
+          poetry config repositories.test-pypi "$PYPI_URL"
           poetry config http-basic.test-pypi "__token__" "$PYPI_TOKEN"
           poetry publish --build --no-interaction --dry-run --repository test-pypi
 
