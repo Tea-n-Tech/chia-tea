@@ -83,7 +83,7 @@ jobs:
           echo ::set-output name=HAS_TEST_SECRET::${HAS_TEST_SECRET}
 
       - name: Publish distribution to Test PyPI
-        if: steps.check_secrets.outputs.HAS_SECRET
+        if: steps.check_secrets.outputs.HAS_TEST_SECRET
         env:
           TWINE_REPOSITORY_URL: https://test.pypi.org/legacy/
           TWINE_USERNAME: __token__
