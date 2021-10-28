@@ -89,7 +89,7 @@ jobs:
           TWINE_USERNAME: __token__
           TWINE_NON_INTERACTIVE: 1
           TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
-        run: twine upload --skip-existing --verbose 'dist/*'
+        run: poetry run twine upload --skip-existing --verbose 'dist/*'
 
       - name: Publish distribution to PyPI
         if: steps.check_secrets.outputs.HAS_SECRET && startsWith(github.event.ref, 'refs/tags')
@@ -97,4 +97,4 @@ jobs:
           TWINE_USERNAME: __token__
           TWINE_NON_INTERACTIVE: 1
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: twine upload --skip-existing --verbose 'dist/*'
+        run: poetry run twine upload --skip-existing --verbose 'dist/*'
