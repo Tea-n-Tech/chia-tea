@@ -81,7 +81,7 @@ jobs:
         if: ${{ github.ref == 'refs/tags' }}
         env:
           REPO_ALIAS: pypi
-          PYPI_TOKEN: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          PYPI_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
         run: |
           poetry config http-basic.$REPO_ALIAS "__token__" "$PYPI_TOKEN"
           poetry publish --no-interaction --repository $REPO_ALIAS
