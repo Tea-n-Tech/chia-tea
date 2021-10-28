@@ -76,7 +76,7 @@ jobs:
         run: |
           poetry config repositories.test-pypi "$PYPI_URL"
           poetry config http-basic.test-pypi "__token__" "$PYPI_TOKEN"
-          poetry publish --build --no-interaction --dry-run --repository test-pypi
+          poetry publish --no-interaction --dry-run --repository test-pypi
 
       - name: Publish package to PyPi
         if: ${{ github.ref == 'refs/heads/staging' }} || ${{ github.ref == 'refs/tags' }}
