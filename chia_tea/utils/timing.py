@@ -24,6 +24,7 @@ def format_timedelta_from_secs(seconds: Union[float, None]) -> str:
     response: str
         nicely formatted timedelta
     """
+    # pylint: disable=too-many-return-statements
 
     if seconds is None:
         return ""

@@ -206,10 +206,12 @@ def plot_in_progress_pb2_as_markdown(plot_in_progress: PlotInProgress) -> str:
         plot_in_progress as markdown string
     """
 
+    start_time_dt = datetime.fromtimestamp(plot_in_progress.start_time)
+
     return "\n".join(
         (
             f"  - 🌽 Plot {plot_in_progress.id[:10]}",
-            f"       Since: {format_time_since(datetime.fromtimestamp(plot_in_progress.start_time))}",
+            f"       Since: {format_time_since(start_time_dt)}",
             f"       State: {plot_in_progress.state}",
             f"       Progress: {plot_in_progress.progress*100:.1f}%",
         )
