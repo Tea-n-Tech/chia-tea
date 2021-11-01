@@ -5,10 +5,11 @@ from ..protobuf.generated.chia_pb2 import (
     Harvester,
     HarvesterPlot,
     HarvesterViewedFromFarmer,
+    PlotInProgress,
 )
 from ..protobuf.generated.hardware_pb2 import Cpu, Disk, Ram
 from ..protobuf.generated.machine_info_pb2 import MachineInfo
-from ..utils.timing import format_timedelta_from_secs
+from ..utils.timing import format_time_since, format_timedelta_from_secs
 
 
 def format_memory_size(n_bytes: float, suffix: str = "B"):
@@ -188,6 +189,32 @@ def harvester_pb2_as_markdown(
         n_proofs=harvester.n_proofs,
         total_size=format_memory_size(total_size),
         disk_msgs="\n".join(disk_msgs),
+    )
+
+
+def plot_in_progress_pb2_as_markdown(plot_in_progress: PlotInProgress) -> str:
+    """Formats a protobuf PlotInProgress as markdown
+
+    Parameters
+    ----------
+    plot_in_progress: PlotInProgress
+        plot in progress to be formatted in markdown
+
+    Returns
+    -------
+    msg : str
+        plot_in_progress as markdown string
+    """
+
+    start_time = datetime.fromtimestamp(plot_in_progress.start_time)
+
+    return "\n".join(
+        (
+            f"  - 🌽 Plot {plot_in_progress.id[:10]}",
+            f"       Since: {format_time_since(datetime.fromtimestamp(plot_in_progress.start_time))}",
+            f"       State: {plot_in_progress.state}",
+            f"       Progress: {plot_in_progress.progress*100:.1f}%",
+        )
     )
 
 

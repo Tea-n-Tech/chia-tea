@@ -28,6 +28,9 @@ def format_timedelta_from_secs(seconds: Union[float, None]) -> str:
     if seconds is None:
         return ""
 
+    if seconds < 0:
+        return ""
+
     response_short = "{0:.0f}{1}"
     response_long = "{0:.2f}{1}"
 
@@ -67,6 +70,30 @@ def format_timedelta(delta_time: Union[timedelta, None]) -> str:
     dt_secs = delta_time.total_seconds()
 
     return format_timedelta_from_secs(dt_secs)
+
+
+def format_time_since(start_time: Optional[datetime]) -> str:
+    """Format the time since start nicely
+
+    Parameters
+    ----------
+    start_time : Optional[datetime]
+        time the counting started
+
+    Returns
+    -------
+    reponse : str
+        time duration as string
+
+    Notes
+    -----
+        Returns empty string on negative time.
+    """
+
+    if start_time is None:
+        return ""
+
+    return format_timedelta(datetime.now() - start_time)
 
 
 async def async_throttle(min_duration: float):
