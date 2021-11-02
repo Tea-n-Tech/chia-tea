@@ -15,8 +15,6 @@ defaults:
 jobs:
   upload:
     runs-on: ubuntu-latest
-    environment:
-      name: staging
 
     steps:
       - name: Cancel previous runs on the same branch
