@@ -47,6 +47,7 @@ Commands:
 - [x] `$wallets`: reports the status of all wallets
 - [x] `$farmers`: reports the status of all farmers
 - [x] `$sql`: execute an arbitrary sql cmd on the database (read only)
+- [x] `$plotters`: reports on running plotters and their progress
 
 # How does the monitoring work?
 
@@ -124,7 +125,7 @@ Briefly answered, everything relevant. Hardware information such as CPU, RAM, Di
   - Wallet
     - [x] is running
     - [x] is synced
-  - Plotters (MadMax supported)
+  - Plotters (MadMax)
     - [x] plotting process
     - [x] plots in process
       - [x] public key (id)
