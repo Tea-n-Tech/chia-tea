@@ -1,6 +1,6 @@
-import unittest
-import tempfile
 import os
+import tempfile
+import unittest
 
 from google.protobuf.json_format import ParseDict
 
