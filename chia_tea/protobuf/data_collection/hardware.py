@@ -1,4 +1,3 @@
-
 import os
 import platform
 from typing import List
@@ -11,7 +10,7 @@ from ...utils.logger import log_runtime_async
 
 
 def __get_cpu_temp() -> float:
-    """ Get the current cpu temperature
+    """Get the current cpu temperature
 
     Returns
     -------
@@ -28,11 +27,9 @@ def __get_cpu_temp() -> float:
 
         # cpu_thermal = raspberrypi
         # coretemp = common on linux
-        cpu_temp_list = temperatures.get(
-            'cpu_thermal') or temperatures.get('coretemp')
+        cpu_temp_list = temperatures.get("cpu_thermal") or temperatures.get("coretemp")
         if cpu_temp_list:
-            temp_sum = sum(
-                core_temp.current for core_temp in cpu_temp_list)
+            temp_sum = sum(core_temp.current for core_temp in cpu_temp_list)
             temp = temp_sum / len(cpu_temp_list)
     # Mac
     elif system_string == "Darwin":
@@ -44,13 +41,14 @@ def __get_cpu_temp() -> float:
     return temp
 
 
-CPU_NAME = processor_name = cpuinfo.get_cpu_info().get(
-    "brand_raw") or platform.processor()
+CPU_NAME = processor_name = (
+    cpuinfo.get_cpu_info().get("brand_raw") or platform.processor()
+)
 
 
 @log_runtime_async(__file__)
 async def collect_cpu_info() -> Cpu:
-    """ Collect all info about the CPU
+    """Collect all info about the CPU
 
     Returns
     -------
@@ -69,7 +67,7 @@ async def collect_cpu_info() -> Cpu:
 
 @log_runtime_async(__file__)
 async def collect_ram_info() -> Ram:
-    """ Collect all info about the RAM
+    """Collect all info about the RAM
 
     Returns
     -------
@@ -89,7 +87,7 @@ async def collect_ram_info() -> Ram:
 
 @log_runtime_async(__file__)
 async def collect_disk_info() -> List[Disk]:
-    """ Collect all about the disks
+    """Collect all about the disks
 
     Returns
     -------
@@ -98,10 +96,18 @@ async def collect_disk_info() -> List[Disk]:
     """
     disk_info_list = []
 
+    drives_to_skip = [
+        "/dev/loop",
+        "/boot",
+        "/etc",
+        "/snap",
+    ]
+
     disk_partitions = psutil.disk_partitions()
     for partition in disk_partitions:
-        if (partition.device.startswith("/dev/loop") or
-                partition.mountpoint.startswith("/boot")):
+        if any(
+            partition.mountpoint.startswith(drive_name) for drive_name in drives_to_skip
+        ):
             continue
 
         disk_usage = psutil.disk_usage(partition.mountpoint)

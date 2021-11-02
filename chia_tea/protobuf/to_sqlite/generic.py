@@ -1,19 +1,19 @@
-
 import enum
 import traceback
-from typing import List, Tuple
+from typing import Any, List, Tuple
 
 from google.protobuf.descriptor import Descriptor, FieldDescriptor
 
 
 class ProtoType(enum.Enum):
-    """ Protobuf enum types
+    """Protobuf enum types
 
     Notes
     -----
         For protobuf type enums see:
         https://developers.google.com/protocol-buffers/docs/reference/cpp/google.protobuf.descriptor.pb
     """
+
     DOUBLE = 1
     FLOAT = 2
     INT64 = 3
@@ -35,17 +35,54 @@ class ProtoType(enum.Enum):
 
 
 class SqliteType(enum.Enum):
-    """ Enum for sqlite3 datatypes """
+    """Enum for sqlite3 datatypes"""
+
     REAL = "READ"
     INTEGER = "INTEGER"
     STRING = "STRING"
     BLOB = "BLOB"
 
 
-def field_descriptor_is_list(
-    field_descriptor: FieldDescriptor
-) -> bool:
-    """ Checks if a proto field is a list or not
+def get_create_table_cmds_for_enum(enum_pb2_class: Any) -> List[str]:
+    """Get the commands to create a table for a protobuf enum
+
+    Parameters
+    ----------
+    enum_pb2_class : Any
+        protobuf msg class
+
+    Returns
+    -------
+    cmds : List[str]
+        sqlite3 commands for creating the table
+        and inserting the enum values
+    """
+    table_name = enum_pb2_class.DESCRIPTOR.name
+
+    cmds = []
+    cmds.append(
+        get_create_table_cmd(
+            table_name,
+            [
+                ("name", SqliteType.STRING),
+                ("value", SqliteType.INTEGER),
+            ],
+            ["name"],
+        )
+    )
+
+    for name, value in enum_pb2_class.items():
+        cmds.append(
+            f"INSERT OR REPLACE INTO {table_name} "
+            + "(name, value) "
+            + f"VALUES('{name}',{value})"
+        )
+
+    return cmds
+
+
+def field_descriptor_is_list(field_descriptor: FieldDescriptor) -> bool:
+    """Checks if a proto field is a list or not
 
     Parameters
     ----------
@@ -64,7 +101,7 @@ def sql_type_from_proto_type(
     message_name: str,
     field_name: str,
 ) -> SqliteType:
-    """ Translate protobuf types into sqlite types
+    """Translate protobuf types into sqlite types
 
     Parameters
     ----------
@@ -85,23 +122,21 @@ def sql_type_from_proto_type(
         For protobuf type enums see:
         https://developers.google.com/protocol-buffers/docs/reference/cpp/google.protobuf.descriptor.pb
     """
-    if proto_type in (
-            ProtoType.DOUBLE.value,
-            ProtoType.FLOAT.value):
+    if proto_type in (ProtoType.DOUBLE.value, ProtoType.FLOAT.value):
         return SqliteType.REAL
 
     if proto_type in (
-            ProtoType.INT64.value,
-            ProtoType.UINT64.value,
-            ProtoType.INT32.value,
-            ProtoType.FIXED64.value,
-            ProtoType.FIXED32.value,
-            ProtoType.BOOL.value,
-            ProtoType.UINT32.value,
-            ProtoType.SFIXED32.value,
-            ProtoType.SFIXED64.value,
-            ProtoType.SINT32.value,
-            ProtoType.SINT64.value,
+        ProtoType.INT64.value,
+        ProtoType.UINT64.value,
+        ProtoType.INT32.value,
+        ProtoType.FIXED64.value,
+        ProtoType.FIXED32.value,
+        ProtoType.BOOL.value,
+        ProtoType.UINT32.value,
+        ProtoType.SFIXED32.value,
+        ProtoType.SFIXED64.value,
+        ProtoType.SINT32.value,
+        ProtoType.SINT64.value,
     ):
         return SqliteType.INTEGER
 
@@ -111,15 +146,17 @@ def sql_type_from_proto_type(
     if proto_type == ProtoType.BYTES.value:
         return SqliteType.BLOB
 
-    err_msg = (f"{message_name}.{field_name} " +
-               f"has an unknown protobuf type enum: {proto_type}")
+    err_msg = (
+        f"{message_name}.{field_name} "
+        + f"has an unknown protobuf type enum: {proto_type}"
+    )
     raise RuntimeError(err_msg)
 
 
 def get_proto_fields_with_types(
-        pb_descriptor: Descriptor
+    pb_descriptor: Descriptor,
 ) -> List[Tuple[str, SqliteType]]:
-    """ Get the proto field names of a descriptor with types
+    """Get the proto field names of a descriptor with types
 
     Parameters
     ----------
@@ -136,22 +173,18 @@ def get_proto_fields_with_types(
             (
                 field.name,
                 sql_type_from_proto_type(
-                    field.type,
-                    pb_descriptor.full_name,
-                    field.name)
+                    field.type, pb_descriptor.full_name, field.name
+                ),
             )
             for field in pb_descriptor.fields
         ]
     except RuntimeError:
-        err_msg = traceback.format_exc(
-        ) + f"\nError in {pb_descriptor.full_name}"
+        err_msg = traceback.format_exc() + f"\nError in {pb_descriptor.full_name}"
         raise RuntimeError(err_msg) from None
 
 
-def get_sqlite_fields_for_insertion_from_pb2(
-    pb_descriptor: Descriptor
-) -> str:
-    """ Converts proto fields from a proto descriptor into sqlite fields
+def get_sqlite_fields_for_insertion_from_pb2(pb_descriptor: Descriptor) -> str:
+    """Converts proto fields from a proto descriptor into sqlite fields
     for table insertion
 
     Parameters
@@ -165,9 +198,7 @@ def get_sqlite_fields_for_insertion_from_pb2(
         string usable for table insertion
     """
     field_name_and_type = get_proto_fields_with_types(pb_descriptor)
-    field_names_prepped = (
-        f"'{name}'" for (name, _) in field_name_and_type
-    )
+    field_names_prepped = (f"'{name}'" for (name, _) in field_name_and_type)
     return ",".join(field_names_prepped)
 
 
@@ -176,7 +207,7 @@ def get_create_table_cmd(
     attributes: List[Tuple[str, SqliteType]],
     primary_key_attribute_names: List[str],
 ) -> str:
-    """ Get the command to create a sqlite table from the
+    """Get the command to create a sqlite table from the
     definition of the attributes
 
     Parameters
@@ -217,7 +248,7 @@ def sqlite_create_tbl_cmd_from_pb2(
     primary_key_attribute_names: List[str],
     pb_descriptor: Descriptor,
 ) -> str:
-    """ Get the table creation command from a proto msg
+    """Get the table creation command from a proto msg
 
     Parameters
     ----------
@@ -241,25 +272,24 @@ def sqlite_create_tbl_cmd_from_pb2(
     set_pb2_names = set(name for name, _ in pb2_attributes)
     duplicate_names = set_meta_names.intersection(set_pb2_names)
     if duplicate_names:
-        err_msg = ("The following meta names intersect " +
-                   "with protobuf message names: {0}")
-        raise ValueError(err_msg.format(
-            ", ".join(duplicate_names)
-        ))
+        err_msg = (
+            "The following meta names intersect " + "with protobuf message names: {0}"
+        )
+        raise ValueError(err_msg.format(", ".join(duplicate_names)))
 
     set_primary_names = set(primary_key_attribute_names)
     set_all_attribute_names = set_meta_names.union(set_pb2_names)
     missing_attributes = set_primary_names - set_all_attribute_names
     if missing_attributes:
         err_msg = (
-            "The following primary key attribute names do" +
-            " neither exist in the proto file nor the additionally" +
-            " specified attributes: " +
-            ", ".join(missing_attributes)
+            "The following primary key attribute names do"
+            + " neither exist in the proto file nor the additionally"
+            + " specified attributes: "
+            + ", ".join(missing_attributes)
         )
 
     return get_create_table_cmd(
         table_name=table_name,
-        attributes=meta_attributes+pb2_attributes,
-        primary_key_attribute_names=primary_key_attribute_names
+        attributes=meta_attributes + pb2_attributes,
+        primary_key_attribute_names=primary_key_attribute_names,
     )

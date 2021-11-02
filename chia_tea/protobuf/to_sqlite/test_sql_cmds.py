@@ -1,4 +1,3 @@
-
 import unittest
 
 from google.protobuf.json_format import ParseDict
@@ -9,14 +8,9 @@ from .sql_cmds import get_update_events_from_db, insert_update_event_in_db
 
 
 class TestSqlCmds(unittest.TestCase):
-
     def test_that_fetched_events_have_correct_event_type(self):
 
-        event_types_to_test = [
-            ADD,
-            UPDATE,
-            DELETE
-        ]
+        event_types_to_test = [ADD, UPDATE, DELETE]
 
         db = MonitoringDatabase(":memory:")
         with db:
@@ -24,10 +18,10 @@ class TestSqlCmds(unittest.TestCase):
                 js_dict=dict(
                     event_type=ADD,
                     farmer_harvester=dict(
-                        id='some plot id 1',
-                    )
+                        id="some plot id 1",
+                    ),
                 ),
-                message=UpdateEvent()
+                message=UpdateEvent(),
             )
             for i_event, event_type in enumerate(event_types_to_test):
                 update_event.event_type = event_type
@@ -36,16 +30,16 @@ class TestSqlCmds(unittest.TestCase):
                     pb_message=update_event,
                     meta_attributes={
                         "machine_id": 1,
-                        'timestamp': i_event,
+                        "timestamp": i_event,
                         "event_type": update_event.event_type,
-                    }
+                    },
                 )
 
             machine_events = get_update_events_from_db(
                 db.cursor,
                 # timestamps inbetween which to fetch data
                 0,
-                len(event_types_to_test)
+                len(event_types_to_test),
             )
 
             self.assertEqual(len(machine_events), 1)

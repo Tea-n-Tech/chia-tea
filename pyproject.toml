@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "chia-tea"
-version = "0.1.0"
+version = "0.2.0rc5"
 description = "A library dedicated to chia-blockchain farmer."
 authors = ["Tea n Tech"]
 license = "BSD-3"
@@ -28,7 +28,7 @@ classifiers=[
 
 [tool.poetry.dependencies]
 python = "^3.7"
-pywin32 = {version="225", markers="sys_platform == 'win32'"}
+pywin32 = {version="300", markers="sys_platform == 'win32'"}
 grpcio = "^1.39.0"
 discord = "^1.7.3"
 psutil = "^5.8.0"
@@ -38,6 +38,7 @@ aiohttp = "3.7.4"
 chia-blockchain = "^1.2.3"
 sortedcontainers = "2.3.0"
 concurrent-log-handler = "^0.9.19"
+rich = "^10.10.0"
 
 [tool.poetry.dev-dependencies]
 grpcio-tools = "^1.39.0"
@@ -46,6 +47,8 @@ pylint-protobuf = "^0.20.2"
 flake8 = "^3.9.2"
 pytest = "^6.2.4"
 twine = "^3.4.2"
+black = "^21.9b0"
+pytest-cov = "^3.0.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -62,7 +65,15 @@ disable=[
     "missing-module-docstring",
     # Some files use camel-case when a single
     # class is contained. 
-    "invalid-name"
+    "invalid-name",
+    # It was triggered sometimes for imports
+    # and sometimes for repeating patterns such
+    # as discord commands. Thus not very useful
+    # since some code simply repeats, especially
+    # in a modular code such as this one.
+    "duplicate-code",
+    # Enforcing f-strings is too strict
+    "consider-using-f-string",
 ]
 
 [tool.pylint.basic]
@@ -81,3 +92,7 @@ overgeneral-exceptions=[
     # of places and services.
     # "Exception"
 ]
+
+[tool.black]
+exclude="chia_tea/protobuf"
+line-length=100

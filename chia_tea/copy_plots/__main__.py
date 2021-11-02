@@ -12,13 +12,12 @@ module_name = "chia_tea.copy"
 
 
 def main():
-    """ Main program for copying files
-    """
+    """Main program for copying files"""
 
     # get command line arguments
     args = parse_args(
         name="Chia Tea Copy",
-        description="Start a process copying files for your chia farm."
+        description="Start a process copying files for your chia farm.",
     )
 
     # load config
@@ -51,13 +50,11 @@ def main():
             target_path = os.path.join(target_dir, filename)
 
             # move file (with measurement)
-            logger.info(
-                "moving file: %s -> %s", filepath, target_path)
+            logger.info("moving file: %s -> %s", filepath, target_path)
             start = time.time()
 
             # lockfile
-            path_to_lockfile = os.path.join(
-                target_dir, filename.replace(".plot", ".copying"))
+            path_to_lockfile = os.path.join(target_dir, filename.replace(".plot", ".copying"))
 
             with create_lockfile(path_to_lockfile):
                 successful_copy = copy_file(filepath, target_path)
@@ -68,12 +65,10 @@ def main():
                 try:
                     os.remove(filepath)
                 except FileNotFoundError:
-                    logger.error(
-                        "Could not remove original file: %s", filepath)
+                    logger.error("Could not remove original file: %s", filepath)
 
             else:
-                logger.error("failed to copy %s in %.1fs",
-                             filepath, duration_secs)
+                logger.error("failed to copy %s in %.1fs", filepath, duration_secs)
 
         # rate limiter
         time.sleep(15)

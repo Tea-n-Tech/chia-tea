@@ -1,4 +1,3 @@
-
 import asyncio
 import traceback
 import uuid
@@ -12,9 +11,13 @@ from ..chia_watchdog.ChiaWatchdog import ChiaWatchdog
 from ..chia_watchdog.computer_info_comparison import get_update_events
 from ..protobuf.generated.computer_info_pb2 import ComputerInfo, UpdateEvent
 from ..protobuf.generated.config_pb2 import (
-    _MONITORINGCONFIG_CLIENTCONFIG_SENDUPDATEEVERY, MonitoringConfig)
-from ..protobuf.generated.monitoring_service_pb2 import (DataUpdateRequest,
-                                                         GetStateRequest)
+    _MONITORINGCONFIG_CLIENTCONFIG_SENDUPDATEEVERY,
+    MonitoringConfig,
+)
+from ..protobuf.generated.monitoring_service_pb2 import (
+    DataUpdateRequest,
+    GetStateRequest,
+)
 from ..protobuf.generated.monitoring_service_pb2_grpc import MonitoringStub
 from ..protobuf.to_sqlite.custom import ProtoType, get_update_even_data
 from ..utils.logger import get_logger
@@ -25,7 +28,7 @@ ClientConfig = MonitoringConfig.ClientConfig
 
 
 def load_machine_id() -> str:
-    """ Loads id of the machine
+    """Loads id of the machine
 
     Returns
     -------
@@ -38,13 +41,11 @@ def load_machine_id() -> str:
         `~/.chia_tea/settings.json`.
     """
 
-    return get_settings_value(
-        "machineId",
-        default=uuid.getnode())
+    return get_settings_value("machineId", default=uuid.getnode())
 
 
 def get_collection_frequencies(config: ClientConfig) -> Dict[str, float]:
-    """ Get the collection frequencies for updates to the server
+    """Get the collection frequencies for updates to the server
 
     Parameters
     ----------
@@ -71,25 +72,22 @@ def get_collection_frequencies(config: ClientConfig) -> Dict[str, float]:
         user_rate_limits[field.name] = field_value
 
     update_event_var_names = tuple(
-        field.name for field in UpdateEvent.DESCRIPTOR.fields
+        field.name
+        for field in UpdateEvent.DESCRIPTOR.fields
         if field.type == ProtoType.MESSAGE.value
     )
 
     for name, _ in user_rate_limits.items():
         if name not in update_event_var_names:
-            err_msg = ("Config entry '{0}' is not valid." +
-                       " Use one of {1}")
-            raise ValueError(err_msg.format(
-                name,
-                ", ".join(update_event_var_names)
-            ))
+            err_msg = "Config entry '{0}' is not valid." + " Use one of {1}"
+            raise ValueError(err_msg.format(name, ", ".join(update_event_var_names)))
 
     return user_rate_limits
 
 
 class MonitoringClient:
-    """ Class for collecting and sending monitoring data to a server
-    """
+    """Class for collecting and sending monitoring data to a server"""
+
     config: ClientConfig
     credentials_cert: str
     machine_id: str
@@ -102,23 +100,23 @@ class MonitoringClient:
     # watching stuff
     chia_dog: ChiaWatchdog
 
-    def __init__(self,
-                 chia_dog: ChiaWatchdog,
-                 config=MonitoringConfig.ClientConfig,
-                 credentials_cert: str = "",
-                 machine_name: str = "",
-                 ):
+    def __init__(
+        self,
+        chia_dog: ChiaWatchdog,
+        config=MonitoringConfig.ClientConfig,
+        credentials_cert: str = "",
+        machine_name: str = "",
+    ):
         self.config = config
         self.credentials_cert = credentials_cert
         self.machine_id = load_machine_id()
         self.chia_dog = chia_dog
-        self.collection_frequencies = get_collection_frequencies(
-            config)
+        self.collection_frequencies = get_collection_frequencies(config)
         self.last_time_sent = {}
         self.machine_name = machine_name
 
     def is_event_allowed_to_be_sent(self, pb_msg: UpdateEvent) -> bool:
-        """ Checks if a an update event is allowed to be sent
+        """Checks if a an update event is allowed to be sent
 
         Parameters
         ----------
@@ -134,22 +132,15 @@ class MonitoringClient:
 
         # get the name of the submessage to be updated
         field_name, sub_msg = get_update_even_data(pb_msg)
-        field_id = getattr(sub_msg, "id") \
-            if hasattr(sub_msg, "id") \
-            else None
+        field_id = getattr(sub_msg, "id") if hasattr(sub_msg, "id") else None
 
-        field_key = field_name if field_id is None \
-            else (field_name, field_id)
+        field_key = field_name if field_id is None else (field_name, field_id)
 
         # no field name found, that is odd. Do a warning and
         # continue
         if not field_name:
-            warn_msg = ("Could not identify which field" +
-                        " was set in an update event: %s")
-            get_logger(__file__).warning(
-                warn_msg,
-                MessageToDict(pb_msg)
-            )
+            warn_msg = "Could not identify which field" + " was set in an update event: %s"
+            get_logger(__file__).warning(warn_msg, MessageToDict(pb_msg))
             self.last_time_sent[field_key] = datetime.now()
             return True
 
@@ -166,8 +157,7 @@ class MonitoringClient:
             return True
 
         # check if enough time passed
-        is_allowed = (datetime.now() -
-                      last_time).total_seconds() > allowed_every
+        is_allowed = (datetime.now() - last_time).total_seconds() > allowed_every
 
         # memorize if we are sending this one
         if is_allowed:
@@ -205,7 +195,7 @@ class MonitoringClient:
         stub: MonitoringStub,
         address_for_logging: str,
     ):
-        """ Sends DataUpdateRequest in an infinite loop
+        """Sends DataUpdateRequest in an infinite loop
 
         Parameters
         ----------
@@ -231,13 +221,14 @@ class MonitoringClient:
             )
 
             filtered_event_list = [
-                update_event for update_event in event_list
+                update_event
+                for update_event in event_list
                 if self.is_event_allowed_to_be_sent(update_event)
             ]
             if not filtered_event_list:
                 await wait_at_least(
-                    min_duration=self.config.collect_data_every,
-                    start_time=start_time)
+                    min_duration=self.config.collect_data_every, start_time=start_time
+                )
                 continue
 
             data_update_request = DataUpdateRequest(
@@ -250,28 +241,22 @@ class MonitoringClient:
             logger.info(
                 "Sending message to %s: %s",
                 address_for_logging,
-                MessageToDict(data_update_request)
+                MessageToDict(data_update_request),
             )
 
             await stream.write(data_update_request)
 
             previous_state = current_state
 
-            await wait_at_least(
-                min_duration=self.config.collect_data_every,
-                start_time=start_time)
+            await wait_at_least(min_duration=self.config.collect_data_every, start_time=start_time)
 
     async def start_sending_updates(self):
-        """ Starts sending updates to the server
-        """
+        """Starts sending updates to the server"""
 
         logger = get_logger(__name__)
         logger.info("Starting to monitor system.")
 
-        address = "{ip}:{port}".format(
-            ip=self.config.address,
-            port=self.config.port
-        )
+        address = "{ip}:{port}".format(ip=self.config.address, port=self.config.port)
 
         channel_constructor, channel_args = await self.__setup_channel(
             address=address,
@@ -282,8 +267,7 @@ class MonitoringClient:
             try:
                 # Open a connection to the server
                 logger.debug("Connecting to %s", address)
-                async with channel_constructor(**channel_args) \
-                        as channel:
+                async with channel_constructor(**channel_args) as channel:
 
                     stub = MonitoringStub(channel)
 
@@ -293,9 +277,7 @@ class MonitoringClient:
                     # in the meantime
                     logger.debug("Requesting last known state from server.")
                     last_known_state = await stub.GetMachineState(
-                        GetStateRequest(
-                            machine_id=self.machine_id
-                        )
+                        GetStateRequest(machine_id=self.machine_id)
                     )
                     logger.debug(
                         "Received message %s",

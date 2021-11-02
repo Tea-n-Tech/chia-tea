@@ -1,16 +1,12 @@
-
 import unittest
 
-from chia_tea.protobuf.to_sqlite.generic import (ProtoType,
-                                                 field_descriptor_is_list)
+from chia_tea.protobuf.to_sqlite.generic import ProtoType, field_descriptor_is_list
 
 from .generated.computer_info_pb2 import _COMPUTERINFO, _UPDATEEVENT
-from .generated.config_pb2 import \
-    _MONITORINGCONFIG_CLIENTCONFIG_SENDUPDATEEVERY
+from .generated.config_pb2 import _MONITORINGCONFIG_CLIENTCONFIG_SENDUPDATEEVERY
 
 
 class TestGenerated(unittest.TestCase):
-
     def test_send_update_every_matches_update_event_names(self):
 
         update_event_fields = set(
@@ -44,8 +40,7 @@ class TestGenerated(unittest.TestCase):
             if field.message_type == ProtoType.MESSAGE.value
         )
 
-        self.assertSetEqual(update_event_message_types,
-                            computer_info_message_types)
+        self.assertSetEqual(update_event_message_types, computer_info_message_types)
 
     def test_that_every_array_message_in_computer_info_has_an_id_entry(self):
 
@@ -62,5 +57,5 @@ class TestGenerated(unittest.TestCase):
                     "id" in msg_field_names,
                     "Message type '{0}' is a repeated field and must contain an entry 'id'.".format(
                         submessage_type.name
-                    )
+                    ),
                 )

@@ -1,48 +1,33 @@
-
+import asyncio
 import unittest
-from datetime import date, datetime, timedelta
+from datetime import datetime
 
+from ..utils.testing import async_test
 from .ChiaWatchdog import ChiaWatchdog
 from .logfile.FarmerHarvesterLogfile import FarmerHarvesterLogfile
 from .logfile.line_checks import ActionFarmedUnfinishedBlock
 
 
 class TestChiaWatchdog(unittest.TestCase):
+    @async_test
+    async def test_readiness(self):
+        dog = ChiaWatchdog("", "")
 
-    def test_nightly_reset(self):
+        async def assert_not_ready():
+            with self.assertRaises(asyncio.TimeoutError):
+                await asyncio.wait_for(dog.ready(), timeout=0.5)
 
-        watchdog = ChiaWatchdog("")
-
-        # add a random harvester
-        harvester_info = FarmerHarvesterLogfile(
-            harvester_id="my_id",
-            ip_address="127.0.0.1",
-            is_connected=True,
-            last_update=datetime.now()
-        )
-        watchdog.harvester_infos = {
-            harvester_info.harvester_id: harvester_info
-        }
-
-        # set yesterday as date
-        today = date.today()
-        yesterday = today - timedelta(days=1)
-        watchdog.date_last_reset = yesterday
-
-        # test if reset is correctly detected
-        self.assertTrue(watchdog.is_reset_time())
-
-        # test if data is resettet
-        watchdog.reset_data()
-        self.assertDictEqual(watchdog.harvester_infos, {})
-
-        # check if reset is not executed anymore
-        should_be = {
-            harvester_info.harvester_id: harvester_info
-        }
-        watchdog.harvester_infos = should_be
-        self.assertFalse(watchdog.is_reset_time())
-        self.assertDictEqual(watchdog.harvester_infos, should_be)
+        dog.set_chia_logfile_is_ready()
+        await assert_not_ready()
+        dog.set_madmax_logfile_is_ready()
+        await assert_not_ready()
+        dog.farmer_service.is_ready = True
+        await assert_not_ready()
+        dog.harvester_service.is_ready = True
+        await assert_not_ready()
+        dog.wallet_service.is_ready = True
+        # raising an exception is an error case here
+        await asyncio.wait_for(dog.ready(), timeout=0.5)
 
     def test_reward_found(self):
         action1 = ActionFarmedUnfinishedBlock()
@@ -52,20 +37,20 @@ class TestChiaWatchdog(unittest.TestCase):
         timestamp = datetime.fromisoformat(timestamp_str)
 
         lineFirstRewardFound = (
-            "07:39:12.978 full_node chia.full_node.full_node: " +
-            "INFO     🍀 ️Farmed unfinished_block " +
-            "6b2a9249ec4aa159c24498a00305012772d33e68a01d116c1110091f440e0cf6"
+            "07:39:12.978 full_node chia.full_node.full_node: "
+            + "INFO     🍀 ️Farmed unfinished_block "
+            + "6b2a9249ec4aa159c24498a00305012772d33e68a01d116c1110091f440e0cf6"
         )
         lineSecondRewardFound = (
-            "07:39:12.978 full_node chia.full_node.full_node: " +
-            "INFO     🍀 ️Farmed unfinished_block " +
-            "6b2a9249ec4aa159c24498a00305012772d33e68a01d116c1110091f440e0cf7"
+            "07:39:12.978 full_node chia.full_node.full_node: "
+            + "INFO     🍀 ️Farmed unfinished_block "
+            + "6b2a9249ec4aa159c24498a00305012772d33e68a01d116c1110091f440e0cf7"
         )
 
         self.assertTrue(action1.is_match(lineFirstRewardFound))
         self.assertTrue(action1.is_match(lineSecondRewardFound))
 
-        chia_dog = ChiaWatchdog("")
+        chia_dog = ChiaWatchdog("", "")
         chia_dog.harvester_infos = {
             node_id: FarmerHarvesterLogfile(
                 node_id,

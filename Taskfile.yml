@@ -19,9 +19,15 @@ tasks:
       - poetry run python -m grpc.tools.protoc -I./protocol --python_out=. protocol/chia_tea/protobuf/generated/config.proto
       - poetry run python -m grpc.tools.protoc -I./protocol --python_out=. --grpc_python_out=. protocol/chia_tea/protobuf/generated/monitoring_service.proto
 
+  format:
+    desc: Formats the source code
+    cmds:
+      - poetry run black chia_tea
+
   lint:
     desc: Lints the code and reports on issues.
     cmds:
+      - poetry run black --check chia_tea
       - poetry run flake8 chia_tea --count --select=E9,F63,F7,F82 --show-source --statistics
       - poetry run flake8 chia_tea --exclude ./chia_tea/protobuf/generated --count --max-complexity=10 --max-line-length=127
       - poetry run pylint chia_tea --ignore=chia_tea/protobuf/generated
@@ -34,7 +40,11 @@ tasks:
   test:
     desc: Runs the test suite.
     cmds:
-      - poetry run pytest
+      - |
+        poetry run pytest \
+        --cov-report html:cov_html \
+        --cov-report term:skip-covered \
+        --cov=chia_tea
 
   copy:
     desc: Starts the copy cli tool.
@@ -49,8 +59,10 @@ tasks:
   clean:
     desc: Cleans up by deleting generated files including the database.
     cmds:
-      - rm -rf chia_tea/protobuf/generated
+      - rm -f chia_tea/protobuf/generated/*_.pb2.py
+      - rm -f chia_tea/protobuf/generated/*_.pb2_grpc.py
       - rm -f ./monitoring.db
+      - rm -rf ./cov_html
 
   server:
     desc: Starts the monitoring main server collecting data from clients.

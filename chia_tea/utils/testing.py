@@ -3,7 +3,7 @@ from typing import Callable
 
 
 def async_test(fun: Callable):
-    """ Decorator for running async tests
+    """Decorator for running async tests
 
     Parameters
     ----------
@@ -14,4 +14,5 @@ def async_test(fun: Callable):
     def wrapper(*args, **kwargs):
         loop = asyncio.get_event_loop()
         loop.run_until_complete(fun(*args, **kwargs))
+
     return wrapper

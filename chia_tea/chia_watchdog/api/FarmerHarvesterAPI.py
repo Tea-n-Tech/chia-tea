@@ -1,7 +1,5 @@
-
-
 class FarmerHarvesterAPI:
-    """ A connected machine to the farmer
+    """A connected machine to the farmer
 
     schema of connections from example data
     {
@@ -17,6 +15,7 @@ class FarmerHarvesterAPI:
         'type': 2
     }
     """
+
     # pylint: disable=too-few-public-methods, too-many-instance-attributes
 
     bytes_read: int
@@ -58,8 +57,8 @@ class FarmerHarvesterAPI:
         self.type = type
         self.n_plots = n_plots
 
-    def copy(self) -> 'FarmerHarvesterAPI':
-        """ Get a copy of the instance
+    def copy(self) -> "FarmerHarvesterAPI":
+        """Get a copy of the instance
 
         Returns
         -------

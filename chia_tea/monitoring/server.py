@@ -1,10 +1,10 @@
-
 import asyncio
 
 import grpc
 
-from ..protobuf.generated.monitoring_service_pb2_grpc import \
-    add_MonitoringServicer_to_server
+from ..protobuf.generated.monitoring_service_pb2_grpc import (
+    add_MonitoringServicer_to_server,
+)
 from ..protobuf.generated.config_pb2 import ChiaTeaConfig
 from ..utils.cli import parse_args
 from ..utils.config import read_config
@@ -15,7 +15,7 @@ from .MonitoringServer import MonitoringServer
 
 
 def __get_port(config: ChiaTeaConfig) -> int:
-    """ Get the port for the server
+    """Get the port for the server
 
     Returns
     -------
@@ -36,7 +36,7 @@ def __get_port(config: ChiaTeaConfig) -> int:
 
 
 def __get_database_filepath(config: ChiaTeaConfig) -> str:
-    """ Get the database filepath from the config
+    """Get the database filepath from the config
 
     Parameters
     ---------
@@ -51,19 +51,15 @@ def __get_database_filepath(config: ChiaTeaConfig) -> str:
     filepath = config.monitoring.server.db_filepath
 
     if not filepath:
-        raise ValueError(
-            "Config entry 'monitoring.server.db_filepath' may not be empty.")
+        raise ValueError("Config entry 'monitoring.server.db_filepath' may not be empty.")
 
     return filepath
 
 
 def create_server(
-        ip_address: str,
-        cert: bytes,
-        key: bytes,
-        db: MonitoringDatabase) -> grpc.aio.Server:
-    """ Creates a grpc server from the config
-    """
+    ip_address: str, cert: bytes, key: bytes, db: MonitoringDatabase
+) -> grpc.aio.Server:
+    """Creates a grpc server from the config"""
     logger = get_logger(__name__)
 
     server = grpc.aio.server()
@@ -78,18 +74,13 @@ def create_server(
         logger.warning("Encryption disabled")
         server.add_insecure_port(ip_address)
 
-    add_MonitoringServicer_to_server(
-        MonitoringServer(
-            db=db
-        ),
-        server
-    )
+    add_MonitoringServicer_to_server(MonitoringServer(db=db), server)
 
     return server
 
 
 async def build_server(config: ChiaTeaConfig, db: MonitoringDatabase):
-    """ Builds the monitoring server
+    """Builds the monitoring server
 
     Parmeters
     ---------
@@ -106,7 +97,7 @@ async def build_server(config: ChiaTeaConfig, db: MonitoringDatabase):
 
     # server address
     port = __get_port(config)
-    ip_address = "[::]:"+str(port)
+    ip_address = "[::]:" + str(port)
 
     # testing disables certificate security
     is_testing = config.development.testing
@@ -116,17 +107,13 @@ async def build_server(config: ChiaTeaConfig, db: MonitoringDatabase):
     key = get_credentials_key(is_testing, config)
 
     # build server
-    server = create_server(
-        ip_address,
-        cert,
-        key,
-        db)
+    server = create_server(ip_address, cert, key, db)
 
     return server
 
 
 async def start_server(config: ChiaTeaConfig):
-    """ Builds and starts the server
+    """Builds and starts the server
 
     Parmeters
     ---------
@@ -148,14 +135,12 @@ async def start_server(config: ChiaTeaConfig):
 
 
 def main():
-    """ Main function starting the monitoring server
-    """
+    """Main function starting the monitoring server"""
 
     try:
         args = parse_args(
             name="Chia Tea Monitoring Server",
-            description=("Start a server collecting data from" +
-                         "from monitoring clients.")
+            description=("Start a server collecting data from" + "from monitoring clients."),
         )
 
         # load config

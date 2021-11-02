@@ -1,12 +1,10 @@
-
-
 from datetime import datetime
 from typing import List
 
 from ...protobuf.generated.chia_pb2 import HarvesterViewedFromFarmer
 from ...protobuf.generated.computer_info_pb2 import ComputerInfo
 from ...protobuf.generated.machine_info_pb2 import MachineInfo
-from .common import get_machine_info_name
+from ..formatting import get_machine_info_name
 
 
 def notify_on_harvester_reward_found(
@@ -14,7 +12,7 @@ def notify_on_harvester_reward_found(
     old_computer_info: ComputerInfo,
     new_computer_info: ComputerInfo,
 ) -> List[str]:
-    """ notify when a reward was found
+    """notify when a reward was found
 
     Parameters
     ----------
@@ -41,7 +39,7 @@ def notify_on_harvester_reward_found(
             "{icon}   Harvester {machine_name} {status}.".format(
                 icon="🔍",
                 machine_name=get_machine_info_name(machine),
-                status="found a proof"
+                status="found a proof",
             )
         )
 
@@ -49,16 +47,16 @@ def notify_on_harvester_reward_found(
 
 
 HARVESTER_TIMOUT = 60  # seconds
-timestamp_of_last_timeout_check = 0.
+timestamp_of_last_timeout_check = 0.0
 
 
 def get_msg_if_farmer_harvester_timed_out(
     machine: MachineInfo,
     last_timestamp: float,
     new_timestamp: float,
-    harvester: HarvesterViewedFromFarmer
+    harvester: HarvesterViewedFromFarmer,
 ) -> str:
-    """ Returns a message if a farmer recognizes that a harvester
+    """Returns a message if a farmer recognizes that a harvester
     didn't respond for a while
 
     Parameters
@@ -79,14 +77,13 @@ def get_msg_if_farmer_harvester_timed_out(
         didn't time out.
     """
 
-    new_harvester_timed_out = (new_timestamp -
-                               harvester.time_last_msg_received >= HARVESTER_TIMOUT)
+    new_harvester_timed_out = new_timestamp - harvester.time_last_msg_received >= HARVESTER_TIMOUT
     previously_notified = (
         last_timestamp - harvester.time_last_msg_received >= HARVESTER_TIMOUT
         # we assume on startup that we already notified on a timeout
         # otherwise we can a message all the time when we restart
         # the bot.
-        if last_timestamp != 0.
+        if last_timestamp != 0.0
         else True
     )
 
@@ -94,7 +91,7 @@ def get_msg_if_farmer_harvester_timed_out(
         return "{icon}  Harvester {machine_name} {status}.".format(
             icon="⚠️",
             machine_name=get_machine_info_name(machine),
-            status=f"didn't respond for {HARVESTER_TIMOUT}s"
+            status=f"didn't respond for {HARVESTER_TIMOUT}s",
         )
 
     return ""
@@ -105,7 +102,7 @@ def notify_when_harvester_times_out(
     old_computer_info: ComputerInfo,
     new_computer_info: ComputerInfo,
 ) -> List[str]:
-    """ notify when a harvester times out
+    """notify when a harvester times out
 
     Parameters
     ----------
@@ -149,7 +146,7 @@ def notify_on_wallet_sync_change(
     old_computer_info: ComputerInfo,
     new_computer_info: ComputerInfo,
 ) -> List[str]:
-    """ notify when a wallet is not synced anymore
+    """notify when a wallet is not synced anymore
 
     Parameters
     ----------
@@ -192,7 +189,7 @@ def notify_on_wallet_connection_change(
     old_computer_info: ComputerInfo,
     new_computer_info: ComputerInfo,
 ) -> List[str]:
-    """ notify when a wallet connects or disconnects
+    """notify when a wallet connects or disconnects
 
     Parameters
     ----------
@@ -235,7 +232,7 @@ def get_computer_info_messages_if_any(
     old_computer_info: ComputerInfo,
     new_computer_info: ComputerInfo,
 ) -> List[str]:
-    """ Checks if we need to print any messages regarding harvesters
+    """Checks if we need to print any messages regarding harvesters
 
     Parameters
     ----------
@@ -254,11 +251,7 @@ def get_computer_info_messages_if_any(
     messages = []
 
     for get_msg_fun in ALL_EVENT_OBSERVERS:
-        messages += get_msg_fun(
-            machine,
-            old_computer_info,
-            new_computer_info
-        )
+        messages += get_msg_fun(machine, old_computer_info, new_computer_info)
 
     return messages
 
@@ -267,5 +260,5 @@ ALL_EVENT_OBSERVERS = (
     notify_on_harvester_reward_found,
     notify_on_wallet_connection_change,
     notify_on_wallet_sync_change,
-    notify_when_harvester_times_out
+    notify_when_harvester_times_out,
 )

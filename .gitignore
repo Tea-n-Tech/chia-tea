@@ -121,7 +121,7 @@ venv.bak/
 .ropeproject
 
 # mkdocs documentation
-/site
+site
 
 # mypy
 .mypy_cache/
@@ -150,3 +150,6 @@ config.yml
 
 # no vscode project dir
 .vscode
+
+# hide generated coverage report
+cov_html

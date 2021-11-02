@@ -8,7 +8,7 @@ from .shared_settings import API_EXCEPTIONS
 
 
 async def update_from_wallet(chia_dog: ChiaWatchdog):
-    """ Updates the chia dog with wallet data
+    """Updates the chia dog with wallet data
 
     Parameters
     ----------
@@ -17,16 +17,12 @@ async def update_from_wallet(chia_dog: ChiaWatchdog):
     """
 
     try:
-        config = load_config(
-            DEFAULT_ROOT_PATH, "config.yaml", exit_on_error=False)
+        config = load_config(DEFAULT_ROOT_PATH, "config.yaml", exit_on_error=False)
         self_hostname = config["self_hostname"]
         wallet_rpc_port = config["wallet"]["rpc_port"]
 
         wallet_client = await WalletRpcClient.create(
-            self_hostname,
-            uint16(wallet_rpc_port),
-            DEFAULT_ROOT_PATH,
-            config
+            self_hostname, uint16(wallet_rpc_port), DEFAULT_ROOT_PATH, config
         )
 
         # reduce timeout from around 4s to 1s

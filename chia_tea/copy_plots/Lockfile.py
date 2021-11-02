@@ -6,8 +6,7 @@ from ..utils.logger import get_logger
 
 
 class Lockfile:
-    """ Class to manage lockfiles
-    """
+    """Class to manage lockfiles"""
 
     def __init__(self, path_to_lockfile: str):
         self.path = path_to_lockfile
@@ -20,13 +19,9 @@ class Lockfile:
             except Exception:
                 trace = traceback.format_stack()
                 get_logger(__file__).error(trace)
-                logging.error(
-                    "Could not write to lockfile: %s", self.path)
+                logging.error("Could not write to lockfile: %s", self.path)
 
-    def __exit__(self,
-                 exception_type,
-                 exception_value,
-                 exception_traceback):
+    def __exit__(self, exception_type, exception_value, exception_traceback):
         logging.info("Removing LogFile")
         try:
             os.remove(self.path)
@@ -37,7 +32,7 @@ class Lockfile:
 
 
 def create_lockfile(path_to_lockfile: str) -> Lockfile:
-    """ Creates a lockfile if used in a context through 'with'
+    """Creates a lockfile if used in a context through 'with'
 
     Parameters
     ----------

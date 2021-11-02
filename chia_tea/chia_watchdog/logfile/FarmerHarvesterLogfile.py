@@ -71,7 +71,7 @@ class FarmerHarvesterLogfile:
         self.reset_times()
 
     def copy(self):
-        """ Get a copy of the HarvesterInfo
+        """Get a copy of the HarvesterInfo
 
         Returns
         -------
@@ -88,11 +88,11 @@ class FarmerHarvesterLogfile:
             time_last_outgoing_msg=self.time_last_outgoing_msg,
             timed_out=self.timed_out,
             n_responses=self.n_responses,
-            n_overdue_responses=self.n_overdue_responses
+            n_overdue_responses=self.n_overdue_responses,
         )
 
     def check_for_timeout(self, current_time: datetime) -> None:
-        """ This functions checks if the harvester timed out from the view of a farmer
+        """This functions checks if the harvester timed out from the view of a farmer
 
         Parameters
         ----------
@@ -108,16 +108,14 @@ class FarmerHarvesterLogfile:
 
         if not self.timed_out:
             if self.time_last_incoming_msg is not None and self.time_last_outgoing_msg is not None:
-                delta_seconds = (
-                    current_time-self.time_last_incoming_msg).total_seconds()
+                delta_seconds = (current_time - self.time_last_incoming_msg).total_seconds()
                 if delta_seconds > CHALLENGE_TIMEOUT:
                     self.n_overdue_responses += 1
                 if delta_seconds > HARVESTER_TIMOUT:
                     self.timed_out = True
 
     def reset_times(self):
-        """ Resets time of incoming, outgoing msgs and signage points
-        """
+        """Resets time of incoming, outgoing msgs and signage points"""
         self.time_last_outgoing_msg = None
         self.time_last_incoming_msg = None
         self.time_of_end_of_last_sgn_point = None
