@@ -5,14 +5,14 @@ import time
 from ..utils.cli import parse_args
 from ..utils.config import read_config
 from ..utils.logger import get_logger
-from .Disk import collect_files_from_folders, copy_file, find_disk_with_space
-from .Lockfile import create_lockfile
+from .Disk import collect_files_from_folders, copy_file, find_disk_with_space, update_completely_copied_files
 
 module_name = "chia_tea.copy"
 
 
 def main():
     """Main program for copying files"""
+    files_copied_completely = []
 
     # get command line arguments
     args = parse_args(
@@ -38,9 +38,13 @@ def main():
 
         files_to_copy = collect_files_from_folders(from_folders, "*.plot")
 
+        files_copied_completely = update_completely_copied_files(
+            target_folders, files_copied_completely)
+
         for filepath in files_to_copy:
             # search for a space on the specified disks
-            target_dir = find_disk_with_space(target_folders, filepath)
+            target_dir = find_disk_with_space(
+                target_folders, filepath, files_copied_completely)
             if target_dir is None:
                 logger.error("No disk space available for: %s", filepath)
                 continue
@@ -53,11 +57,7 @@ def main():
             logger.info("moving file: %s -> %s", filepath, target_path)
             start = time.time()
 
-            # lockfile
-            path_to_lockfile = os.path.join(target_dir, filename.replace(".plot", ".copying"))
-
-            with create_lockfile(path_to_lockfile):
-                successful_copy = copy_file(filepath, target_path)
+            successful_copy = copy_file(filepath, target_path)
 
             duration_secs = time.time() - start
             if successful_copy:
@@ -65,10 +65,12 @@ def main():
                 try:
                     os.remove(filepath)
                 except FileNotFoundError:
-                    logger.error("Could not remove original file: %s", filepath)
+                    logger.error(
+                        "Could not remove original file: %s", filepath)
 
             else:
-                logger.error("failed to copy %s in %.1fs", filepath, duration_secs)
+                logger.error("failed to copy %s in %.1fs",
+                             filepath, duration_secs)
 
         # rate limiter
         time.sleep(15)

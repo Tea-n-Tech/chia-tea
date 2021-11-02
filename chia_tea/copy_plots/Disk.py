@@ -1,8 +1,9 @@
-import glob
 import os
+import glob
 import random
 import shutil
 import traceback
+from os.path import isfile, join
 from typing import Dict, List, Union
 
 import psutil
@@ -34,7 +35,39 @@ def filter_least_used_disks(disk_to_lockfile_count: Dict[str, int]) -> List[str]
     return available_target_dirpaths
 
 
-def find_disk_with_space(target_dirs: List[str], filepath_file: str) -> Union[str, None]:
+def update_completely_copied_files(target_dirs: List[str], files_copied_completely: List[str]) -> List[str]:
+    """ For each target dir, it will add the completly copied files
+    Parameters
+    ----------
+    target_dirs: List[str]
+        Directories in which the file can be copied
+
+    Returns
+    -------
+    files_copied_completely: List[str]
+        All the files which are not being copied anymore
+    """
+    logger = get_logger(__file__)
+    for folder_path in target_dirs:
+
+        if not os.path.isdir(folder_path):
+            if os.path.isfile(folder_path):
+                warn_msg = "Path '{0}' is a file and not a directory."
+            else:
+                warn_msg = "Folder '{0}' does not exist or is not a directory."
+            logger.warning(warn_msg, folder_path)
+            continue
+
+        all_files = [f for f in os.listdir(
+            folder_path) if isfile(join(folder_path, f))]
+        for f in all_files:
+            if f not in files_copied_completely:
+                if not is_being_used(f):
+                    files_copied_completely.append(f)
+    return files_copied_completely
+
+
+def find_disk_with_space(target_dirs: List[str], filepath_file: str, files_copied_completely: List[str]) -> Union[str, None]:
     """Searches for space for a file to be moved
 
     Parameters
@@ -51,15 +84,17 @@ def find_disk_with_space(target_dirs: List[str], filepath_file: str) -> Union[st
     """
     logger = get_logger(__file__)
     fstat = os.stat(filepath_file)
-    disk_to_lockfile_count = update_lockfile_count(target_dirs)
-    available_target_dirpaths = filter_least_used_disks(disk_to_lockfile_count)
+    disk_to_copy_processes_count = update_copy_processes_count(
+        target_dirs, files_copied_completely)
+    available_target_dirpaths = filter_least_used_disks(
+        disk_to_copy_processes_count)
 
     for dirpath in available_target_dirpaths:
         try:
             if not os.path.isdir(dirpath):
                 os.makedirs(dirpath, exist_ok=True)
             # size check
-            n_lockfiles = disk_to_lockfile_count[dirpath]
+            n_lockfiles = disk_to_copy_processes_count[dirpath]
             space_after_copying = n_lockfiles * 1.08e11  # 108GB
             space = psutil.disk_usage(dirpath)
             if space.free > (fstat.st_size + space_after_copying):
@@ -85,14 +120,14 @@ def copy_file(source_path: str, target_path: str) -> bool:
 
     Parameters
     ----------
-    source_path : str
+    source_path: str
         Path to the existing source file
     target_path: str
         Path where to copy the file
 
     Returns
     -------
-    success : bool
+    success: bool
         If the copy was a success.
     """
     print(target_path)
@@ -141,23 +176,92 @@ def collect_files_from_folders(folder_list: List[str], pattern: str) -> List[str
     return all_filepaths
 
 
-def update_lockfile_count(target_dirs: List[str]) -> Dict[str, int]:
-    """Get the lockfile count for the specified directories
-
+def is_being_used(fpath):
+    """Looks if a file is being used on from a different process
     Parameters
     ----------
-    target_dirs : List[str]
-        Directories to get lockfile count for.
+    fpath: str
+        full(!) path to the file
 
     Returns
     -------
-    lockfile_count : Dict[str, int]
-        Dictionary containing as key the directory and as
-        value den lockfile count.
+    being_used: boolean
+        true if being used by another process
     """
-    n_lockfiles_per_disk = {}
+    for proc in psutil.process_iter():
+        try:
+            for item in proc.open_files():
+                if fpath == item.path:
+                    return True
+        except Exception:
+            pass
+
+    return False
+
+
+def update_copy_processes_count(target_dirs: List[str], files_copied_completely) -> Dict[str, int]:
+    """Get the copy processes count for the specified directories
+
+    Parameters
+    ----------
+    target_dirs: List[str]
+        Directories to get copy processes count for.
+
+    Returns
+    -------
+    number_of_copy_processes_per_disk: Dict[str, int]
+        Dictionary containing as key the directory and as
+        value den copy processes count.
+    """
+    number_of_copy_processes_per_disk = {}
     for target_dir in target_dirs:
-        lock_files = collect_files_from_folders([target_dir], "*.copying")
-        n_lockfiles = len(lock_files)
-        n_lockfiles_per_disk[target_dir] = n_lockfiles
-    return n_lockfiles_per_disk
+        files_beeing_copied_to_dir = get_files_beingCopied(
+            [target_dir], files_copied_completely)
+        number_of_copy_processes = len(files_beeing_copied_to_dir)
+        print("Number of copy processes:  {}".format(number_of_copy_processes))
+        print("Number of complete copied processes:  {}".format(
+            len(files_copied_completely)))
+        number_of_copy_processes_per_disk[target_dir] = number_of_copy_processes
+    return number_of_copy_processes_per_disk
+
+
+def get_files_beingCopied(target_dirs: List[str], files_copied_completely: List[str]) -> List[str]:
+    """
+    Later
+    """
+    all_filepaths = []
+    logger = get_logger(__file__)
+    for folder_path in target_dirs:
+
+        if not os.path.isdir(folder_path):
+            if os.path.isfile(folder_path):
+                warn_msg = "Path '{0}' is a file and not a directory."
+            else:
+                warn_msg = "Folder '{0}' does not exist or is not a directory."
+            logger.warning(warn_msg, folder_path)
+            continue
+
+        all_files_to_check = [f for f in os.listdir(
+            folder_path) if isfile(join(folder_path, f))]
+
+        all_files_to_check = [f for f in os.listdir(
+            folder_path) if isfile(join(folder_path, f))]
+
+        # remove all files which not have to be cheked
+        print("Size before {}".format(len(all_files_to_check)))
+        print(files_copied_completely)
+        for f in files_copied_completely:
+            if f in all_files_to_check:
+                all_files_to_check.remove(f)
+                print("Removed: "+f + " as it is already copied completely")
+        print("Size after {}".format(len(all_files_to_check)))
+
+        # check
+        for f in all_files_to_check:
+            if is_being_used(f):
+                all_filepaths.append(f)
+            else:
+                files_copied_completely.append(f)
+                print("Added "+f + " because it is already copied completely")
+
+        return all_filepaths
