@@ -28,7 +28,7 @@ async def plotters_cmd(db_filepath: str) -> List[str]:
         for _, (machine, computer_info) in machine_and_computer_info_dict.items():
             messages.append(
                 "\n".join(
-                    ("\n", f"  🛠️ Plotter {get_machine_info_name(machine)}")
+                    (f"  🛠️ Plotter {get_machine_info_name(machine)}",)
                     + tuple(
                         plot_in_progress_pb2_as_markdown(plot)
                         for plot in computer_info.plotting_plots
@@ -38,7 +38,8 @@ async def plotters_cmd(db_filepath: str) -> List[str]:
 
         if messages:
             messages.insert(0, "**Plotters:**")
+            messages.insert(1, "")
         else:
-            messages.append("No Plotters 🛠️ around.")
+            messages.append("No Plotters 🛠️ at work.")
 
     return messages
