@@ -67,7 +67,7 @@ message PlotInProgress {
     string id = 1;
     string pool_public_key = 2;
     double start_time = 3;
-    float plottingProgress = 5;
+    float progress = 5;
     string state = 6;
 }
 

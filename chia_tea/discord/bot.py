@@ -3,6 +3,8 @@ import sys
 
 from discord.ext import commands
 
+from chia_tea.discord.commands.plotters import plotters_cmd
+
 from ..utils.cli import parse_args
 from ..utils.config import get_config, read_config
 from ..utils.logger import get_logger
@@ -81,6 +83,21 @@ async def bot_harvester(ctx):
     db_filepath = get_config().monitoring.server.db_filepath
 
     messages = await harvesters_cmd(db_filepath)
+
+    await log_and_send_msg_if_any(
+        messages=messages,
+        logger=get_logger(__file__),
+        channel=ctx.channel,
+        is_testing=get_config().development.testing,
+    )
+
+
+@bot.command(name="plotters")
+async def bot_plotters(ctx):
+    """Prints all plotters"""
+    db_filepath = get_config().monitoring.server.db_filepath
+
+    messages = await plotters_cmd(db_filepath)
 
     await log_and_send_msg_if_any(
         messages=messages,
