@@ -96,8 +96,16 @@ async def collect_connected_harvesters_to_farmer(
             if not harvester_info.is_connected:
                 continue
             kwargs["missed_challenges"] = harvester_info.n_overdue_responses
-            kwargs["time_last_msg_received"] = harvester_info.time_last_incoming_msg or 0.0
-            kwargs["time_last_msg_sent"] = harvester_info.time_last_outgoing_msg or 0.0
+            kwargs["time_last_msg_received"] = (
+                harvester_info.time_last_incoming_msg.timestamp()
+                if harvester_info.time_last_incoming_msg is not None
+                else 0.0
+            )
+            kwargs["time_last_msg_sent"] = (
+                harvester_info.time_last_outgoing_msg.timestamp()
+                if harvester_info.time_last_outgoing_msg is not None
+                else 0.0
+            )
 
         connected_harvesters.append(
             HarvesterViewedFromFarmer(

@@ -29,6 +29,8 @@ async def watch_lines_infinitely(
     """
 
     if not filepath:
+        if on_file_missing is not None:
+            await on_file_missing()
         return
 
     logger = get_logger(__name__)

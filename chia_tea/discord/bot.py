@@ -113,7 +113,7 @@ async def bot_sql(ctx, *cmds):
     db_filepath = get_config().monitoring.server.db_filepath
 
     cmd = " ".join(cmds)
-    messages = await sql_cmd(db_filepath, (cmd,))
+    messages = await sql_cmd(db_filepath, cmd)
 
     await log_and_send_msg_if_any(
         messages=messages,
