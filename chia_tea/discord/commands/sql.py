@@ -6,7 +6,6 @@ from rich.console import Console
 from rich.table import Table
 
 from ..common import catch_errors_as_message, open_database_read_only
-from ...utils.logger import get_logger
 
 ROW_LIMIT = 5
 
