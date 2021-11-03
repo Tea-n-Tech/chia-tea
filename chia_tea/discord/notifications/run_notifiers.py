@@ -149,10 +149,7 @@ async def run_notifiers(
                         machine_info,
                         new_computer_info,
                     ) in new_machine_computer_info_dict.items():
-                        _, old_computer_info = old_machine_computer_info_dict.get(
-                            machine_id,
-                            ComputerInfo(),
-                        )
+                        _, old_computer_info = old_machine_computer_info_dict.get(machine_id)
                         new_computer_info = get_computer_info_from_db(
                             cursor,
                             machine_id,
