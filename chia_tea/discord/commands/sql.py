@@ -78,7 +78,6 @@ async def sql_cmd(db_filepath: str, cmd: str) -> List[str]:
     with open_database_read_only(db_filepath) as cursor:
         sql_cursor: sqlite3.Cursor = cursor
         try:
-            get_logger(__name__).debug(cmd)
             sql_cursor.execute(cmd)
             rows = sql_cursor.fetchall()
 
