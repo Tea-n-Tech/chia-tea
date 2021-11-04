@@ -167,7 +167,7 @@ def notify_if_plots_are_lost(machine_id: str, update_events: List[UpdateEvent]) 
 
     messages = []
     if n_deleted_plots:
-        messages.append(f"⚠️ Machine {machine_id} lost f{n_deleted_plots} plots 🌽")
+        messages.append(f"⚠️ Machine {machine_id} lost {n_deleted_plots} plots 🌽")
 
     return messages
 
