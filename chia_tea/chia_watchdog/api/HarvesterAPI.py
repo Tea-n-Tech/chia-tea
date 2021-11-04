@@ -1,7 +1,8 @@
-from copy import deepcopy
+from dataclasses import dataclass, field
 from typing import Iterable, List
 
 
+@dataclass
 class HarvesterAPI:
     """This class holds chia information fetched through RPC
     from chia services on the same machine
@@ -13,7 +14,7 @@ class HarvesterAPI:
     is_ready: bool = False
 
     is_running: bool = False
-    plots: List[dict]
+    plots: List[dict] = field(default_factory=list)
     # Plot layout:
     # {
     #     'file_size': 108878195752,
@@ -25,30 +26,7 @@ class HarvesterAPI:
     #     'size': 32,
     #     'time_modified': 1621370658.446281
     # }
-    failed_to_open_filenames: List[str]
-    not_found_filenames: List[str]
+    failed_to_open_filenames: List[str] = field(default_factory=list)
+    not_found_filenames: List[str] = field(default_factory=list)
     plot_directories: Iterable[str] = tuple()
     n_proofs: int = 0
-
-    def __init__(self):
-        self.plots = []
-        self.failed_to_open_filenames = []
-        self.not_found_filenames = []
-
-    def copy(self) -> "HarvesterAPI":
-        """Get a copy of the instance
-
-        Returns
-        -------
-        harvester : HarvesterAPI
-            copy of the instance
-        """
-        new_harvester = HarvesterAPI()
-        new_harvester.is_running = self.is_running
-        new_harvester.is_ready = self.is_ready
-        new_harvester.plots = deepcopy(self.plots)
-        new_harvester.failed_to_open_filenames = list(self.failed_to_open_filenames)
-        new_harvester.not_found_filenames = list(self.not_found_filenames)
-        new_harvester.plot_directories = list(self.plot_directories)
-        new_harvester.n_proofs = self.n_proofs
-        return new_harvester

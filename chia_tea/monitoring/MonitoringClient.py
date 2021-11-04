@@ -1,6 +1,7 @@
 import asyncio
 import traceback
 import uuid
+from copy import deepcopy
 from datetime import datetime
 from typing import Dict, Tuple, Union
 
@@ -14,10 +15,7 @@ from ..protobuf.generated.config_pb2 import (
     _MONITORINGCONFIG_CLIENTCONFIG_SENDUPDATEEVERY,
     MonitoringConfig,
 )
-from ..protobuf.generated.monitoring_service_pb2 import (
-    DataUpdateRequest,
-    GetStateRequest,
-)
+from ..protobuf.generated.monitoring_service_pb2 import DataUpdateRequest, GetStateRequest
 from ..protobuf.generated.monitoring_service_pb2_grpc import MonitoringStub
 from ..protobuf.to_sqlite.custom import ProtoType, get_update_even_data
 from ..utils.logger import get_logger
@@ -217,7 +215,9 @@ class MonitoringClient:
             event_list, current_state = await get_update_events(
                 machine_id=self.machine_id,
                 initial_state=previous_state,
-                chia_dog=self.chia_dog,
+                # we make a copy here, otherwise the object might get
+                # mutated during data collection (takes a few ms).
+                chia_dog=deepcopy(self.chia_dog),
             )
 
             filtered_event_list = [
@@ -299,11 +299,11 @@ class MonitoringClient:
 
             # in case of trouble reconnect
             except grpc.aio.AioRpcError as err:
-                err_msg = "Connection error with %s (%d): %s"
+                err_msg = "Connection error with %s (%s): %s"
                 logger.error(
                     err_msg,
                     address,
-                    err.code(),
+                    str(err.code()),
                     err.details(),
                 )
                 await asyncio.sleep(5)
