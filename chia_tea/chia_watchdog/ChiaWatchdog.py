@@ -47,31 +47,6 @@ class ChiaWatchdog:
         self.farmed_blocks = []
         self.plots_in_progress = []
 
-    def copy(self) -> "ChiaWatchdog":
-        """Creates a copy of this instance
-
-        Returns
-        -------
-        new_instance : ChiaWatchdog
-            copy of the instance
-        """
-        new_instance = ChiaWatchdog(self.logfile_filepath, self.madmax_logfile)
-        new_instance.harvester_infos = {
-            id: harvester_info.copy() for id, harvester_info in self.harvester_infos.items()
-        }
-        new_instance.plots_in_progress = [plot.copy() for plot in self.plots_in_progress]
-        # not sure about this one but ok
-        # pylint: disable=protected-access
-        # pylint: disable=unused-private-member
-        new_instance.__logfile_chia_ready = self.__logfile_chia_ready
-        new_instance.__logfile_madmax_ready = self.__logfile_madmax_ready
-        new_instance.farmer_service = self.farmer_service.copy()
-        new_instance.wallet_service = self.wallet_service.copy()
-        new_instance.harvester_service = self.harvester_service.copy()
-        new_instance.farmed_blocks = self.farmed_blocks.copy()
-
-        return new_instance
-
     async def ready(self):
         """Wait for the readiness of the watchdog"""
         while not (

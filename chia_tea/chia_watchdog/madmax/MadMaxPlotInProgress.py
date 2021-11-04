@@ -65,13 +65,3 @@ class MadMaxPlotInProgress:
     progress: float
     plot_type: int
     state: str
-
-    def copy(self) -> "MadMaxPlotInProgress":
-        """Get a copy of the instance
-
-        Returns
-        -------
-        plot : MadMaxPlotInProgress
-            copy of this instance
-        """
-        return MadMaxPlotInProgress(**self.__dict__)
