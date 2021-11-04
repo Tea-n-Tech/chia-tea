@@ -2,6 +2,7 @@ import os
 import glob
 import random
 import shutil
+import time
 import traceback
 from os.path import isfile, join
 from typing import Dict, List, Union
@@ -11,7 +12,7 @@ import psutil
 from ..utils.logger import get_logger
 
 
-def filter_least_used_disks(disk_to_lockfile_count: Dict[str, int]) -> List[str]:
+def filter_least_used_disks(disk_to_copy_processes_count: Dict[str, int]) -> List[str]:
     """Filters for the least used disk
 
     Parameters
@@ -25,11 +26,11 @@ def filter_least_used_disks(disk_to_lockfile_count: Dict[str, int]) -> List[str]
         Available directories with minimal lockfile count. In case of
         equal lockfile count then the disks are given randomly.
     """
-    minimum_number_of_lockfiles = min(disk_to_lockfile_count.values())
+    minimum_number_of_lockfiles = min(disk_to_copy_processes_count.values())
     available_target_dirpaths = [
         dirpath
-        for dirpath in disk_to_lockfile_count
-        if disk_to_lockfile_count[dirpath] == minimum_number_of_lockfiles
+        for dirpath in disk_to_copy_processes_count
+        if disk_to_copy_processes_count[dirpath] == minimum_number_of_lockfiles
     ]
     random.shuffle(available_target_dirpaths)
     return available_target_dirpaths
@@ -199,6 +200,31 @@ def is_being_used(fpath):
     return False
 
 
+def is_accessible(fpath):
+    """Looks if a file is being accessible
+    Parameters
+    ----------
+    fpath: str
+        full(!) path to the file
+
+    Returns
+    -------
+    accessible: boolean
+        false if being used by another process
+    """
+    print(fpath)
+    try:
+        start = time.time()
+        for i in range(1, 1000):
+            with open(fpath, "r+"):
+                pass
+        end = time.time()
+        print(end - start)
+    except Exception:
+        return False
+    return True
+
+
 def update_copy_processes_count(target_dirs: List[str], files_copied_completely) -> Dict[str, int]:
     """Get the copy processes count for the specified directories
 
@@ -213,6 +239,7 @@ def update_copy_processes_count(target_dirs: List[str], files_copied_completely)
         Dictionary containing as key the directory and as
         value den copy processes count.
     """
+    print("Updating Copy Process Counts")
     number_of_copy_processes_per_disk = {}
     for target_dir in target_dirs:
         files_beeing_copied_to_dir = get_files_beingCopied(
@@ -248,20 +275,20 @@ def get_files_beingCopied(target_dirs: List[str], files_copied_completely: List[
             folder_path) if isfile(join(folder_path, f))]
 
         # remove all files which not have to be cheked
-        print("Size before {}".format(len(all_files_to_check)))
         print(files_copied_completely)
         for f in files_copied_completely:
             if f in all_files_to_check:
                 all_files_to_check.remove(f)
                 print("Removed: "+f + " as it is already copied completely")
-        print("Size after {}".format(len(all_files_to_check)))
 
         # check
         for f in all_files_to_check:
             if is_being_used(f):
+                print("!!!!!!!! File {} is being used".format(f))
                 all_filepaths.append(f)
             else:
                 files_copied_completely.append(f)
-                print("Added "+f + " because it is already copied completely")
+                print("Added "+f +
+                      " because it is already copied completely")
 
         return all_filepaths
