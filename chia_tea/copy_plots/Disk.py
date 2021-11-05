@@ -63,7 +63,7 @@ def update_completely_copied_files(target_dirs: List[str], files_copied_complete
             folder_path) if isfile(join(folder_path, f))]
         for f in all_files:
             if f not in files_copied_completely:
-                if not is_being_used(f):
+                if is_accessible(f):
                     files_copied_completely.append(f)
     return files_copied_completely
 
@@ -131,11 +131,12 @@ def copy_file(source_path: str, target_path: str) -> bool:
     success: bool
         If the copy was a success.
     """
-    print(target_path)
     with open(source_path, "rb") as fin:
         with open(target_path, "wb") as fout:
             try:
-                shutil.copyfileobj(fin, fout, 128 * 1024)
+                # important - only copy files which are not yet in a copy  process
+                if is_accessible(source_path):
+                    shutil.copyfileobj(fin, fout, 128 * 1024)
             except (Exception, ConnectionResetError):
                 trace = traceback.format_stack()
                 get_logger(__file__).error(trace)
@@ -177,29 +178,6 @@ def collect_files_from_folders(folder_list: List[str], pattern: str) -> List[str
     return all_filepaths
 
 
-def is_being_used(fpath):
-    """Looks if a file is being used on from a different process
-    Parameters
-    ----------
-    fpath: str
-        full(!) path to the file
-
-    Returns
-    -------
-    being_used: boolean
-        true if being used by another process
-    """
-    for proc in psutil.process_iter():
-        try:
-            for item in proc.open_files():
-                if fpath == item.path:
-                    return True
-        except Exception:
-            pass
-
-    return False
-
-
 def is_accessible(fpath):
     """Looks if a file is being accessible
     Parameters
@@ -212,14 +190,12 @@ def is_accessible(fpath):
     accessible: boolean
         false if being used by another process
     """
-    print(fpath)
     try:
-        start = time.time()
-        for i in range(1, 1000):
-            with open(fpath, "r+"):
-                pass
-        end = time.time()
-        print(end - start)
+        #start = time.time()
+        with open(fpath, "r+", encoding="utf8"):
+            pass
+        #end = time.time()
+        #print(end - start)
     except Exception:
         return False
     return True
@@ -245,9 +221,6 @@ def update_copy_processes_count(target_dirs: List[str], files_copied_completely)
         files_beeing_copied_to_dir = get_files_beingCopied(
             [target_dir], files_copied_completely)
         number_of_copy_processes = len(files_beeing_copied_to_dir)
-        print("Number of copy processes:  {}".format(number_of_copy_processes))
-        print("Number of complete copied processes:  {}".format(
-            len(files_copied_completely)))
         number_of_copy_processes_per_disk[target_dir] = number_of_copy_processes
     return number_of_copy_processes_per_disk
 
@@ -275,20 +248,17 @@ def get_files_beingCopied(target_dirs: List[str], files_copied_completely: List[
             folder_path) if isfile(join(folder_path, f))]
 
         # remove all files which not have to be cheked
-        print(files_copied_completely)
         for f in files_copied_completely:
             if f in all_files_to_check:
                 all_files_to_check.remove(f)
-                print("Removed: "+f + " as it is already copied completely")
 
         # check
         for f in all_files_to_check:
-            if is_being_used(f):
-                print("!!!!!!!! File {} is being used".format(f))
+            if not is_accessible(f):
+                #print("!!!!!!!! File is being used")
                 all_filepaths.append(f)
             else:
                 files_copied_completely.append(f)
-                print("Added "+f +
-                      " because it is already copied completely")
+                #print("File is accessible - no need to check it anymore")
 
         return all_filepaths

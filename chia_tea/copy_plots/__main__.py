@@ -35,16 +35,12 @@ def main():
 
     # execute infinite copy loop
     while True:
-        print("Looping")
         files_to_copy = collect_files_from_folders(from_folders, "*.plot")
 
         files_copied_completely = update_completely_copied_files(
             target_folders, files_copied_completely)
-        print("Legnth of completely copied files: {}".format(
-            len(files_copied_completely)))
 
         for filepath in files_to_copy:
-            print("File Loop")
             # search for a space on the specified disks
             target_dir = find_disk_with_space(
                 target_folders, filepath, files_copied_completely)
