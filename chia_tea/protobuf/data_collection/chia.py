@@ -15,6 +15,7 @@ from ...protobuf.generated.chia_pb2 import (
 from ...utils.logger import log_runtime_async
 
 
+@log_runtime_async(__file__)
 async def collect_plots_in_progress(chia_dog: ChiaWatchdog) -> List[PlotInProgress]:
     """Converts partially finished plots from the watchdog to protobuf
 
@@ -41,6 +42,7 @@ async def collect_plots_in_progress(chia_dog: ChiaWatchdog) -> List[PlotInProgre
     return plots_in_progress
 
 
+@log_runtime_async(__file__)
 async def collect_connected_harvesters_to_farmer(
     chia_dog: ChiaWatchdog,
 ) -> List[HarvesterViewedFromFarmer]:
