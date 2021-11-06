@@ -1,7 +1,6 @@
 import asyncio
 import traceback
 import uuid
-from copy import deepcopy
 from datetime import datetime
 from typing import Dict, Tuple, Union
 
@@ -219,6 +218,10 @@ class MonitoringClient:
                 # mutated during data collection (takes a few ms).
                 chia_dog=self.chia_dog.snapshot(),
             )
+            for event in event_list:
+                field_name, sub_msg = get_update_even_data(event)
+                if field_name == "farmer_harvester":
+                    logger.debug("Emiting Event: {0}".format(event))
 
             filtered_event_list = [
                 update_event
