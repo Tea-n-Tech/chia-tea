@@ -1,8 +1,7 @@
-from typing import Any, Iterable, List, Tuple
+from typing import Any, Iterable
 
 from sortedcontainers import SortedSet
 
-from ..protobuf.data_collection.computer_info import collect_computer_info
 from ..protobuf.generated.computer_info_pb2 import (
     _UPDATEEVENT,
     ADD,
@@ -11,7 +10,6 @@ from ..protobuf.generated.computer_info_pb2 import (
     ComputerInfo,
     UpdateEvent,
 )
-from .ChiaWatchdog import ChiaWatchdog
 
 
 def get_event_type(old_msg: Any, new_msg: Any) -> int:

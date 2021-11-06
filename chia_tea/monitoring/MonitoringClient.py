@@ -8,7 +8,8 @@ import grpc
 from google.protobuf.json_format import MessageToDict
 
 from ..chia_watchdog.ChiaWatchdog import ChiaWatchdog
-from ..chia_watchdog.computer_info_comparison import collect_computer_info, compare_computer_info
+from ..chia_watchdog.computer_info_comparison import compare_computer_info
+from ..protobuf.data_collection.computer_info import collect_computer_info
 from ..protobuf.generated.computer_info_pb2 import ComputerInfo, UpdateEvent
 from ..protobuf.generated.config_pb2 import (
     _MONITORINGCONFIG_CLIENTCONFIG_SENDUPDATEEVERY,
