@@ -1,5 +1,4 @@
 import asyncio
-import json
 import traceback
 import uuid
 from datetime import datetime
@@ -88,7 +87,10 @@ def get_collection_frequencies(config: ClientConfig) -> Dict[str, float]:
 class MonitoringClient:
     """Class for collecting and sending monitoring data to a server"""
 
+    # pylint: disable=too-many-instance-attributes
+
     config: ClientConfig
+    debug_config: DevelopmentConfig
     credentials_cert: str
     machine_id: str
     machine_name: str
@@ -100,6 +102,7 @@ class MonitoringClient:
     # watching stuff
     chia_dog: ChiaWatchdog
 
+    # pylint: disable=too-many-arguments
     def __init__(
         self,
         chia_dog: ChiaWatchdog,
@@ -223,7 +226,9 @@ class MonitoringClient:
                 self.chia_dog.snapshot(),
             )
             if self.debug_config.testing and self.debug_config.monitoring_client_state_file:
-                with open(self.debug_config.monitoring_client_state_file, "a") as fp:
+                with open(
+                    self.debug_config.monitoring_client_state_file, "a", encoding="utf8"
+                ) as fp:
                     fp.write(
                         "{0} {1}\n".format(
                             datetime.now(),
