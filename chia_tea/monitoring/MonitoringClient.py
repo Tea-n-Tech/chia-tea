@@ -8,7 +8,7 @@ import grpc
 from google.protobuf.json_format import MessageToDict
 
 from ..chia_watchdog.ChiaWatchdog import ChiaWatchdog
-from ..chia_watchdog.computer_info_comparison import get_update_events
+from ..chia_watchdog.computer_info_comparison import collect_computer_info, compare_computer_info
 from ..protobuf.generated.computer_info_pb2 import ComputerInfo, UpdateEvent
 from ..protobuf.generated.config_pb2 import (
     _MONITORINGCONFIG_CLIENTCONFIG_SENDUPDATEEVERY,
@@ -211,13 +211,19 @@ class MonitoringClient:
         while True:
             start_time = datetime.now()
 
-            event_list, current_state = await get_update_events(
-                machine_id=self.machine_id,
-                initial_state=previous_state,
+            current_state = await collect_computer_info(
+                self.machine_id,
                 # we make a copy here, otherwise the object might get
                 # mutated during data collection (takes a few ms).
-                chia_dog=self.chia_dog.snapshot(),
+                self.chia_dog.snapshot(),
             )
+
+            event_list = [
+                change_event
+                async for change_event in compare_computer_info(
+                    old_computer_info=previous_state, new_computer_info=current_state
+                )
+            ]
 
             filtered_event_list = [
                 update_event
