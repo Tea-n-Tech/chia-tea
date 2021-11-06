@@ -217,7 +217,7 @@ class MonitoringClient:
                 initial_state=previous_state,
                 # we make a copy here, otherwise the object might get
                 # mutated during data collection (takes a few ms).
-                chia_dog=deepcopy(self.chia_dog),
+                chia_dog=self.chia_dog.snapshot(),
             )
 
             filtered_event_list = [
