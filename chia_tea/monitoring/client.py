@@ -38,6 +38,7 @@ def main():
         config=config.monitoring.client,
         credentials_cert=cert,
         machine_name=config.machine.name,
+        debug_config=config.development,
     )
 
     # setup event loops

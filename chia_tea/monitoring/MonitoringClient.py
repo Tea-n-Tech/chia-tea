@@ -1,11 +1,12 @@
 import asyncio
+import json
 import traceback
 import uuid
 from datetime import datetime
 from typing import Dict, Tuple, Union
 
 import grpc
-from google.protobuf.json_format import MessageToDict
+from google.protobuf.json_format import MessageToDict, MessageToJson
 
 from ..chia_watchdog.ChiaWatchdog import ChiaWatchdog
 from ..chia_watchdog.computer_info_comparison import compare_computer_info
@@ -13,6 +14,7 @@ from ..protobuf.data_collection.computer_info import collect_computer_info
 from ..protobuf.generated.computer_info_pb2 import ComputerInfo, UpdateEvent
 from ..protobuf.generated.config_pb2 import (
     _MONITORINGCONFIG_CLIENTCONFIG_SENDUPDATEEVERY,
+    DevelopmentConfig,
     MonitoringConfig,
 )
 from ..protobuf.generated.monitoring_service_pb2 import DataUpdateRequest, GetStateRequest
@@ -104,6 +106,7 @@ class MonitoringClient:
         config=MonitoringConfig.ClientConfig,
         credentials_cert: str = "",
         machine_name: str = "",
+        debug_config: DevelopmentConfig = DevelopmentConfig(testing=False),
     ):
         self.config = config
         self.credentials_cert = credentials_cert
@@ -112,6 +115,7 @@ class MonitoringClient:
         self.collection_frequencies = get_collection_frequencies(config)
         self.last_time_sent = {}
         self.machine_name = machine_name
+        self.debug_config = debug_config
 
     def is_event_allowed_to_be_sent(self, pb_msg: UpdateEvent) -> bool:
         """Checks if a an update event is allowed to be sent
@@ -218,6 +222,14 @@ class MonitoringClient:
                 # mutated during data collection (takes a few ms).
                 self.chia_dog.snapshot(),
             )
+            if self.debug_config.testing and self.debug_config.monitoring_client_state_file:
+                with open(self.debug_config.monitoring_client_state_file, "a") as fp:
+                    fp.write(
+                        "{0} {1}\n".format(
+                            datetime.now(),
+                            MessageToJson(current_state, indent=0).replace("\n", ""),
+                        )
+                    )
 
             event_list = [
                 change_event
