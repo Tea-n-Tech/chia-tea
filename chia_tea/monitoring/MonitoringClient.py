@@ -1,7 +1,6 @@
 import asyncio
 import traceback
 import uuid
-from copy import deepcopy
 from datetime import datetime
 from typing import Dict, Tuple, Union
 
@@ -9,10 +8,12 @@ import grpc
 from google.protobuf.json_format import MessageToDict
 
 from ..chia_watchdog.ChiaWatchdog import ChiaWatchdog
-from ..chia_watchdog.computer_info_comparison import get_update_events
+from ..chia_watchdog.computer_info_comparison import compare_computer_info
+from ..protobuf.data_collection.computer_info import collect_computer_info
 from ..protobuf.generated.computer_info_pb2 import ComputerInfo, UpdateEvent
 from ..protobuf.generated.config_pb2 import (
     _MONITORINGCONFIG_CLIENTCONFIG_SENDUPDATEEVERY,
+    DevelopmentConfig,
     MonitoringConfig,
 )
 from ..protobuf.generated.monitoring_service_pb2 import DataUpdateRequest, GetStateRequest
@@ -86,7 +87,10 @@ def get_collection_frequencies(config: ClientConfig) -> Dict[str, float]:
 class MonitoringClient:
     """Class for collecting and sending monitoring data to a server"""
 
+    # pylint: disable=too-many-instance-attributes
+
     config: ClientConfig
+    debug_config: DevelopmentConfig
     credentials_cert: str
     machine_id: str
     machine_name: str
@@ -98,6 +102,7 @@ class MonitoringClient:
     # watching stuff
     chia_dog: ChiaWatchdog
 
+    # pylint: disable=too-many-arguments
     def __init__(
         self,
         chia_dog: ChiaWatchdog,
@@ -212,13 +217,19 @@ class MonitoringClient:
         while True:
             start_time = datetime.now()
 
-            event_list, current_state = await get_update_events(
-                machine_id=self.machine_id,
-                initial_state=previous_state,
+            current_state = await collect_computer_info(
+                self.machine_id,
                 # we make a copy here, otherwise the object might get
                 # mutated during data collection (takes a few ms).
-                chia_dog=deepcopy(self.chia_dog),
+                self.chia_dog.snapshot(),
             )
+
+            event_list = [
+                change_event
+                async for change_event in compare_computer_info(
+                    old_computer_info=previous_state, new_computer_info=current_state
+                )
+            ]
 
             filtered_event_list = [
                 update_event

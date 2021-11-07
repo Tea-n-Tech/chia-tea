@@ -22,14 +22,16 @@ class FarmerHarvesterAPI:
 
     # pylint: disable=too-few-public-methods, too-many-instance-attributes
 
+    node_id: bytes
     bytes_read: int
     bytes_written: int
     creation_time: float
     last_message_time: float
     local_port: int
-    node_id: bytes
     peer_host: str
     peer_port: int
     peer_server_port: int
     type: int
-    n_plots: int
+
+    # self-added extra attributes
+    n_plots: int = 0

@@ -1,8 +1,7 @@
-from typing import Any, Iterable, List, Tuple
+from typing import Any, Iterable
 
 from sortedcontainers import SortedSet
 
-from ..protobuf.data_collection.computer_info import collect_computer_info
 from ..protobuf.generated.computer_info_pb2 import (
     _UPDATEEVENT,
     ADD,
@@ -11,7 +10,6 @@ from ..protobuf.generated.computer_info_pb2 import (
     ComputerInfo,
     UpdateEvent,
 )
-from .ChiaWatchdog import ChiaWatchdog
 
 
 def get_event_type(old_msg: Any, new_msg: Any) -> int:
@@ -131,38 +129,3 @@ def create_update_event(old_msg: Any, new_msg: Any, event_type: int) -> UpdateEv
         + f" and data was of type: {type(event_data)}"
     )
     raise RuntimeError(err_msg)
-
-
-async def get_update_events(
-    machine_id: str,
-    initial_state: ComputerInfo,
-    chia_dog: ChiaWatchdog,
-) -> Tuple[List[UpdateEvent], ComputerInfo]:
-    """Get a continuous stream of update events about what is changing
-
-    Parameters
-    ----------
-    machine_id : str
-        id of the machine
-    initial_state : ComputerInfo
-        initial state given by the server
-    chia_dog : ChiaWatchdog
-
-    Yields
-    ------
-    update_events : List[UpdateEvent]
-        changes happening on the machine
-    current_state : ComputerInfo
-        current state of the computer
-    """
-
-    new_computer_info = await collect_computer_info(machine_id, chia_dog)
-
-    update_events = [
-        change_event
-        async for change_event in compare_computer_info(
-            old_computer_info=initial_state, new_computer_info=new_computer_info
-        )
-    ]
-
-    return update_events, new_computer_info
