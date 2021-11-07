@@ -12,9 +12,16 @@ from .update_from_farmer import update_from_farmer
 
 
 class TestUpdatingFromFarmer(unittest.TestCase):
+    def setUp(self) -> None:
+        self.chia_config = {
+            "self_hostname": "127.0.0.1",
+            "farmer": {"rpc_port": 8008},
+        }
+
     @async_test
     @mock.patch("chia_tea.chia_watchdog.api.update_from_farmer.FarmerRpcClient", autospec=True)
-    async def test_new_harvester_connected(self, MockRpcClient):
+    @mock.patch("chia_tea.chia_watchdog.api.update_from_farmer.load_config", autospec=True)
+    async def test_new_harvester_connected(self, load_config_mock, MockRpcClient):
         dog = ChiaWatchdog("", "")
 
         node_id = b"1n\x0f\xc4J\xb5q8\xc4\x98\x0b\xe7\\\xac\xd1\x82..."
@@ -39,6 +46,7 @@ class TestUpdatingFromFarmer(unittest.TestCase):
             ],
         }
 
+        load_config_mock.return_value = self.chia_config
         MockRpcClient = MockRpcClient.create.return_value
         MockRpcClient.get_connections.return_value = [connection_result]
         MockRpcClient.get_harvesters.return_value = harvester_result
@@ -68,7 +76,8 @@ class TestUpdatingFromFarmer(unittest.TestCase):
 
     @async_test
     @mock.patch("chia_tea.chia_watchdog.api.update_from_farmer.FarmerRpcClient", autospec=True)
-    async def test_harvester_disconnected(self, MockRpcClient):
+    @mock.patch("chia_tea.chia_watchdog.api.update_from_farmer.load_config", autospec=True)
+    async def test_harvester_disconnected(self, load_config_mock, MockRpcClient):
         dog = ChiaWatchdog("", "")
 
         node_id = b"1n\x0f\xc4J\xb5q8\xc4\x98\x0b\xe7\\\xac\xd1\x82..."
@@ -92,6 +101,7 @@ class TestUpdatingFromFarmer(unittest.TestCase):
             "harvesters": [],
         }
 
+        load_config_mock.return_value = self.chia_config
         MockRpcClient = MockRpcClient.create.return_value
         MockRpcClient.get_connections.return_value = []
         MockRpcClient.get_harvesters.return_value = harvester_result
@@ -113,7 +123,8 @@ class TestUpdatingFromFarmer(unittest.TestCase):
 
     @async_test
     @mock.patch("chia_tea.chia_watchdog.api.update_from_farmer.FarmerRpcClient", autospec=True)
-    async def test_existing_harvester_is_updated(self, MockRpcClient):
+    @mock.patch("chia_tea.chia_watchdog.api.update_from_farmer.load_config", autospec=True)
+    async def test_existing_harvester_is_updated(self, load_config_mock, MockRpcClient):
         dog = ChiaWatchdog("", "")
 
         node_id = b"1n\x0f\xc4J\xb5q8\xc4\x98\x0b\xe7\\\xac\xd1\x82..."
@@ -153,6 +164,7 @@ class TestUpdatingFromFarmer(unittest.TestCase):
             ],
         }
 
+        load_config_mock.return_value = self.chia_config
         MockRpcClient = MockRpcClient.create.return_value
         MockRpcClient.get_connections.return_value = [connection_result]
         MockRpcClient.get_harvesters.return_value = harvester_result
@@ -167,6 +179,7 @@ class TestUpdatingFromFarmer(unittest.TestCase):
         self.assertTrue(MockRpcClient.get_harvesters.called)
         self.assertTrue(MockRpcClient.close.called)
         self.assertTrue(MockRpcClient.await_closed.called)
+        self.assertTrue(load_config_mock.called)
 
         harvester_list = dog.farmer_service.connections
         self.assertIs(old_list, harvester_list)
