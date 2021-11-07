@@ -18,6 +18,8 @@ async def _update_farmer_connections(
     farmer_harvesters: List[FarmerHarvesterAPI],
 ) -> None:
 
+    # pylint: disable=too-many-locals
+
     # IMPORTANT:
     # We mutate existing data objects if possible
     # to avoid bugs with wrong data references.
@@ -87,7 +89,7 @@ async def update_from_farmer(chia_dog: ChiaWatchdog):
     chia_dog : ChiaWatchdog
         watchdog instance to be modified
     """
-    # pylint: disable=duplicate-code,too-many-locals
+    # pylint: disable=duplicate-code
 
     try:
         config = load_config(DEFAULT_ROOT_PATH, "config.yaml", exit_on_error=False)
