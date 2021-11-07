@@ -37,7 +37,7 @@ async def _update_farmer_connections(
     for node_id, data in connected_harvesters.items():
         old_harvester = previous_harvesters.get(node_id)
         if old_harvester is not None:
-            for field_name, field_value in data:
+            for field_name, field_value in data.items():
                 # This is a hack to catch an error in case the API changed names
                 # and the attribute names don't match anymore.
                 getattr(old_harvester, field_name)
