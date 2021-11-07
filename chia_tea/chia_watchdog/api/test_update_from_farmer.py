@@ -42,6 +42,8 @@ class TestUpdatingFromFarmer(unittest.TestCase):
         MockRpcClient = MockRpcClient.create.return_value
         MockRpcClient.get_connections.return_value = [connection_result]
         MockRpcClient.get_harvesters.return_value = harvester_result
+        MockRpcClient.close.return_value = None
+        MockRpcClient.await_closed.return_value = None
 
         # do the thing
         await update_from_farmer(dog)
@@ -49,6 +51,8 @@ class TestUpdatingFromFarmer(unittest.TestCase):
         # validate
         self.assertTrue(MockRpcClient.get_connections.called)
         self.assertTrue(MockRpcClient.get_harvesters.called)
+        self.assertTrue(MockRpcClient.close.called)
+        self.assertTrue(MockRpcClient.await_closed.called)
 
         harvester_list = dog.farmer_service.connections
         self.assertEqual(len(harvester_list), 1)
@@ -91,6 +95,8 @@ class TestUpdatingFromFarmer(unittest.TestCase):
         MockRpcClient = MockRpcClient.create.return_value
         MockRpcClient.get_connections.return_value = []
         MockRpcClient.get_harvesters.return_value = harvester_result
+        MockRpcClient.close.return_value = None
+        MockRpcClient.await_closed.return_value = None
 
         # do the thing
         await update_from_farmer(dog)
@@ -98,6 +104,8 @@ class TestUpdatingFromFarmer(unittest.TestCase):
         # validate
         self.assertTrue(MockRpcClient.get_connections.called)
         self.assertTrue(MockRpcClient.get_harvesters.called)
+        self.assertTrue(MockRpcClient.close.called)
+        self.assertTrue(MockRpcClient.await_closed.called)
 
         harvester_list = dog.farmer_service.connections
         self.assertEqual(len(harvester_list), 0)
@@ -148,6 +156,8 @@ class TestUpdatingFromFarmer(unittest.TestCase):
         MockRpcClient = MockRpcClient.create.return_value
         MockRpcClient.get_connections.return_value = [connection_result]
         MockRpcClient.get_harvesters.return_value = harvester_result
+        MockRpcClient.close.return_value = None
+        MockRpcClient.await_closed.return_value = None
 
         # do the thing
         await update_from_farmer(dog)
@@ -155,6 +165,8 @@ class TestUpdatingFromFarmer(unittest.TestCase):
         # validate
         self.assertTrue(MockRpcClient.get_connections.called)
         self.assertTrue(MockRpcClient.get_harvesters.called)
+        self.assertTrue(MockRpcClient.close.called)
+        self.assertTrue(MockRpcClient.await_closed.called)
 
         harvester_list = dog.farmer_service.connections
         self.assertIs(old_list, harvester_list)

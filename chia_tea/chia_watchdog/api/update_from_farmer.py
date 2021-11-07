@@ -87,7 +87,7 @@ async def update_from_farmer(chia_dog: ChiaWatchdog):
     chia_dog : ChiaWatchdog
         watchdog instance to be modified
     """
-    # pylint: disable=duplicate-code
+    # pylint: disable=duplicate-code,too-many-locals
 
     try:
         config = load_config(DEFAULT_ROOT_PATH, "config.yaml", exit_on_error=False)
