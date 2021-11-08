@@ -24,7 +24,7 @@ class TestUpdatingFromFarmer(unittest.TestCase):
     async def test_new_harvester_connected(self, load_config_mock, MockRpcClient):
         dog = ChiaWatchdog("", "")
 
-        node_id = b"1n\x0f\xc4J\xb5q8\xc4\x98\x0b\xe7\\\xac\xd1\x82..."
+        node_id = b"1n\x0f\xc4J\xb5q8\xc4\x98\x0b\xe7\\\xac\xd1\x82"
         plots = ["only", "length", "is", "used"]
 
         connection_result = {
@@ -42,7 +42,7 @@ class TestUpdatingFromFarmer(unittest.TestCase):
         harvester_result = {
             "success": True,
             "harvesters": [
-                {"plots": plots, "connection": {"node_id": node_id}},
+                {"plots": plots, "connection": {"node_id": node_id.hex()}},
             ],
         }
 
@@ -80,7 +80,7 @@ class TestUpdatingFromFarmer(unittest.TestCase):
     async def test_harvester_disconnected(self, load_config_mock, MockRpcClient):
         dog = ChiaWatchdog("", "")
 
-        node_id = b"1n\x0f\xc4J\xb5q8\xc4\x98\x0b\xe7\\\xac\xd1\x82..."
+        node_id = b"1n\x0f\xc4J\xb5q8\xc4\x98\x0b\xe7\\\xac\xd1\x82"
         dog.farmer_service.connections = [
             FarmerHarvesterAPI(
                 node_id=node_id,
@@ -95,7 +95,6 @@ class TestUpdatingFromFarmer(unittest.TestCase):
                 type=NodeType.HARVESTER.value,
             )
         ]
-        previous_list = dog.farmer_service.connections
         harvester_result = {
             "success": True,
             "harvesters": [],
@@ -119,7 +118,6 @@ class TestUpdatingFromFarmer(unittest.TestCase):
 
         harvester_list = dog.farmer_service.connections
         self.assertEqual(len(harvester_list), 0)
-        self.assertIs(previous_list, dog.farmer_service.connections)
 
     @async_test
     @mock.patch("chia_tea.chia_watchdog.api.update_from_farmer.FarmerRpcClient", autospec=True)
@@ -127,7 +125,7 @@ class TestUpdatingFromFarmer(unittest.TestCase):
     async def test_existing_harvester_is_updated(self, load_config_mock, MockRpcClient):
         dog = ChiaWatchdog("", "")
 
-        node_id = b"1n\x0f\xc4J\xb5q8\xc4\x98\x0b\xe7\\\xac\xd1\x82..."
+        node_id = b"1n\x0f\xc4J\xb5q8\xc4\x98\x0b\xe7\\\xac\xd1\x82"
         plots = ["only", "length", "is", "used"]
         old_harvester = FarmerHarvesterAPI(
             node_id=node_id,
@@ -143,7 +141,6 @@ class TestUpdatingFromFarmer(unittest.TestCase):
             n_plots=len(plots),
         )
         dog.farmer_service.connections = [old_harvester]
-        old_list = dog.farmer_service.connections
 
         connection_result = {
             "bytes_read": 732921,
@@ -160,7 +157,7 @@ class TestUpdatingFromFarmer(unittest.TestCase):
         harvester_result = {
             "success": True,
             "harvesters": [
-                {"plots": plots, "connection": {"node_id": node_id}},
+                {"plots": plots, "connection": {"node_id": node_id.hex()}},
             ],
         }
 
@@ -182,7 +179,6 @@ class TestUpdatingFromFarmer(unittest.TestCase):
         self.assertTrue(load_config_mock.called)
 
         harvester_list = dog.farmer_service.connections
-        self.assertIs(old_list, harvester_list)
         self.assertEqual(len(harvester_list), 1)
 
         harvester = harvester_list[0]
