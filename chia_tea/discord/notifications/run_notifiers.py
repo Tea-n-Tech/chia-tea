@@ -45,6 +45,13 @@ async def log_and_send_msg_if_any(
     """
 
     if messages:
+
+        # Send all messages as once piece if we don't hit
+        # discords API limit.
+        total_msg = "\n".join(messages)
+        if len(total_msg) < DISCORD_MSG_LIMIT:
+            messages = [total_msg]
+
         for msg in messages:
             n_chars_too_long = len(msg) - DISCORD_MSG_LIMIT
             if n_chars_too_long > 0:

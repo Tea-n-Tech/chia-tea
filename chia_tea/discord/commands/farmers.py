@@ -42,9 +42,7 @@ async def farmers_cmd(db_filepath: str) -> List[str]:
                     for harvester in computer_info.farmer_harvesters
                 ]
 
-        if messages:
-            messages.insert(0, "**Farmers:**")
-        else:
+        if not messages:
             messages.append("No farmers 🧑‍🌾 around.")
 
     return messages
