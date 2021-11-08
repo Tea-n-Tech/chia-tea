@@ -114,7 +114,7 @@ async def watch_logfile_generator(
                 await asyncio.sleep(interval_seconds)
 
                 # check if file was replaced, then rewind
-                if _file_was_replaced_or_cleared(fp):
+                if _file_was_replaced_or_cleared(fp, filepath):
                     break
 
         if terminate:
@@ -125,5 +125,5 @@ def _end_of_file(fp: TextIO) -> bool:
     return fp.tell() == os.stat(fp.fileno()).st_size
 
 
-def _file_was_replaced_or_cleared(fp: TextIO) -> bool:
-    return fp.tell() > os.stat(fp.fileno()).st_size
+def _file_was_replaced_or_cleared(fp: TextIO, filepath: str) -> bool:
+    return fp.tell() > os.stat(filepath).st_size
