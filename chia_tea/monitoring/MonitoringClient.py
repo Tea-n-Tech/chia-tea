@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import Dict, Tuple, Union
 
 import grpc
-from google.protobuf.json_format import MessageToDict, MessageToJson
+from google.protobuf.json_format import MessageToDict
 
 from ..chia_watchdog.ChiaWatchdog import ChiaWatchdog
 from ..chia_watchdog.computer_info_comparison import compare_computer_info
@@ -217,32 +217,12 @@ class MonitoringClient:
         while True:
             start_time = datetime.now()
 
-            def serialize(obj):
-                """JSON serializer for objects not serializable by default json code"""
-
-                if isinstance(obj, datetime):
-                    return obj.isoformat()
-
-                if isinstance(obj, bytes):
-                    return obj.decode("utf-8")
-
-                return obj.__dict__
-
-            import json
-
-            now = datetime.now()
-            with open("watchdogs.log", "a", encoding="utf8") as fp:
-                fp.write("{0} {1}\n".format(now, json.dumps(self.chia_dog, default=serialize)))
-
             current_state = await collect_computer_info(
                 self.machine_id,
                 # we make a copy here, otherwise the object might get
                 # mutated during data collection (takes a few ms).
                 self.chia_dog.snapshot(),
             )
-
-            with open("computer_infos.log", "a", encoding="utf8") as fp:
-                fp.write("{0} {1}\n".format(now, MessageToJson(current_state)))
 
             event_list = [
                 change_event
