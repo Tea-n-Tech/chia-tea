@@ -2,7 +2,6 @@ import os
 import glob
 import random
 import shutil
-import time
 import traceback
 from os.path import isfile, join
 from typing import Dict, List, Union
@@ -36,8 +35,10 @@ def filter_least_used_disks(disk_to_copy_processes_count: Dict[str, int]) -> Lis
     return available_target_dirpaths
 
 
-def update_completely_copied_files(target_dirs: List[str], files_copied_completely: List[str]) -> List[str]:
-    """ For each target dir, it will add the completly copied files
+def update_completely_copied_files(
+    target_dirs: List[str], files_copied_completely: List[str]
+) -> List[str]:
+    """For each target dir, it will add the completly copied files
     Parameters
     ----------
     target_dirs: List[str]
@@ -59,8 +60,7 @@ def update_completely_copied_files(target_dirs: List[str], files_copied_complete
             logger.warning(warn_msg, folder_path)
             continue
 
-        all_files = [f for f in os.listdir(
-            folder_path) if isfile(join(folder_path, f))]
+        all_files = [f for f in os.listdir(folder_path) if isfile(join(folder_path, f))]
         for f in all_files:
             if f not in files_copied_completely:
                 if is_accessible(f):
@@ -68,7 +68,9 @@ def update_completely_copied_files(target_dirs: List[str], files_copied_complete
     return files_copied_completely
 
 
-def find_disk_with_space(target_dirs: List[str], filepath_file: str, files_copied_completely: List[str]) -> Union[str, None]:
+def find_disk_with_space(
+    target_dirs: List[str], filepath_file: str, files_copied_completely: List[str]
+) -> Union[str, None]:
     """Searches for space for a file to be moved
 
     Parameters
@@ -85,10 +87,8 @@ def find_disk_with_space(target_dirs: List[str], filepath_file: str, files_copie
     """
     logger = get_logger(__file__)
     fstat = os.stat(filepath_file)
-    disk_to_copy_processes_count = update_copy_processes_count(
-        target_dirs, files_copied_completely)
-    available_target_dirpaths = filter_least_used_disks(
-        disk_to_copy_processes_count)
+    disk_to_copy_processes_count = update_copy_processes_count(target_dirs, files_copied_completely)
+    available_target_dirpaths = filter_least_used_disks(disk_to_copy_processes_count)
 
     for dirpath in available_target_dirpaths:
         try:
@@ -191,11 +191,8 @@ def is_accessible(fpath):
         false if being used by another process
     """
     try:
-        #start = time.time()
         with open(fpath, "r+", encoding="utf8"):
             pass
-        #end = time.time()
-        #print(end - start)
     except Exception:
         return False
     return True
@@ -218,8 +215,7 @@ def update_copy_processes_count(target_dirs: List[str], files_copied_completely)
     print("Updating Copy Process Counts")
     number_of_copy_processes_per_disk = {}
     for target_dir in target_dirs:
-        files_beeing_copied_to_dir = get_files_beingCopied(
-            [target_dir], files_copied_completely)
+        files_beeing_copied_to_dir = get_files_beingCopied([target_dir], files_copied_completely)
         number_of_copy_processes = len(files_beeing_copied_to_dir)
         number_of_copy_processes_per_disk[target_dir] = number_of_copy_processes
     return number_of_copy_processes_per_disk
@@ -241,11 +237,9 @@ def get_files_beingCopied(target_dirs: List[str], files_copied_completely: List[
             logger.warning(warn_msg, folder_path)
             continue
 
-        all_files_to_check = [f for f in os.listdir(
-            folder_path) if isfile(join(folder_path, f))]
+        all_files_to_check = [f for f in os.listdir(folder_path) if isfile(join(folder_path, f))]
 
-        all_files_to_check = [f for f in os.listdir(
-            folder_path) if isfile(join(folder_path, f))]
+        all_files_to_check = [f for f in os.listdir(folder_path) if isfile(join(folder_path, f))]
 
         # remove all files which not have to be cheked
         for f in files_copied_completely:
@@ -255,10 +249,8 @@ def get_files_beingCopied(target_dirs: List[str], files_copied_completely: List[
         # check
         for f in all_files_to_check:
             if not is_accessible(f):
-                #print("!!!!!!!! File is being used")
                 all_filepaths.append(f)
             else:
                 files_copied_completely.append(f)
-                #print("File is accessible - no need to check it anymore")
 
         return all_filepaths

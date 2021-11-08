@@ -5,7 +5,12 @@ import time
 from ..utils.cli import parse_args
 from ..utils.config import read_config
 from ..utils.logger import get_logger
-from .Disk import collect_files_from_folders, copy_file, find_disk_with_space, update_completely_copied_files
+from .Disk import (
+    collect_files_from_folders,
+    copy_file,
+    find_disk_with_space,
+    update_completely_copied_files,
+)
 
 module_name = "chia_tea.copy"
 
@@ -38,12 +43,12 @@ def main():
         files_to_copy = collect_files_from_folders(from_folders, "*.plot")
 
         files_copied_completely = update_completely_copied_files(
-            target_folders, files_copied_completely)
+            target_folders, files_copied_completely
+        )
 
         for filepath in files_to_copy:
             # search for a space on the specified disks
-            target_dir = find_disk_with_space(
-                target_folders, filepath, files_copied_completely)
+            target_dir = find_disk_with_space(target_folders, filepath, files_copied_completely)
             if target_dir is None:
                 logger.error("No disk space available for: %s", filepath)
                 continue
@@ -64,12 +69,10 @@ def main():
                 try:
                     os.remove(filepath)
                 except FileNotFoundError:
-                    logger.error(
-                        "Could not remove original file: %s", filepath)
+                    logger.error("Could not remove original file: %s", filepath)
 
             else:
-                logger.error("failed to copy %s in %.1fs",
-                             filepath, duration_secs)
+                logger.error("failed to copy %s in %.1fs", filepath, duration_secs)
 
         # rate limiter
         time.sleep(5)
