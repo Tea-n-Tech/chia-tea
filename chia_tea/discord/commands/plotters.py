@@ -36,10 +36,7 @@ async def plotters_cmd(db_filepath: str) -> List[str]:
                 )
             )
 
-        if messages:
-            messages.insert(0, "**Plotters:**")
-            messages.insert(1, "")
-        else:
+        if not messages:
             messages.append("No Plotters 🛠️ at work.")
 
     return messages

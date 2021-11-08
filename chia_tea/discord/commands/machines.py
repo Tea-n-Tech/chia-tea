@@ -52,18 +52,18 @@ async def machines_cmd(db_filepath: str) -> List[str]:
             ram_msgs = [ram_pb2_as_markdown(ram) for ram in rams]
 
             machine_name = get_machine_info_name(machine_info)
-            messages += (
-                [
-                    f"{icon} {machine_name} responded {seconds_since_last_contact:.1f} seconds ago",
-                ]
-                + cpu_msgs
-                + ram_msgs
+            messages.append(
+                "\n".join(
+                    [
+                        f"{icon} {machine_name} responded {seconds_since_last_contact:.1f} seconds ago",
+                    ]
+                    + cpu_msgs
+                    + ram_msgs
+                )
             )
 
         # Heading in case there is anything to report
-        if messages:
-            messages.insert(0, "**Machines being Monitored 🧐:**")
-        else:
+        if not messages:
             messages.append("No machines being monitored 😴")
 
     return messages

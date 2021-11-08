@@ -34,7 +34,7 @@ async def farmers_cmd(db_filepath: str) -> List[str]:
 
             # a farmer is running, create a message
             if farmer_is_running:
-                messages += [f"\n🧑‍🌾 *{get_machine_info_name(machine)}*:"]
+                messages += [f"🧑‍🌾 *{get_machine_info_name(machine)}*:"]
 
                 # list up connected harvesters
                 messages += [

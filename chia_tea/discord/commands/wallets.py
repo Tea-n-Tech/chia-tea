@@ -30,8 +30,14 @@ async def wallets_cmd(db_filepath: str) -> List[str]:
             if wallet.is_running:
                 icon = "🟢" if wallet.is_synced else "🟠"
                 not_msg = "" if wallet.is_synced else "not "
-                messages.append(f"\nWallet 👛 *{get_machine_info_name(machine)}*")
-                messages.append(f"   {icon} {not_msg}synchronized")
+                messages.append(
+                    "\n".join(
+                        (
+                            f"Wallet 👛 *{get_machine_info_name(machine)}*",
+                            f"   {icon} {not_msg}synchronized",
+                        )
+                    )
+                )
 
         # Heading in case there is anything to report
         if not messages:
