@@ -36,9 +36,7 @@ async def harvesters_cmd(db_filepath: str) -> List[str]:
                     )
                 )
 
-        if messages:
-            messages.insert(0, "**Harvesters:**")
-        else:
+        if not messages:
             messages.append("No Harvesters 🚜 around.")
 
     return messages

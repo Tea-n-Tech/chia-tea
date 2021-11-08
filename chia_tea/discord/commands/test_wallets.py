@@ -84,11 +84,9 @@ class TestWalletsCmd(unittest.TestCase):
                 messages = await wallets_cmd(db_filepath)
                 print(messages)
                 # no failure
-                self.assertEqual(len(messages), 2)
-                wallet_msg = messages[0]
-                sync_msg = messages[1]
-                self.assertFalse(wallet_msg.startswith("No wallets"))
-                self.assertFalse(wallet_msg.startswith("Traceback"))
+                self.assertEqual(len(messages), 1)
+                msg = messages[0]
+                self.assertFalse(msg.startswith("Traceback"))
                 # display online harvester
-                self.assertTrue("machine A" in wallet_msg)
-                self.assertEqual(sync_msg.count("synchronized"), 1)
+                self.assertTrue("machine A" in msg)
+                self.assertIn("synchronized", msg)

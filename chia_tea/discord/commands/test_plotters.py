@@ -56,13 +56,10 @@ class TestPlotterCmd(unittest.TestCase):
 
                 messages = await plotters_cmd(db_filepath)
                 # no failure
-                self.assertEqual(len(messages), 3)
-                title_msg = messages[0]
-                msg = messages[2]
-                self.assertFalse(title_msg.startswith("No Plotters"))
-                self.assertFalse(title_msg.startswith("Traceback"))
+                self.assertEqual(len(messages), 1)
+                msg = messages[0]
+                self.assertFalse(msg.startswith("Traceback"))
                 # display online harvester
-                self.assertIn("Plotters", title_msg)
                 self.assertIn("Plot id", msg)
                 self.assertIn("Since:", msg)
                 self.assertIn("State: Some Phase", msg)
