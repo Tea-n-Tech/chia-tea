@@ -25,10 +25,6 @@ async def update_from_wallet(chia_dog: ChiaWatchdog):
             self_hostname, uint16(wallet_rpc_port), DEFAULT_ROOT_PATH, config
         )
 
-        # reduce timeout from around 4s to 1s
-        # timeout = aiohttp.ClientTimeout(total=1)
-        # wallet_client.session._timeout = timeout
-
         chia_dog.wallet_service.n_wallets = len(await wallet_client.get_connections())
         chia_dog.wallet_service.is_running = True
         chia_dog.wallet_service.is_synced = await wallet_client.get_synced()
