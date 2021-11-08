@@ -37,8 +37,8 @@ class AbstractLineAction(ABC):
         ---------
         line : str
             line from which information will be extracted
-        harvester_infos : Dict[str, HarvesterInfo]
-            harvester infos to be modified by the action
+        chia_dog : ChiaWatchdog
+            chia watchdog to be modified
         """
         raise NotImplementedError()
 

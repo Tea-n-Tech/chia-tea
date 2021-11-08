@@ -50,9 +50,3 @@ class FarmerHarvesterLogfile:
                     self.n_overdue_responses += 1
                 if delta_seconds > HARVESTER_TIMOUT:
                     self.timed_out = True
-
-    def reset_times(self):
-        """Resets time of incoming, outgoing msgs and signage points"""
-        self.time_last_outgoing_msg = None
-        self.time_last_incoming_msg = None
-        self.time_of_end_of_last_sgn_point = None
