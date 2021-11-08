@@ -6,6 +6,8 @@ from .run_notifiers import DISCORD_MSG_LIMIT, MSG_TOO_LONG, log_and_send_msg_if_
 
 
 class TestRunNotifiers(unittest.TestCase):
+
+    # pylint: disable=no-self-use
     @async_test
     async def test_msg_is_sent(self):
         channel_mock = mock.AsyncMock()
@@ -25,6 +27,7 @@ class TestRunNotifiers(unittest.TestCase):
         channel_mock.send.assert_has_calls(calls)
         logger_mock.info.assert_has_calls(calls)
 
+    # pylint: disable=no-self-use
     @async_test
     async def test_log_and_send_msg_if_any_msg_too_long(self):
         channel_mock = mock.AsyncMock()
@@ -44,6 +47,7 @@ class TestRunNotifiers(unittest.TestCase):
         channel_mock.send.assert_called_once_with(msg)
         logger_mock.info.assert_called_once_with(msg)
 
+    # pylint: disable=no-self-use
     @async_test
     async def test_msg_is_not_sent_to_discord_during_testing(self):
         channel_mock = mock.AsyncMock()
@@ -57,10 +61,10 @@ class TestRunNotifiers(unittest.TestCase):
             messages=messages, logger=logger_mock, channel=channel_mock, is_testing=True
         )
 
-        msg = MSG_TOO_LONG.format(n_chars_too_long=1, discord_msg_limit=DISCORD_MSG_LIMIT)
         channel_mock.send.assert_not_called()
         logger_mock.info.assert_called_once_with(messages[0])
 
+    # pylint: disable=no-self-use
     @async_test
     async def test_multiple_messages_are_bundled(self):
         channel_mock = mock.AsyncMock()
@@ -78,6 +82,7 @@ class TestRunNotifiers(unittest.TestCase):
         channel_mock.send.assert_called_once_with(total_msg)
         logger_mock.info.assert_called_once_with(total_msg)
 
+    # pylint: disable=no-self-use
     @async_test
     async def test_multiple_messages_are_sent_individually_if_too_long(self):
         channel_mock = mock.AsyncMock()

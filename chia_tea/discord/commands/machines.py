@@ -52,10 +52,17 @@ async def machines_cmd(db_filepath: str) -> List[str]:
             ram_msgs = [ram_pb2_as_markdown(ram) for ram in rams]
 
             machine_name = get_machine_info_name(machine_info)
+            headline = (
+                "{icon} {machine_name} responded {seconds_since_last_contact:.1f} seconds ago"
+            )
             messages.append(
                 "\n".join(
                     [
-                        f"{icon} {machine_name} responded {seconds_since_last_contact:.1f} seconds ago",
+                        headline.format(
+                            icon=icon,
+                            machine_name=machine_name,
+                            seconds_since_last_contact=seconds_since_last_contact,
+                        ),
                     ]
                     + cpu_msgs
                     + ram_msgs
