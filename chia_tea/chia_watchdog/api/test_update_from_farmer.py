@@ -196,6 +196,8 @@ class TestUpdatingFromFarmer(unittest.TestCase):
     async def test_harvester_disconnects_between_two_api_calls(
         self, load_config_mock, MockRpcClient
     ):
+        # pylint: disable=too-many-locals
+
         dog = ChiaWatchdog("", "")
 
         node_id1 = b"1n\x0f\xc4J\xb5q8\xc4\x98\x0b\xe7\\\xac\xd1\x82"
