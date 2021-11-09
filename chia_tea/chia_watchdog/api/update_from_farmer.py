@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Set
 
 from chia.rpc.farmer_rpc_client import FarmerRpcClient
 from chia.server.outbound_message import NodeType
@@ -20,21 +20,42 @@ async def _update_farmer_connections(
     harvesters = []
 
     # general connection information
-    harvester_kwargs: Dict[str, Dict[str, Any]] = {
-        kwargs[NODE_ID].hex(): kwargs
-        for kwargs in await farmer_client.get_connections()
-        if kwargs.get("type") == NodeType.HARVESTER.value
+    harvester_connections: Dict[str, Dict[str, Any]] = {
+        data[NODE_ID].hex(): data
+        for data in await farmer_client.get_connections()
+        if data.get("type") == NodeType.HARVESTER.value
     }
 
     # harvester specific data such as plot count
+    harvesters_which_disconnected: Set[str] = set()
     response = await farmer_client.get_harvesters()
     if response.get("success"):
-        for kwargs in response.get("harvesters"):
-            node_id = kwargs.get("connection").get(NODE_ID)
-            n_plots = len(kwargs.get("plots"))
-            harvester_kwargs[node_id]["n_plots"] = n_plots
+        harvester_ids = set()
+        harvester_data_list = response.get("harvesters")
+        for data in harvester_data_list:
+            node_id = data.get("connection").get(NODE_ID)
+            harvester_ids.add(node_id)
+            n_plots = len(data.get("plots"))
+            properties = harvester_connections.get(node_id)
 
-    for kwargs in harvester_kwargs.values():
+            if properties is not None:
+                properties["n_plots"] = n_plots
+            else:
+                # A new harvester might have connected in-between.
+                # We simply skip them.
+                pass
+
+        # harvesters which disconnected between the two API calls
+        harvesters_which_disconnected = {
+            node_id for node_id in harvester_connections.keys() if node_id not in harvester_ids
+        }
+
+    for node_id, kwargs in harvester_connections.items():
+
+        # A harvester disconnected inbetween thus we skip it
+        if node_id in harvesters_which_disconnected:
+            continue
+
         harvesters.append(FarmerHarvesterAPI(**kwargs))
 
     return harvesters
