@@ -27,10 +27,6 @@ async def update_from_harvester(chia_dog: ChiaWatchdog):
             self_hostname, uint16(harvester_rpc_port), DEFAULT_ROOT_PATH, config
         )
 
-        # reduce timeout from around 4s to 1s
-        # timeout = aiohttp.ClientTimeout(total=1)
-        # harvester_client.session._timeout = timeout
-
         plots_response = await harvester_client.get_plots()
         chia_dog.harvester_service.is_running = True
         if plots_response["success"]:

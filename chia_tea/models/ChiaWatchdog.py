@@ -1,3 +1,4 @@
+import copy
 import asyncio
 from typing import Dict, List
 
@@ -100,3 +101,13 @@ class ChiaWatchdog:
             harvester_info.ip_address = ip_address
 
         return harvester_info
+
+    def snapshot(self) -> "ChiaWatchdog":
+        """Takes a snapshot of the current watchdog
+
+        Returns
+        -------
+        snapshot : ChiaWatchdog
+            copy snapshot
+        """
+        return copy.deepcopy(self)

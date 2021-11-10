@@ -75,6 +75,7 @@ message MonitoringConfig {
 
 message DevelopmentConfig {
     bool testing = 1;
+    string monitoring_client_state_file = 2;
 }
 
 message ChiaTeaConfig {

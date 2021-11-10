@@ -66,7 +66,7 @@ async def collect_connected_harvesters_to_farmer(
     harvesters_logfile = chia_dog.harvester_infos
 
     # which harvesters do exist
-    all_harvester_ids = set(harvesters_rpc.keys()) | set(chia_dog.harvester_infos.keys())
+    all_harvester_ids = set(harvesters_rpc.keys()) | set(harvesters_logfile.keys())
 
     connected_harvesters = []
     for harvester_id in all_harvester_ids:
