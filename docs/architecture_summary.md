@@ -38,7 +38,7 @@ This information is partially converted into protobuf messages and sent to the s
 
 The collected chia data needs to be sent from the monitoring clients to the monitoring server. The glue for this task is the communication protocol written in [Protobuf][protobuf]. This protocol defines two things: which data is sent from the monitored machines to the server but also what data is stored in the database. The protocol can be found in the folder `protocol` and the generated source code can be found under `chia_tea.protobuf.generated`. There is also a [GRPC][grpc] service definition, which defines the communication functions between server and client.
 
-The module `chia_tea.protobuf.data_collection` converts the `ChiaWatchdog` data into protobuf messages. It also contains the code to collect hardware information but this will be seperated in the future.
+The module `chia_tea.monitoring.data_collection` converts the `ChiaWatchdog` data into protobuf messages. It also contains the code to collect hardware information but this will be seperated in the future.
 
 ### Data Storage
 
