@@ -124,7 +124,7 @@ def create_update_event(old_msg: Any, new_msg: Any, event_type: int) -> UpdateEv
 
     err_msg = (
         "Could not send update event since the data"
-        + " didn't match any type which can be send"
+        + " didn't match any type which can be sent"
         + f" by the message protocol. Event type was '{event_type}'"
         + f" and data was of type: {type(event_data)}"
     )
