@@ -17,8 +17,10 @@ class TestUpdatingFromFarmer(unittest.TestCase):
         }
 
     @async_test
-    @mock.patch("chia_tea.chia_watchdog.api.update_from_farmer.FarmerRpcClient", autospec=True)
-    @mock.patch("chia_tea.chia_watchdog.api.update_from_farmer.load_config", autospec=True)
+    @mock.patch(
+        "chia_tea.watchdog.collection.api.update_from_farmer.FarmerRpcClient", autospec=True
+    )
+    @mock.patch("chia_tea.watchdog.collection.api.update_from_farmer.load_config", autospec=True)
     async def test_new_harvester_connected(self, load_config_mock, MockRpcClient):
         dog = ChiaWatchdog("", "")
 
@@ -73,8 +75,10 @@ class TestUpdatingFromFarmer(unittest.TestCase):
         self.assertEqual(harvester.n_plots, len(plots))
 
     @async_test
-    @mock.patch("chia_tea.chia_watchdog.api.update_from_farmer.FarmerRpcClient", autospec=True)
-    @mock.patch("chia_tea.chia_watchdog.api.update_from_farmer.load_config", autospec=True)
+    @mock.patch(
+        "chia_tea.watchdog.collection.api.update_from_farmer.FarmerRpcClient", autospec=True
+    )
+    @mock.patch("chia_tea.watchdog.collection.api.update_from_farmer.load_config", autospec=True)
     async def test_harvester_disconnected(self, load_config_mock, MockRpcClient):
         dog = ChiaWatchdog("", "")
 
@@ -118,8 +122,10 @@ class TestUpdatingFromFarmer(unittest.TestCase):
         self.assertEqual(len(harvester_list), 0)
 
     @async_test
-    @mock.patch("chia_tea.chia_watchdog.api.update_from_farmer.FarmerRpcClient", autospec=True)
-    @mock.patch("chia_tea.chia_watchdog.api.update_from_farmer.load_config", autospec=True)
+    @mock.patch(
+        "chia_tea.watchdog.collection.api.update_from_farmer.FarmerRpcClient", autospec=True
+    )
+    @mock.patch("chia_tea.watchdog.collection.api.update_from_farmer.load_config", autospec=True)
     async def test_existing_harvester_is_updated(self, load_config_mock, MockRpcClient):
         dog = ChiaWatchdog("", "")
 
@@ -189,8 +195,10 @@ class TestUpdatingFromFarmer(unittest.TestCase):
         self.assertEqual(harvester.n_plots, len(plots))
 
     @async_test
-    @mock.patch("chia_tea.chia_watchdog.api.update_from_farmer.FarmerRpcClient", autospec=True)
-    @mock.patch("chia_tea.chia_watchdog.api.update_from_farmer.load_config", autospec=True)
+    @mock.patch(
+        "chia_tea.watchdog.collection.api.update_from_farmer.FarmerRpcClient", autospec=True
+    )
+    @mock.patch("chia_tea.watchdog.collection.api.update_from_farmer.load_config", autospec=True)
     async def test_harvester_disconnects_between_two_api_calls(
         self, load_config_mock, MockRpcClient
     ):
@@ -292,8 +300,10 @@ class TestUpdatingFromFarmer(unittest.TestCase):
         self.assertEqual(harvester.n_plots, len(plots1))
 
     @async_test
-    @mock.patch("chia_tea.chia_watchdog.api.update_from_farmer.FarmerRpcClient", autospec=True)
-    @mock.patch("chia_tea.chia_watchdog.api.update_from_farmer.load_config", autospec=True)
+    @mock.patch(
+        "chia_tea.watchdog.collection.api.update_from_farmer.FarmerRpcClient", autospec=True
+    )
+    @mock.patch("chia_tea.watchdog.collection.api.update_from_farmer.load_config", autospec=True)
     async def test_harvester_connects_between_two_api_calls(self, load_config_mock, MockRpcClient):
         dog = ChiaWatchdog("", "")
 
