@@ -1,6 +1,6 @@
 import asyncio
 
-from ..ChiaWatchdog import ChiaWatchdog
+from ....models.ChiaWatchdog import ChiaWatchdog
 from .update_from_farmer import update_from_farmer
 from .update_from_harvester import update_from_harvester
 from .update_from_wallet import update_from_wallet

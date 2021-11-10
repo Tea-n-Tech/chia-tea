@@ -1,6 +1,5 @@
 import asyncio
 import unittest
-from datetime import datetime
 
 from ..utils.testing import async_test
 from .ChiaWatchdog import ChiaWatchdog

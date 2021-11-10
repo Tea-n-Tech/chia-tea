@@ -2,10 +2,10 @@ import unittest
 
 from chia.server.outbound_message import NodeType
 
-from ...chia_watchdog.api.FarmerHarvesterAPI import FarmerHarvesterAPI
-from ...chia_watchdog.ChiaWatchdog import ChiaWatchdog
-from ...chia_watchdog.logfile.FarmerHarvesterLogfile import FarmerHarvesterLogfile
-from ..generated.chia_pb2 import HarvesterViewedFromFarmer
+from ...models.ChiaWatchdog import ChiaWatchdog
+from ...models.FarmerHarvesterAPI import FarmerHarvesterAPI
+from ...models.FarmerHarvesterLogfile import FarmerHarvesterLogfile
+from ...protobuf.generated.chia_pb2 import HarvesterViewedFromFarmer
 from .chia import collect_connected_harvesters_to_farmer
 
 

@@ -1,8 +1,8 @@
 import asyncio
 
+from ..models.ChiaWatchdog import ChiaWatchdog
 from ..utils.cli import parse_args
 from ..utils.config import read_config
-from ..watchdog.models.ChiaWatchdog import ChiaWatchdog
 from ..watchdog.run_watchdog import run_watchdog
 from .common import get_credentials_cert
 from .MonitoringClient import MonitoringClient

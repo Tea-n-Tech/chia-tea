@@ -3,7 +3,7 @@ from chia.util.config import load_config
 from chia.util.default_root import DEFAULT_ROOT_PATH
 from chia.util.ints import uint16
 
-from ..ChiaWatchdog import ChiaWatchdog
+from ....models.ChiaWatchdog import ChiaWatchdog
 from .shared_settings import API_EXCEPTIONS
 
 

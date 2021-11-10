@@ -1,13 +1,11 @@
 import unittest
 from unittest import mock
+
 from chia.server.outbound_message import NodeType
 
-from chia_tea.chia_watchdog.api.FarmerHarvesterAPI import FarmerHarvesterAPI
-
-
-from ..ChiaWatchdog import ChiaWatchdog
-from ...utils.testing import async_test
-
+from ....models.ChiaWatchdog import ChiaWatchdog
+from ....models.FarmerHarvesterAPI import FarmerHarvesterAPI
+from ....utils.testing import async_test
 from .update_from_farmer import update_from_farmer
 
 

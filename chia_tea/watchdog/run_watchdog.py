@@ -2,13 +2,13 @@ import asyncio
 import traceback
 from typing import Callable
 
+from ..general.file_watching import watch_lines_infinitely
+from ..models.ChiaWatchdog import ChiaWatchdog
 from ..utils.logger import get_logger
-from .api.update_all import update_directly_from_chia
-from .ChiaWatchdog import ChiaWatchdog
-from .logfile.file_watching import watch_lines_infinitely
-from .logfile.line_checks import run_line_checks
-from .madmax.line_checks import run_line_checks as run_line_checks_madmax
-from .regular_checks import run_watchdog_checks
+from .checks.regular_checks import run_watchdog_checks
+from .collection.api.update_all import update_directly_from_chia
+from .collection.logfile.line_checks import run_line_checks
+from .collection.madmax_logfile.line_checks import run_line_checks as run_line_checks_madmax
 
 
 async def __start_watchdog_self_checks(chia_dog: ChiaWatchdog):
