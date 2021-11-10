@@ -1,11 +1,11 @@
 import asyncio
 from typing import Dict, List
 
-from .api.FarmerAPI import FarmerAPI
-from .api.HarvesterAPI import HarvesterAPI
-from .api.WalletAPI import WalletAPI
-from .logfile.FarmerHarvesterLogfile import FarmerHarvesterLogfile
-from .madmax.MadMaxPlotInProgress import MadMaxPlotInProgress
+from .FarmerAPI import FarmerAPI
+from .HarvesterAPI import HarvesterAPI
+from .WalletAPI import WalletAPI
+from .FarmerHarvesterLogfile import FarmerHarvesterLogfile
+from .MadMaxPlotInProgress import MadMaxPlotInProgress
 
 
 class ChiaWatchdog:

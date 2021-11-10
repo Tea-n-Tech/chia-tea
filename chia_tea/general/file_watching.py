@@ -2,7 +2,7 @@ import asyncio
 import os
 from typing import AsyncGenerator, Awaitable, Callable, Coroutine, Optional, TextIO, Union
 
-from ...utils.logger import get_logger
+from ..utils.logger import get_logger
 
 
 async def watch_lines_infinitely(

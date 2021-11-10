@@ -41,9 +41,10 @@ def __get_cpu_temp() -> float:
     return temp
 
 
-CPU_NAME = processor_name = (
-    cpuinfo.get_cpu_info().get("brand_raw") or platform.processor()
-)
+# we do this here on startup to safe time.
+# This is a one time operation and the cpu will definitely not change during
+# operation.
+CPU_NAME = processor_name = cpuinfo.get_cpu_info().get("brand_raw") or platform.processor()
 
 
 @log_runtime_async(__file__)
@@ -105,9 +106,7 @@ async def collect_disk_info() -> List[Disk]:
 
     disk_partitions = psutil.disk_partitions()
     for partition in disk_partitions:
-        if any(
-            partition.mountpoint.startswith(drive_name) for drive_name in drives_to_skip
-        ):
+        if any(partition.mountpoint.startswith(drive_name) for drive_name in drives_to_skip):
             continue
 
         disk_usage = psutil.disk_usage(partition.mountpoint)

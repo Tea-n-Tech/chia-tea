@@ -1,7 +1,7 @@
 import asyncio
 from datetime import datetime
 
-from ...chia_watchdog.ChiaWatchdog import ChiaWatchdog
+from ...models.ChiaWatchdog import ChiaWatchdog
 from ...protobuf.generated.computer_info_pb2 import ComputerInfo
 from ...utils.logger import log_runtime_async
 from .chia import (

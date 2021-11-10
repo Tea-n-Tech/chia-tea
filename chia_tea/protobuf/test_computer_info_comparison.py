@@ -9,9 +9,9 @@ from ..protobuf.generated.computer_info_pb2 import (
     ComputerInfo,
     UpdateEvent,
 )
-from ..protobuf.generated.hardware_pb2 import Cpu
 from ..utils.testing import async_test
 from .computer_info_comparison import compare_computer_info
+from .generated.hardware_pb2 import Cpu
 
 
 class TestMonitoringClient(unittest.TestCase):

@@ -2,8 +2,8 @@ import traceback
 from abc import ABC, abstractmethod
 from datetime import datetime
 
-from ...utils.logger import get_logger
-from ..ChiaWatchdog import ChiaWatchdog
+from ....utils.logger import get_logger
+from ....models.ChiaWatchdog import ChiaWatchdog
 
 
 class AbstractLineAction(ABC):

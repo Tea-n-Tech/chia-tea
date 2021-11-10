@@ -1,10 +1,8 @@
 import datetime
 import unittest
 
-from chia_tea.chia_watchdog.madmax.MadMaxPlotInProgress import (
-    MadMaxPercentages,
-    MadMaxPlotInProgress,
-)
+from ....models.ChiaWatchdog import ChiaWatchdog
+from ....models.MadMaxPlotInProgress import MadMaxPercentages, MadMaxPlotInProgress
 from .line_checks import (
     AddNewPlotInProgress,
     LatestPlotEnteringPhase2,
@@ -18,7 +16,6 @@ from .line_checks import (
     SetPoolPublicKeyForLatestPlot,
     StartCopyOfPlot,
 )
-from ..ChiaWatchdog import ChiaWatchdog
 
 
 class TestLineAction(unittest.TestCase):

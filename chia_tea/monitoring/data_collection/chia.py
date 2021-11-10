@@ -2,7 +2,7 @@ from typing import Any, Dict, List
 
 import psutil
 
-from ...chia_watchdog.ChiaWatchdog import ChiaWatchdog
+from ...models.ChiaWatchdog import ChiaWatchdog
 from ...protobuf.generated.chia_pb2 import (
     Farmer,
     Harvester,

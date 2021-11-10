@@ -1,7 +1,7 @@
 from typing import Dict
 import psutil
 
-from .ChiaWatchdog import ChiaWatchdog
+from ...models.ChiaWatchdog import ChiaWatchdog
 
 
 # pylint: disable=unused-argument

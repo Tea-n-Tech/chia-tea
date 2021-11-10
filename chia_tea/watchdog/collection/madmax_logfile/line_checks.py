@@ -3,10 +3,10 @@ import traceback
 from datetime import datetime
 from typing import Tuple
 
-from ...utils.logger import get_logger
-from ..ChiaWatchdog import ChiaWatchdog
+from ....models.ChiaWatchdog import ChiaWatchdog
+from ....models.MadMaxPlotInProgress import MadMaxPercentages, MadMaxPlotInProgress
+from ....utils.logger import get_logger
 from ..logfile.line_checks import AbstractLineAction
-from .MadMaxPlotInProgress import MadMaxPercentages, MadMaxPlotInProgress
 
 
 class AddNewPlotInProgress(AbstractLineAction):

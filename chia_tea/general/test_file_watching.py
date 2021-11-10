@@ -2,7 +2,7 @@ import os
 import tempfile
 import unittest
 
-from ...utils.testing import async_test
+from ..utils.testing import async_test
 from .file_watching import watch_logfile_generator
 
 

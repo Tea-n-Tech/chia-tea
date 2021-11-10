@@ -4,8 +4,8 @@ from unittest import mock
 
 import psutil
 
-from .ChiaWatchdog import ChiaWatchdog
-from .madmax.MadMaxPlotInProgress import MadMaxPlotInProgress
+from ...models.ChiaWatchdog import ChiaWatchdog
+from ...models.MadMaxPlotInProgress import MadMaxPlotInProgress
 from .regular_checks import remove_plotting_plots_if_madmax_does_not_run
 
 
