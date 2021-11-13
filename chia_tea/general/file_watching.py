@@ -45,6 +45,14 @@ async def watch_lines_infinitely(
                 filepath=filepath,
                 on_ready=on_ready,
             )
+
+            logger.debug("Logfile '%s' found. Starting to watch it.", filepath)
+
+            # process lines
+            async for line in line_generator:
+                if on_line is not None:
+                    await on_line(line)
+
         except FileNotFoundError:
             # in case there is no log file (yet) simply
             # wait gently for one to appear
@@ -53,13 +61,6 @@ async def watch_lines_infinitely(
             if on_file_missing is not None and not file_missing_was_run:
                 await on_file_missing()
                 file_missing_was_run = True
-
-    logger.debug("Logfile '%s' found. Starting to watch it.", filepath)
-
-    # process lines
-    async for line in line_generator:
-        if on_line is not None:
-            await on_line(line)
 
 
 async def watch_logfile_generator(

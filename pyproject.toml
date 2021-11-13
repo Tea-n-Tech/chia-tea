@@ -94,5 +94,5 @@ overgeneral-exceptions=[
 ]
 
 [tool.black]
-exclude="chia_tea/protobuf"
+exclude="chia_tea/protobuf/generated"
 line-length=100

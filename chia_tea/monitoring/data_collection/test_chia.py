@@ -2,6 +2,7 @@ import unittest
 
 from chia.server.outbound_message import NodeType
 
+from ...utils.testing import async_test
 from ...models.ChiaWatchdog import ChiaWatchdog
 from ...models.FarmerHarvesterAPI import FarmerHarvesterAPI
 from ...models.FarmerHarvesterLogfile import FarmerHarvesterLogfile
@@ -10,6 +11,7 @@ from .chia import collect_connected_harvesters_to_farmer
 
 
 class TestChiaDataCollection(unittest.TestCase):
+    @async_test
     async def test_farmer_harvester_collection(self):
 
         node_id = b"1n\x0f\xc4J\xb5q8\xc4\x98\x0b\xe7\\\xac\xd1\x82"
