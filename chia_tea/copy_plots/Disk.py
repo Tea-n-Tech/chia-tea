@@ -134,7 +134,7 @@ def copy_file(source_path: str, target_path: str) -> bool:
     with open(source_path, "rb") as fin:
         with open(target_path, "wb") as fout:
             try:
-                # important - only copy files which are not yet in a copy  process
+                # important - only copy files which are not yet in a copy process
                 if is_accessible(source_path):
                     shutil.copyfileobj(fin, fout, 128 * 1024)
             except (Exception, ConnectionResetError):
@@ -190,14 +190,25 @@ def is_accessible(fpath: str):
     accessible: boolean
         false if being used by another process
     """
+    logger = get_logger()
     try:
         with open(fpath, "r+", encoding="utf8"):
             pass
-    except OSError:
-        print("Could not open/read file:{}".format(fpath))
+    except PermissionError:
+        warn_msg = "File access check: Permission denied to file '%s'."
+        logger.warning(warn_msg, fpath)
         return False
     except FileNotFoundError:
-        print("Could not find file:{}".format(fpath))
+        warn_msg = "File access check: '%s' does not exist."
+        logger.warning(warn_msg, fpath)
+        return False
+    except ConnectionResetError:
+        warn_msg = "File access check: Lost connection to network on file: '%s'"
+        logger.warning(warn_msg, fpath)
+        return False
+    except OSError:
+        warn_msg = "File access check: Cannot reach file '%s'"
+        logger.warning(warn_msg, fpath)
         return False
     return True
 
