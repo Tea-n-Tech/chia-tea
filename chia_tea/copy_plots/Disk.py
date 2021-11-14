@@ -178,7 +178,7 @@ def collect_files_from_folders(folder_list: List[str], pattern: str) -> List[str
     return all_filepaths
 
 
-def is_accessible(fpath):
+def is_accessible(fpath: str):
     """Looks if a file is being accessible
     Parameters
     ----------
