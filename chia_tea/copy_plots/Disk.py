@@ -190,7 +190,7 @@ def is_accessible(fpath: str):
     accessible: boolean
         false if being used by another process
     """
-    logger = get_logger()
+    logger = get_logger(__file__)
     try:
         with open(fpath, "r+", encoding="utf8"):
             pass
