@@ -90,11 +90,11 @@ Briefly answered, everything relevant. Hardware information such as CPU, RAM, Di
     - [x] total/used ram
     - [x] total/used swap
   - Disks
-    - [ ] temperature
+    - [ ] temperature (cannot get without admin rights)
     - [x] total/used space
-    - [ ] read/write activity
-    - [ ] read/write speed
-    - [ ] read/write total tbw
+    - [ ] read/write activity (cannot get without admin rights)
+    - [ ] read/write speed (cannot get without admin rights)
+    - [ ] read/write total tbw (cannot get without admin rights)
     - [x] device name
     - [x] mountpoint
     - [x] fstype
@@ -140,4 +140,4 @@ Briefly answered, everything relevant. Hardware information such as CPU, RAM, Di
     - [x] cpu usage
     - [x] ram usage
     - [x] opened files
-    - [ ] network connections
+    - [ ] network connections (quite verbose data)
