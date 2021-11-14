@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Union
+from typing import Optional, Union
 
 
 # pylint: disable=too-many-instance-attributes
@@ -13,17 +13,17 @@ class FarmerHarvesterLogfile:
     ip_address: str = ""
 
     # Tracking of connection status
-    is_connected = False
+    is_connected: bool = False
 
     # Signage point tracking
-    time_of_end_of_last_sgn_point: Union[datetime, None] = None
-    time_last_incoming_msg: Union[datetime, None] = None
-    time_last_outgoing_msg: Union[datetime, None] = None
+    time_of_end_of_last_sgn_point: Optional[datetime] = None
+    time_last_incoming_msg: Optional[datetime] = None
+    time_last_outgoing_msg: Optional[datetime] = None
     timed_out: bool = False
 
     # Metrics
-    n_responses = 0
-    n_overdue_responses = 0
+    n_responses: int = 0
+    n_overdue_responses: int = 0
 
     # Additional tracking
     last_update: datetime = datetime.now()

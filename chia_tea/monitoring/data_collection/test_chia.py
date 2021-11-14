@@ -1,12 +1,13 @@
 import unittest
+from datetime import datetime
 
 from chia.server.outbound_message import NodeType
 
-from ...utils.testing import async_test
 from ...models.ChiaWatchdog import ChiaWatchdog
 from ...models.FarmerHarvesterAPI import FarmerHarvesterAPI
 from ...models.FarmerHarvesterLogfile import FarmerHarvesterLogfile
 from ...protobuf.generated.chia_pb2 import HarvesterViewedFromFarmer
+from ...utils.testing import async_test
 from .chia import collect_connected_harvesters_to_farmer
 
 
@@ -39,11 +40,14 @@ class TestChiaDataCollection(unittest.TestCase):
         harvester_logfile = FarmerHarvesterLogfile(
             harvester_id=node_id_str,
             ip_address=ip_address,
-            last_update=max(time_last_msg_received, time_last_msg_sent),
-            time_last_incoming_msg=time_last_msg_received,
-            time_last_outgoing_msg=time_last_msg_sent,
+            last_update=datetime.fromtimestamp(max(time_last_msg_received, time_last_msg_sent)),
+            time_last_incoming_msg=datetime.fromtimestamp(time_last_msg_received),
+            time_last_outgoing_msg=datetime.fromtimestamp(time_last_msg_sent),
             time_of_end_of_last_sgn_point=1,
             timed_out=False,
+            is_connected=True,
+            n_overdue_responses=missed_challenges,
+            n_responses=0,
         )
 
         dog = ChiaWatchdog("", "")
@@ -55,8 +59,8 @@ class TestChiaDataCollection(unittest.TestCase):
 
         self.assertTrue(len(harvester_list), 1)
         harvester: HarvesterViewedFromFarmer = harvester_list[0]
-        self.assertEqual(harvester.id, node_id)
-        self.assertEqual(harvester.connection_time, node_id)
+        self.assertEqual(harvester.id, node_id_str)
+        self.assertEqual(harvester.connection_time, creation_time)
         self.assertEqual(harvester.time_last_msg_received, time_last_msg_received)
         self.assertEqual(harvester.time_last_msg_sent, time_last_msg_sent)
         self.assertEqual(harvester.ip_address, ip_address)
