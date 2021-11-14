@@ -193,7 +193,11 @@ def is_accessible(fpath: str):
     try:
         with open(fpath, "r+", encoding="utf8"):
             pass
-    except Exception:
+    except OSError:
+        print("Could not open/read file:{}".format(fpath))
+        return False
+    except FileNotFoundError:
+        print("Could not find file:{}".format(fpath))
         return False
     return True
 
@@ -215,17 +219,30 @@ def update_copy_processes_count(target_dirs: List[str], files_copied_completely)
     print("Updating Copy Process Counts")
     number_of_copy_processes_per_disk = {}
     for target_dir in target_dirs:
-        files_beeing_copied_to_dir = get_files_beingCopied([target_dir], files_copied_completely)
+        files_beeing_copied_to_dir = get_files_being_copied([target_dir], files_copied_completely)
         number_of_copy_processes = len(files_beeing_copied_to_dir)
         number_of_copy_processes_per_disk[target_dir] = number_of_copy_processes
     return number_of_copy_processes_per_disk
 
 
 def get_files_being_copied(target_dirs: List[str], files_copied_completely: List[str]) -> List[str]:
+    """Get all the files which are not accessible for write (i.e. being copied)
+
+    Parameters
+    ----------
+    target_dirs: List[str]
+        Directories where to search for files, which cannot be accessed (i.e. being copied)
+
+    files_copied_completely : List[str]
+        Already known files which are accessed right now
+        Those files are not checked. Update of that List happens separately
+
+    Returns
+    -------
+    files_in_progress: List[str]
+        List with all the files, which are being denied accesse (i.e. being copied)
     """
-    Later
-    """
-    all_filepaths = []
+    files_in_progress = []
     logger = get_logger(__file__)
     for folder_path in target_dirs:
 
@@ -239,8 +256,6 @@ def get_files_being_copied(target_dirs: List[str], files_copied_completely: List
 
         all_files_to_check = [f for f in os.listdir(folder_path) if isfile(join(folder_path, f))]
 
-        all_files_to_check = [f for f in os.listdir(folder_path) if isfile(join(folder_path, f))]
-
         # remove all files which not have to be cheked
         for f in files_copied_completely:
             if f in all_files_to_check:
@@ -249,8 +264,8 @@ def get_files_being_copied(target_dirs: List[str], files_copied_completely: List
         # check
         for f in all_files_to_check:
             if not is_accessible(f):
-                all_filepaths.append(f)
+                files_in_progress.append(f)
             else:
                 files_copied_completely.append(f)
 
-        return all_filepaths
+        return files_in_progress
