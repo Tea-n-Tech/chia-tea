@@ -17,7 +17,7 @@ module_name = "chia_tea.copy"
 
 def main():
     """Main program for copying files"""
-    files_copied_completely = []
+    files_copied_completely = set()
 
     # get command line arguments
     args = parse_args(
@@ -32,21 +32,24 @@ def main():
     logger = get_logger(module_name)
 
     # little hack since "from" is a reserved keyword in python
-    from_folders = config.copy.source_folders
-    target_folders = config.copy.target_folders
+    from_folders = set(config.copy.source_folders)
+    target_folders = set(config.copy.target_folders)
 
     logger.info("Copying from: %s", from_folders)
     logger.info("Copying to  : %s", target_folders)
 
     # execute infinite copy loop
     while True:
+        print("collecting Plots")
         files_to_copy = collect_files_from_folders(from_folders, "*.plot")
 
+        print("Updating copiedFiles")
         files_copied_completely = update_completely_copied_files(
             target_folders, files_copied_completely
         )
 
         for filepath in files_to_copy:
+            print("copy process")
             # search for a space on the specified disks
             target_dir = find_disk_with_space(target_folders, filepath, files_copied_completely)
             if target_dir is None:

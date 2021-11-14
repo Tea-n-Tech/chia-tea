@@ -4,14 +4,14 @@ import random
 import shutil
 import traceback
 from os.path import isfile, join
-from typing import Dict, List, Union
+from typing import Dict, Set, Union
 
 import psutil
 
 from ..utils.logger import get_logger
 
 
-def filter_least_used_disks(disk_to_copy_processes_count: Dict[str, int]) -> List[str]:
+def filter_least_used_disks(disk_to_copy_processes_count: Dict[str, int]) -> Set[str]:
     """Filters for the least used disk
 
     Parameters
@@ -21,7 +21,7 @@ def filter_least_used_disks(disk_to_copy_processes_count: Dict[str, int]) -> Lis
 
     Returns
     -------
-    available_dirs : List[str]
+    available_dirs : Set[str]
         Available directories with minimal lockfile count. In case of
         equal lockfile count then the disks are given randomly.
     """
@@ -36,21 +36,22 @@ def filter_least_used_disks(disk_to_copy_processes_count: Dict[str, int]) -> Lis
 
 
 def update_completely_copied_files(
-    target_dirs: List[str], files_copied_completely: List[str]
-) -> List[str]:
+    target_dirs: Set[str], files_copied_completely: Set[str]
+) -> Set[str]:
     """For each target dir, it will add the completly copied files
     Parameters
     ----------
-    target_dirs: List[str]
+    target_dirs: Set[str]
         Directories in which the file can be copied
 
     Returns
     -------
-    files_copied_completely: List[str]
+    files_copied_completely: Set[str]
         All the files which are not being copied anymore
     """
     logger = get_logger(__file__)
     for folder_path in target_dirs:
+        print("Target:" + folder_path)
 
         if not os.path.isdir(folder_path):
             if os.path.isfile(folder_path):
@@ -59,23 +60,25 @@ def update_completely_copied_files(
                 warn_msg = "Folder '{0}' does not exist or is not a directory."
             logger.warning(warn_msg, folder_path)
             continue
-
-        all_files = [f for f in os.listdir(folder_path) if isfile(join(folder_path, f))]
+        all_files = set(
+            [join(folder_path, f) for f in os.listdir(folder_path) if isfile(join(folder_path, f))]
+        )
+        print(all_files)
         for f in all_files:
             if f not in files_copied_completely:
                 if is_accessible(f):
-                    files_copied_completely.append(f)
+                    files_copied_completely.add(f)
     return files_copied_completely
 
 
 def find_disk_with_space(
-    target_dirs: List[str], filepath_file: str, files_copied_completely: List[str]
+    target_dirs: Set[str], filepath_file: str, files_copied_completely: Set[str]
 ) -> Union[str, None]:
     """Searches for space for a file to be moved
 
     Parameters
     ----------
-    target_dirs: List[str]
+    target_dirs: Set[str]
         Directories in which the file can be copied
     filepath_file: str
         Path to the file to be copied
@@ -131,8 +134,9 @@ def copy_file(source_path: str, target_path: str) -> bool:
     success: bool
         If the copy was a success.
     """
-    with open(os.path.abspath(source_path), "rb") as fin:
-        with open(os.path.abspath(target_path), "wb") as fout:
+
+    with open(source_path, "rb") as fin:
+        with open(target_path, "wb") as fout:
             try:
                 # important - only copy files which are not yet in a copy process
                 if is_accessible(source_path):
@@ -144,36 +148,36 @@ def copy_file(source_path: str, target_path: str) -> bool:
     return True
 
 
-def collect_files_from_folders(folder_list: List[str], pattern: str) -> List[str]:
+def collect_files_from_folders(folder_set: Set[str], pattern: str) -> Set[str]:
     """Collect files from folders
 
     Parameters
     ----------
-    folder_list : List[str]
-        list of folders to search for files
+    folder_set : Set[str]
+        set of folders to search for files
     pattern : str
         file pattern to search for
 
     Returns
     -------
-    filepaths : List[str]
+    filepaths : Set[str]
         paths to the files
     """
     logger = get_logger(__file__)
 
-    all_filepaths = []
+    all_filepaths = set()
 
-    for folder_path in folder_list:
+    for folder in folder_set:
 
-        if not os.path.isdir(folder_path):
-            if os.path.isfile(folder_path):
+        if not os.path.isdir(folder):
+            if os.path.isfile(folder):
                 warn_msg = "Path '{0}' is a file and not a directory."
             else:
                 warn_msg = "Folder '{0}' does not exist or is not a directory."
-            logger.warning(warn_msg, folder_path)
+            logger.warning(warn_msg, folder)
             continue
 
-        all_filepaths += glob.glob(os.path.join(folder_path, pattern))
+        all_filepaths.update(glob.glob(os.path.join(folder, pattern)))
 
     return all_filepaths
 
@@ -190,35 +194,35 @@ def is_accessible(fpath: str):
     accessible: boolean
         false if being used by another process
     """
-    logger = get_logger(__file__)
+
+    logger = get_logger(__name__)
     try:
-        with open(os.path.abspath(fpath), "r+", encoding="utf8"):
+        with open(fpath, "r+", encoding="utf8"):
             pass
     except PermissionError:
         warn_msg = "File access check: Permission denied to file '%s'."
-        logger.warning(warn_msg, fpath)
+        logger.warning(warn_msg, os.path.abspath(fpath))
         return False
     except FileNotFoundError:
         warn_msg = "File access check: '%s' does not exist."
-        logger.warning(warn_msg, fpath)
+        logger.warning(warn_msg, os.path.abspath(fpath))
         return False
     except ConnectionResetError:
         warn_msg = "File access check: Lost connection to network on file: '%s'"
-        logger.warning(warn_msg, fpath)
+        logger.warning(warn_msg, os.path.abspath(fpath))
         return False
     except OSError:
         warn_msg = "File access check: Cannot reach file '%s'"
-        logger.warning(warn_msg, fpath)
-        return False
+        logger.warning(warn_msg, os.path.abspath(fpath))
     return True
 
 
-def update_copy_processes_count(target_dirs: List[str], files_copied_completely) -> Dict[str, int]:
+def update_copy_processes_count(target_dirs: Set[str], files_copied_completely) -> Dict[str, int]:
     """Get the copy processes count for the specified directories
 
     Parameters
     ----------
-    target_dirs: List[str]
+    target_dirs: Set[str]
         Directories to get copy processes count for.
 
     Returns
@@ -236,24 +240,24 @@ def update_copy_processes_count(target_dirs: List[str], files_copied_completely)
     return number_of_copy_processes_per_disk
 
 
-def get_files_being_copied(target_dirs: List[str], files_copied_completely: List[str]) -> List[str]:
+def get_files_being_copied(target_dirs: Set[str], files_copied_completely: Set[str]) -> Set[str]:
     """Get all the files which are not accessible for write (i.e. being copied)
 
     Parameters
     ----------
-    target_dirs: List[str]
+    target_dirs: Set[str]
         Directories where to search for files, which cannot be accessed (i.e. being copied)
 
-    files_copied_completely : List[str]
+    files_copied_completely : Set[str]
         Already known files which are accessed right now
-        Those files are not checked. Update of that List happens separately
+        Those files are not checked. Update of that Set happens separately
 
     Returns
     -------
-    files_in_progress: List[str]
-        List with all the files, which are being denied accesse (i.e. being copied)
+    files_in_progress: Set[str]
+        Set with all the files, which are being denied accesse (i.e. being copied)
     """
-    files_in_progress = []
+    files_in_progress = set()
     logger = get_logger(__file__)
     for folder_path in target_dirs:
 
@@ -265,7 +269,9 @@ def get_files_being_copied(target_dirs: List[str], files_copied_completely: List
             logger.warning(warn_msg, folder_path)
             continue
 
-        all_files_to_check = [f for f in os.listdir(folder_path) if isfile(join(folder_path, f))]
+        all_files_to_check = set(
+            [join(folder_path, f) for f in os.listdir(folder_path) if isfile(join(folder_path, f))]
+        )
 
         # remove all files which not have to be cheked
         for f in files_copied_completely:
@@ -275,8 +281,8 @@ def get_files_being_copied(target_dirs: List[str], files_copied_completely: List
         # check
         for f in all_files_to_check:
             if not is_accessible(f):
-                files_in_progress.append(f)
+                files_in_progress.add(f)
             else:
-                files_copied_completely.append(f)
+                files_copied_completely.add(f)
 
         return files_in_progress
