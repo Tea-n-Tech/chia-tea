@@ -60,9 +60,10 @@ def update_completely_copied_files(
                 warn_msg = "Folder '{0}' does not exist or is not a directory."
             logger.warning(warn_msg, folder_path)
             continue
-        all_files = set(
-            [join(folder_path, f) for f in os.listdir(folder_path) if isfile(join(folder_path, f))]
-        )
+        all_files = {
+            join(folder_path, f) for f in os.listdir(folder_path) if isfile(join(folder_path, f))
+        }
+
         print(all_files)
         for f in all_files:
             if f not in files_copied_completely:
@@ -269,9 +270,9 @@ def get_files_being_copied(target_dirs: Set[str], files_copied_completely: Set[s
             logger.warning(warn_msg, folder_path)
             continue
 
-        all_files_to_check = set(
-            [join(folder_path, f) for f in os.listdir(folder_path) if isfile(join(folder_path, f))]
-        )
+        all_files_to_check = {
+            join(folder_path, f) for f in os.listdir(folder_path) if isfile(join(folder_path, f))
+        }
 
         # remove all files which not have to be cheked
         for f in files_copied_completely:
