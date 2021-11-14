@@ -131,8 +131,8 @@ def copy_file(source_path: str, target_path: str) -> bool:
     success: bool
         If the copy was a success.
     """
-    with open(source_path, "rb") as fin:
-        with open(target_path, "wb") as fout:
+    with open(os.path.abspath(source_path), "rb") as fin:
+        with open(os.path.abspath(target_path), "wb") as fout:
             try:
                 # important - only copy files which are not yet in a copy process
                 if is_accessible(source_path):
@@ -192,7 +192,7 @@ def is_accessible(fpath: str):
     """
     logger = get_logger(__file__)
     try:
-        with open(fpath, "r+", encoding="utf8"):
+        with open(os.path.abspath(fpath), "r+", encoding="utf8"):
             pass
     except PermissionError:
         warn_msg = "File access check: Permission denied to file '%s'."
