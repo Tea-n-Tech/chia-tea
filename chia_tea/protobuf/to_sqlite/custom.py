@@ -162,9 +162,7 @@ def sqlite_insert_into_table_fun_from_pb2(
     """
     field_name_and_type = get_proto_fields_with_types(pb_descriptor)
     field_names = [
-        field_name
-        for field_name, _ in field_name_and_type
-        if field_name not in fields_to_ignore
+        field_name for field_name, _ in field_name_and_type if field_name not in fields_to_ignore
     ]
 
     all_attributes = meta_attribute_names + field_names
@@ -187,9 +185,7 @@ def sqlite_insert_into_table_fun_from_pb2(
         if pb_message is None:
             return
 
-        pb_message_iter = (
-            (pb_message,) if not isinstance(pb_message, Iterable) else pb_message
-        )
+        pb_message_iter = (pb_message,) if not isinstance(pb_message, Iterable) else pb_message
 
         # this must not fail
         meta_attribute_values = (
@@ -268,9 +264,7 @@ def sqlite_delete_in_table_fun_from_pb2(
         if pb_message is None:
             return
 
-        pb_message_iter = (
-            (pb_message,) if not isinstance(pb_message, Iterable) else pb_message
-        )
+        pb_message_iter = (pb_message,) if not isinstance(pb_message, Iterable) else pb_message
 
         # this must not fail
         meta_attribute_values: Tuple[Any, ...] = tuple(
@@ -514,9 +508,7 @@ def get_function_to_retrieve_pb2_from_sqlite_db(
     pb_descriptor = pb_class.DESCRIPTOR
     table_name = pb_descriptor.name + table_suffix
 
-    selectors = " AND ".join(
-        f"{name}{operation}?" for name, operation in key_names_and_ops
-    )
+    selectors = " AND ".join(f"{name}{operation}?" for name, operation in key_names_and_ops)
 
     comparison_word = " WHERE " if selectors else ""
 
@@ -597,9 +589,7 @@ def get_fun_to_collect_pb2_messages_for_nested_submessages(
         module = importlib.import_module(module_name)
         class_constructor = getattr(module, class_name)
 
-        msgs_retrieve_functions[
-            field.number
-        ] = get_function_to_retrieve_pb2_from_sqlite_db(
+        msgs_retrieve_functions[field.number] = get_function_to_retrieve_pb2_from_sqlite_db(
             table_suffix=table_suffix,
             pb_class=class_constructor,
             key_names_and_ops=key_names_and_ops,
@@ -677,9 +667,7 @@ def get_fun_to_collect_latest_update_events_from_db(
         module = importlib.import_module(module_name)
         class_constructor = getattr(module, class_name)
 
-        msgs_retrieve_functions[
-            field.number
-        ] = get_function_to_retrieve_pb2_from_sqlite_db(
+        msgs_retrieve_functions[field.number] = get_function_to_retrieve_pb2_from_sqlite_db(
             table_suffix=table_suffix,
             pb_class=class_constructor,
             key_names_and_ops=key_names_and_ops,
@@ -750,18 +738,10 @@ def get_fun_to_update_db_from_pb2_class(
     setter_fields = [f"{field.name}=?" for field in pb_descriptor.fields]
     all_fields = attribute_names + setter_fields
 
-    selectors = " AND ".join(
-        f"{name}{operation}?" for name, operation in key_names_and_ops
-    )
+    selectors = " AND ".join(f"{name}{operation}?" for name, operation in key_names_and_ops)
     comparison_word = " WHERE " if selectors else ""
 
-    cmd = (
-        f"UPDATE {table_name} "
-        + "SET "
-        + ",".join(all_fields)
-        + comparison_word
-        + selectors
-    )
+    cmd = f"UPDATE {table_name} " + "SET " + ",".join(all_fields) + comparison_word + selectors
 
     def _update_table_fun(
         cursor: sqlite3.Cursor,
@@ -773,9 +753,7 @@ def get_fun_to_update_db_from_pb2_class(
         if pb_message is None:
             return
 
-        pb_message_iter = (
-            (pb_message,) if not isinstance(pb_message, Iterable) else pb_message
-        )
+        pb_message_iter = (pb_message,) if not isinstance(pb_message, Iterable) else pb_message
 
         # this must not fail
         attribute_values_as_tuple: Tuple[Any, ...] = tuple(

@@ -9,7 +9,9 @@ from ....models.FarmerHarvesterAPI import FarmerHarvesterAPI
 from ....utils.testing import async_test
 from .update_from_farmer import update_from_farmer
 
-if sys.version_info >= (3, 8):
+# Async testing is hard do in python 3.7 and 3.8 and higher at the same time,
+# thus we skip the test in that case.
+if sys.version_info >= (3, 8):  # noqa: C901
 
     class TestUpdateFromFarmer(unittest.TestCase):
         def setUp(self) -> None:
