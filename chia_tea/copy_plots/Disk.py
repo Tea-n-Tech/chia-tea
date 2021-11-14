@@ -221,7 +221,7 @@ def update_copy_processes_count(target_dirs: List[str], files_copied_completely)
     return number_of_copy_processes_per_disk
 
 
-def get_files_beingCopied(target_dirs: List[str], files_copied_completely: List[str]) -> List[str]:
+def get_files_being_copied(target_dirs: List[str], files_copied_completely: List[str]) -> List[str]:
     """
     Later
     """
