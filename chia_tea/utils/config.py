@@ -1,4 +1,5 @@
 import os
+from typing import Optional
 
 import yaml
 from google.protobuf.json_format import MessageToDict, ParseDict
@@ -15,34 +16,46 @@ from ..protobuf.generated.config_pb2 import (
     MonitoringConfig,
 )
 
+DEFAULT_CONFIG_FOLDER = os.path.expanduser("~/.chia_tea/config")
+DEFAULT_CONFIG_FILEPATH = os.path.join(DEFAULT_CONFIG_FOLDER, "config.yml")
 
-def create_default_config(filepath: str) -> ChiaTeaConfig:
+def create_default_config(
+    filepath: str = DEFAULT_CONFIG_FILEPATH, 
+    overwrite: bool = False) -> ChiaTeaConfig:
     """Creates a default config on the system
 
     Parameters
     ----------
     filepath : str
         path where to create the default config
+    overwrite : bool
+        overwrite an existing config file
 
     Returns
     -------
     config : ChiaTeaConfig
         created default config object
 
+    Raises
+    ------
+    FileExistsError
+        If the file already exists and overwrite is False then an exception is
+        raised.
+
     Notes
     -----
-        The config is being stored in the '.chia_tea'
-        directory in the home folder.
+        If no filepath is specified, the config is created by default
+        in `~/.chia_tea/config/config.yml`.
     """
-    config_filepath = os.path.join(
-        filepath,
-        "config.yml",
-    )
-    if not os.path.exists(config_filepath):
+    folder = os.path.dirname(filepath)
+    if not os.path.exists(folder):
+        os.makedirs(folder, exist_ok=True)
+
+    if not os.path.exists(filepath) or overwrite:
         config = get_default_config()
-        save_config(config_filepath, get_default_config())
+        save_config(filepath, get_default_config())
     else:
-        config = get_config()
+        raise FileExistsError(f"Config file already exists: {filepath}")
 
     return config
 
