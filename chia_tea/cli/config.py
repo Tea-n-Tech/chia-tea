@@ -1,6 +1,4 @@
 
-from typing import Optional
-
 import typer
 from chia_tea.utils.config import (DEFAULT_CONFIG_FILEPATH,
                                    create_default_config, read_config)

@@ -5,9 +5,11 @@ import typer
 
 from ..utils.config import config_is_loaded, read_config
 from .config import config_cmd
+from .copy import copy_cmd
 
 app = typer.Typer()
 app.add_typer(config_cmd, name="config")
+app.add_typer(copy_cmd, name="copy")
 
 # @app.callback()
 # def main(config: str = Optional[str]):
