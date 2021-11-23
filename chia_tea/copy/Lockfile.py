@@ -12,23 +12,23 @@ class Lockfile:
         self.path = path_to_lockfile
 
     def __enter__(self):
-        logging.info("Creating LogFile")
+        logging.info("Creating Lockfile: %s" % self.path)
         with open(self.path, "w", encoding="utf8") as fp:
             try:
                 fp.write("copying")
             except Exception:
-                trace = traceback.format_stack()
-                get_logger(__file__).error(trace)
-                logging.error("Could not write to lockfile: %s", self.path)
+                logger = get_logger(__file__)
+                logger.error("Could not write to lockfile: %s" % self.path)
+                logger.error(traceback.format_stack())
 
     def __exit__(self, exception_type, exception_value, exception_traceback):
         logging.info("Removing LogFile")
         try:
             os.remove(self.path)
         except Exception:
-            trace = exception_traceback.format_stack()
-            get_logger(__file__).error(trace)
-            logging.error("Could not remove lockfile: %s", self.path)
+            logger = get_logger(__file__)
+            logger.error("Could not remove lockfile: %s" % self.path)
+            logger.error(exception_traceback.format_stack())
 
 
 def create_lockfile(path_to_lockfile: str) -> Lockfile:

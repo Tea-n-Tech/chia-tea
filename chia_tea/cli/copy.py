@@ -10,11 +10,12 @@ from ..copy.Lockfile import create_lockfile
 from ..utils.config import DEFAULT_CONFIG_FILEPATH, read_config
 from ..utils.logger import get_logger
 
-copy_cmd = typer.Typer()
+copy_cmd = typer.Typer(invoke_without_command=True)
 
-copy_cmd.callback()
-def copy(config: str = typer.Option(default=DEFAULT_CONFIG_FILEPATH,)):
-    """ Copy files from one place to another.
+@copy_cmd.callback()
+def copy(config: str = DEFAULT_CONFIG_FILEPATH) -> None:
+    """
+    Copy files from one place to another.
 
     For source and target directories please see the config file.
     """

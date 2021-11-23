@@ -3,7 +3,7 @@ import typer
 from chia_tea.utils.config import (DEFAULT_CONFIG_FILEPATH,
                                    create_default_config, read_config)
 
-config_cmd = typer.Typer()
+config_cmd = typer.Typer(no_args_is_help=True)
 
 @config_cmd.command()
 def init(
