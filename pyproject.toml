@@ -43,6 +43,7 @@ sortedcontainers = "^2.4.0"
 concurrent-log-handler = "^0.9.19"
 rich = "^10.10.0"
 typer = {extras = ["all"], version = "^0.4.0"}
+protobuf = "^3.19.1"
 
 [tool.poetry.dev-dependencies]
 grpcio-tools = "^1.39.0"

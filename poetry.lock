@@ -664,7 +664,7 @@ tests = ["pytest (>=5.4.1)", "pytest-cov (>=2.8.1)", "sphinx (>=3.0.3)", "pytest
 name = "protobuf"
 version = "3.19.1"
 description = "Protocol Buffers"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.5"
 
@@ -1127,7 +1127,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "57d5203d7acb93b08ed854ad09dd8c38f4d3147fd496e79dcf730adedc4d886b"
+content-hash = "327d2166b9217279b96f05d8520ceb6a6978f19747f754093ea546bca187e3b2"
 
 [metadata.files]
 aiohttp = [
