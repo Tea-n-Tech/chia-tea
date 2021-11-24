@@ -58,12 +58,9 @@ def server_cmd(config: str = DEFAULT_CONFIG_FILEPATH):
         # load config
         config = read_config(config)
 
-        # setup logger
-        logger = get_logger(__name__)
-
         # start the server
         loop = asyncio.get_event_loop()
         loop.run_until_complete(start_server(config))
 
     except KeyboardInterrupt:
-        logger.info("Stopped server.")
+        get_logger(__name__).info("Stopped server.")
