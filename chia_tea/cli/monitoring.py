@@ -6,7 +6,6 @@ from ..models.ChiaWatchdog import ChiaWatchdog
 from ..monitoring.common import get_credentials_cert
 from ..monitoring.MonitoringClient import MonitoringClient
 from ..monitoring.server import start_server
-from ..protobuf.generated.config_pb2 import ChiaTeaConfig
 from ..utils.config import DEFAULT_CONFIG_FILEPATH, read_config
 from ..utils.logger import get_logger
 from ..watchdog.run_watchdog import run_watchdog

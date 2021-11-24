@@ -1,13 +1,9 @@
-import asyncio
-
 import grpc
 
 from ..protobuf.generated.monitoring_service_pb2_grpc import (
     add_MonitoringServicer_to_server,
 )
 from ..protobuf.generated.config_pb2 import ChiaTeaConfig
-from ..utils.cli import parse_args
-from ..utils.config import read_config
 from ..utils.logger import get_logger
 from .common import get_credentials_cert, get_credentials_key
 from .MonitoringDatabase import MonitoringDatabase

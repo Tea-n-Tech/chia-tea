@@ -66,16 +66,16 @@ def find_disk_with_space(target_dirs: List[str], filepath_file: str) -> Union[st
                 return dirpath
         except PermissionError:
             warn_msg = "Permission denied to directory '%s'."
-            logger.warning(warn_msg % dirpath)
+            logger.warning(warn_msg, dirpath)
         except FileNotFoundError:
             warn_msg = "Directory '%s' does not exist."
-            logger.warning(warn_msg % dirpath)
+            logger.warning(warn_msg, dirpath)
         except ConnectionResetError:
             warn_msg = "Lost connection to network drive '%s'"
-            logger.warning(warn_msg % dirpath)
+            logger.warning(warn_msg, dirpath)
         except OSError:
             warn_msg = "Cannot reach host for drive '%s'"
-            logger.warning(warn_msg % dirpath)
+            logger.warning(warn_msg, dirpath)
 
     return None
 
@@ -130,10 +130,10 @@ def collect_files_from_folders(folder_list: List[str], pattern: str) -> List[str
 
         if not os.path.isdir(folder_path):
             if os.path.isfile(folder_path):
-                warn_msg = "Path '{0}' is a file and not a directory."
+                warn_msg = "Path '%s' is a file and not a directory."
             else:
-                warn_msg = "Folder '{0}' does not exist."
-            logger.warning(warn_msg.format(folder_path))
+                warn_msg = "Folder '%s' does not exist."
+            logger.warning(warn_msg, folder_path)
             continue
 
         all_filepaths += glob.glob(os.path.join(folder_path, pattern))

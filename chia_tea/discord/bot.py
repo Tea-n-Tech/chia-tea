@@ -5,8 +5,7 @@ from discord.ext import commands
 
 from chia_tea.discord.commands.plotters import plotters_cmd
 
-from ..utils.cli import parse_args
-from ..utils.config import get_config, read_config
+from ..utils.config import get_config
 from ..utils.logger import get_logger
 from .commands.farmers import farmers_cmd
 from .commands.harvesters import harvesters_cmd

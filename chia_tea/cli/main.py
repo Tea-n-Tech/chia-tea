@@ -1,9 +1,5 @@
-import os
-from typing import Optional
-
 import typer
 
-from ..utils.config import config_is_loaded, read_config
 from .config import config_cmd
 from .copy import copy_cmd
 from .discord import discord_cmd

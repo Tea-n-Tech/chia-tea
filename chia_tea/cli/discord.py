@@ -1,5 +1,4 @@
 import typer
-import sys
 
 from ..protobuf.generated.config_pb2 import ChiaTeaConfig
 
