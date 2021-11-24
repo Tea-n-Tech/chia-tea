@@ -26,10 +26,10 @@ app.add_typer(monitoring_cmd, name="monitoring")
 #     else:
 #         default_filepaths = ["config.yml", "~/.chia_tea/config.yml"]
 #         for filepath in default_filepaths:
-            
+
 #             if filepath.startswith("~"):
 #                 filepath = os.path.expanduser(filepath)
-            
+
 #             if os.path.isfile(filepath):
 #                 read_config(filepath)
 

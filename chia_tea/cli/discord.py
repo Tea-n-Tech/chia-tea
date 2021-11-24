@@ -1,4 +1,3 @@
-
 import typer
 import sys
 
@@ -13,12 +12,13 @@ channel_id = ""
 
 discord_cmd = typer.Typer(invoke_without_command=True)
 
+
 @discord_cmd.callback()
 def discord_callback(config: str = DEFAULT_CONFIG_FILEPATH):
     """
     Start the discord bot watching the monitoring database.
     """
-    
+
     # load config
     config = read_config(config)
 

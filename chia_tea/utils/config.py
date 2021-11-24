@@ -1,5 +1,4 @@
 import os
-from typing import Optional
 
 import yaml
 from google.protobuf.json_format import MessageToDict, ParseDict
@@ -19,9 +18,10 @@ from ..protobuf.generated.config_pb2 import (
 DEFAULT_CONFIG_FOLDER = os.path.expanduser("~/.chia_tea/config")
 DEFAULT_CONFIG_FILEPATH = os.path.join(DEFAULT_CONFIG_FOLDER, "config.yml")
 
+
 def create_default_config(
-    filepath: str = DEFAULT_CONFIG_FILEPATH, 
-    overwrite: bool = False) -> ChiaTeaConfig:
+    filepath: str = DEFAULT_CONFIG_FILEPATH, overwrite: bool = False
+) -> ChiaTeaConfig:
     """Creates a default config on the system
 
     Parameters

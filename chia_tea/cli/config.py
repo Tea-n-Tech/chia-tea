@@ -1,16 +1,15 @@
-
 import typer
-from chia_tea.utils.config import (DEFAULT_CONFIG_FILEPATH,
-                                   create_default_config, read_config)
+from chia_tea.utils.config import DEFAULT_CONFIG_FILEPATH, create_default_config, read_config
 
 config_cmd = typer.Typer(no_args_is_help=True)
 
+
 @config_cmd.command()
 def init(
-        filepath: str = DEFAULT_CONFIG_FILEPATH,
-        overwrite: bool = False,
-    ) -> None:
-    """ Create the default chia-tea config file.
+    filepath: str = DEFAULT_CONFIG_FILEPATH,
+    overwrite: bool = False,
+) -> None:
+    """Create the default chia-tea config file.
 
     If no filepath is specified the config is created in
     "~/.chia_tea/config/config.yml"
@@ -22,9 +21,10 @@ def init(
         typer.echo(f"⛈️  {err}")
         typer.Exit(1)
 
+
 @config_cmd.command()
 def validate(filepath: str) -> None:
-    """ Validate a config file.
+    """Validate a config file.
 
     Raises an error in case the config file is not valid.
     """

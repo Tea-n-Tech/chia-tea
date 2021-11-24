@@ -12,14 +12,15 @@ from ..utils.logger import get_logger
 from ..watchdog.run_watchdog import run_watchdog
 
 monitoring_cmd = typer.Typer(
-    no_args_is_help=True, 
+    no_args_is_help=True,
     help="This tool collects data about chia and the machine"
-            + "and sends them to the monitoring server.")
+    + "and sends them to the monitoring server.",
+)
+
 
 @monitoring_cmd.command("client")
 def client_cmd(config: str = DEFAULT_CONFIG_FILEPATH):
-    """ Starts the monitoring client observing chia and the machine
-    """
+    """Starts the monitoring client observing chia and the machine"""
 
     # load config
     config = read_config(config)
@@ -49,11 +50,11 @@ def client_cmd(config: str = DEFAULT_CONFIG_FILEPATH):
     loop.create_task(client.start_sending_updates())
     loop.run_forever()
 
+
 @monitoring_cmd.command("server")
 def server_cmd(config: str = DEFAULT_CONFIG_FILEPATH):
-    """ Starts the server receiving and storing monitoring data
-    """
-    
+    """Starts the server receiving and storing monitoring data"""
+
     try:
         # load config
         config = read_config(config)

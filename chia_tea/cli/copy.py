@@ -4,13 +4,13 @@ import time
 
 import typer
 
-from ..copy.Disk import (collect_files_from_folders, copy_file,
-                         find_disk_with_space)
+from ..copy.Disk import collect_files_from_folders, copy_file, find_disk_with_space
 from ..copy.Lockfile import create_lockfile
 from ..utils.config import DEFAULT_CONFIG_FILEPATH, read_config
 from ..utils.logger import get_logger
 
 copy_cmd = typer.Typer(invoke_without_command=True)
+
 
 @copy_cmd.callback()
 def copy(config: str = DEFAULT_CONFIG_FILEPATH) -> None:
@@ -19,7 +19,7 @@ def copy(config: str = DEFAULT_CONFIG_FILEPATH) -> None:
 
     For source and target directories please see the config file.
     """
-    
+
     # load config
     config = read_config(config)
 
