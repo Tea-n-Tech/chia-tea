@@ -16,10 +16,11 @@ def init(
     "~/.chia_tea/config/config.yml"
     """
     try:
-        create_default_config(filepath, overwrite=overwrite)
+        create_default_config(filepath=filepath, overwrite=overwrite)
         typer.echo(f"👍 Created config file: {filepath}")
     except Exception as err:
         typer.echo(f"⛈️  {err}")
+        typer.Exit(1)
 
 @config_cmd.command()
 def validate(filepath: str) -> None:

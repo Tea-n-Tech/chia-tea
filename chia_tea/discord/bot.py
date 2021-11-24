@@ -165,28 +165,3 @@ async def on_ready():
     is_testing = config.development.testing
 
     await run_notifiers(db_filepath, channel, is_testing)
-
-
-def main():
-    """Main function for the discord bot"""
-    args = parse_args(
-        name="Chia Tea Discord Bot",
-        description="Start a discord bot to keep an eye on your Chia farm.",
-    )
-
-    # load config
-    config = read_config(args.config)
-
-    discord_token = config.discord.token
-
-    # pylint: disable=global-statement
-    global channel_id
-    channel_id = get_discord_channel_id()
-
-    # initiate bot and event loop
-    # create_task must come first!!!!
-    bot.run(discord_token)
-
-
-if __name__ == "__main__":
-    main()

@@ -132,30 +132,3 @@ async def start_server(config: ChiaTeaConfig):
         logger.info("Starting Server")
         await server.start()
         await server.wait_for_termination()
-
-
-def main():
-    """Main function starting the monitoring server"""
-
-    try:
-        args = parse_args(
-            name="Chia Tea Monitoring Server",
-            description=("Start a server collecting data from" + "from monitoring clients."),
-        )
-
-        # load config
-        config = read_config(args.config)
-
-        # setup logger
-        logger = get_logger(__name__)
-
-        # start the server
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(start_server(config))
-
-    except KeyboardInterrupt:
-        logger.info("Stopped server.")
-
-
-if __name__ == "__main__":
-    main()
