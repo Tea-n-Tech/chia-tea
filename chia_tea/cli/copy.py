@@ -21,7 +21,7 @@ def copy(config: str = DEFAULT_CONFIG_FILEPATH) -> None:
     For source and target directories please see the config file.
     """
     try:
-        run_copy(config)
+        run_copy(filepath=config)
     except KeyboardInterrupt:
         typer.echo("Stopping copy")
     except Exception as err:
