@@ -1,25 +1,24 @@
 import asyncio
 
 from ..models.ChiaWatchdog import ChiaWatchdog
-from ..utils.cli import parse_args
+from ..protobuf.generated.config_pb2 import ChiaTeaConfig
 from ..utils.config import read_config
 from ..watchdog.run_watchdog import run_watchdog
 from .common import get_credentials_cert
 from .MonitoringClient import MonitoringClient
 
 
-def main():
-    """This function starts the chia tea client"""
-    args = parse_args(
-        name="Chia Tea Monitoring Client",
-        description=(
-            "This tool collects data about chia and the machine"
-            + "and sends them to the monitoring server."
-        ),
-    )
+def run_client(config: ChiaTeaConfig) -> None:
+    """This function starts the chia tea client
+
+    Parameters
+    ----------
+    config : ChiaTeaConfig
+        the configuration used to run the client
+    """
 
     # load config
-    config = read_config(args.config)
+    config = read_config(config)
 
     # create the watchdog
     watchdog = ChiaWatchdog(
@@ -45,7 +44,3 @@ def main():
     loop.create_task(run_watchdog(watchdog))
     loop.create_task(client.start_sending_updates())
     loop.run_forever()
-
-
-if __name__ == "__main__":
-    main()

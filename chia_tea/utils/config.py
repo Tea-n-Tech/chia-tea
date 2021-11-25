@@ -68,6 +68,9 @@ def get_default_config() -> ChiaTeaConfig:
     config : ChiaTeaConfig
         default config
     """
+    config_directory = os.path.dirname(DEFAULT_CONFIG_FILEPATH)
+    key_filepath = os.path.join(config_directory, "server.key")
+    cert_filepath = os.path.join(config_directory, "server.cert")
 
     return ChiaTeaConfig(
         version=0,
@@ -117,8 +120,8 @@ def get_default_config() -> ChiaTeaConfig:
             # One done you can register them here. The server needs
             # both while the client just needs the cert-file.
             auth=MonitoringConfig.AuthConfig(
-                cert_filepath="./server.crt",
-                key_filepath="./server.key",
+                cert_filepath=cert_filepath,
+                key_filepath=key_filepath,
             ),
             # Settings for the monitoring server
             server=MonitoringConfig.ServerConfig(

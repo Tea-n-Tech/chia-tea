@@ -1,3 +1,4 @@
+import asyncio
 import grpc
 
 from ..protobuf.generated.monitoring_service_pb2_grpc import (
@@ -108,7 +109,7 @@ async def build_server(config: ChiaTeaConfig, db: MonitoringDatabase):
     return server
 
 
-async def start_server(config: ChiaTeaConfig):
+async def _start_server(config: ChiaTeaConfig):
     """Builds and starts the server
 
     Parmeters
@@ -128,3 +129,17 @@ async def start_server(config: ChiaTeaConfig):
         logger.info("Starting Server")
         await server.start()
         await server.wait_for_termination()
+
+
+def run_server(config: ChiaTeaConfig) -> None:
+    """Runs the monitoring server
+
+    Parameters
+    ---------
+    config : ChiaTeaConfig
+        config used by the server
+    """
+
+    # start the server
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(_start_server(config))

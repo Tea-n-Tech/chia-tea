@@ -1,14 +1,9 @@
-import asyncio
-
 import typer
 
-from ..models.ChiaWatchdog import ChiaWatchdog
-from ..monitoring.common import get_credentials_cert
-from ..monitoring.MonitoringClient import MonitoringClient
-from ..monitoring.server import start_server
+from ..monitoring.run_server import run_server
 from ..utils.config import DEFAULT_CONFIG_FILEPATH, read_config
 from ..utils.logger import get_logger
-from ..watchdog.run_watchdog import run_watchdog
+from ..monitoring.run_client import run_client
 
 monitoring_cmd = typer.Typer(
     no_args_is_help=True,
@@ -20,47 +15,32 @@ monitoring_cmd = typer.Typer(
 @monitoring_cmd.command("client")
 def client_cmd(config: str = DEFAULT_CONFIG_FILEPATH):
     """Starts the monitoring client observing chia and the machine"""
+    logger = get_logger(__name__)
 
-    # load config
-    config = read_config(config)
-
-    # create the watchdog
-    watchdog = ChiaWatchdog(
-        config.chia.logfile_filepath,
-        config.chia.madmax_logfile,
-    )
-
-    # we disable auth during testing
-    is_testing = config.development.testing
-
-    cert = get_credentials_cert(is_testing, config) if not is_testing else ""
-
-    # create client
-    client = MonitoringClient(
-        chia_dog=watchdog,
-        config=config.monitoring.client,
-        credentials_cert=cert,
-        machine_name=config.machine.name,
-    )
-
-    # setup event loops
-    loop = asyncio.get_event_loop()
-    loop.create_task(run_watchdog(watchdog))
-    loop.create_task(client.start_sending_updates())
-    loop.run_forever()
+    try:
+        config = read_config(config)
+        run_client(config)
+    except KeyboardInterrupt:
+        # someone just stopping it, that is ok
+        pass
+    except Exception as err:
+        logger.error("Error: %s", str(err))
+    finally:
+        logger.info("Shutting down monitoring client.")
 
 
 @monitoring_cmd.command("server")
 def server_cmd(config: str = DEFAULT_CONFIG_FILEPATH):
     """Starts the server receiving and storing monitoring data"""
+    logger = get_logger(__name__)
 
     try:
-        # load config
         config = read_config(config)
-
-        # start the server
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(start_server(config))
-
+        run_server(config)
     except KeyboardInterrupt:
-        get_logger(__name__).info("Stopped server.")
+        # someone just stopping it, that is ok
+        pass
+    except Exception as err:
+        logger.error("Error: %s", str(err))
+    finally:
+        logger.info("Shutting down monitoring server.")
