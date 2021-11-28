@@ -58,8 +58,8 @@ def location() -> None:
         typer.Exit(1)
 
 
-@config_cmd.command()
-def create_certificates(dirpath: str = DEFAULT_CONFIG_FOLDER, overwrite: bool = False) -> None:
+@config_cmd.command(name="create_certificates")
+def create_certificates_cmd(dirpath: str = DEFAULT_CONFIG_FOLDER, overwrite: bool = False) -> None:
     """Create a certificate pair in the specified directory"""
     logger = get_logger(__name__)
     try:
