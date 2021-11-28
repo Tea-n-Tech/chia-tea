@@ -21,7 +21,7 @@ def client_cmd(config: str = DEFAULT_CONFIG_FILEPATH):
         config = read_config(config)
         run_client(config)
     except KeyboardInterrupt:
-        # someone just stopping it, that is ok
+        # just stopping it, that is ok
         pass
     except Exception as err:
         logger.error("Error: %s", str(err))
@@ -38,7 +38,7 @@ def server_cmd(config: str = DEFAULT_CONFIG_FILEPATH):
         config = read_config(config)
         run_server(config)
     except KeyboardInterrupt:
-        # someone just stopping it, that is ok
+        # just stopping it, that is ok
         pass
     except Exception as err:
         logger.error("Error: %s", str(err))

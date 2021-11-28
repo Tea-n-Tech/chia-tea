@@ -1,6 +1,11 @@
 import os
 import typer
-from ..utils.config import DEFAULT_CONFIG_FILEPATH, create_default_config, read_config
+from ..utils.config import (
+    DEFAULT_CONFIG_FILEPATH,
+    DEFAULT_CONFIG_FOLDER,
+    create_default_config,
+    read_config,
+)
 
 from ..utils.ssl import create_certificate_pair
 from ..utils.logger import get_logger
@@ -44,10 +49,25 @@ def init(
 
 @config_cmd.command()
 def location() -> None:
-    """Print the filepath of the default config file"""
+    """Print the filepath to the default location of the config file"""
     logger = get_logger(__name__)
     try:
         logger.info(os.path.expanduser(DEFAULT_CONFIG_FILEPATH))
+    except Exception as err:
+        logger.error("⛈️  %s", str(err))
+        typer.Exit(1)
+
+
+@config_cmd.command()
+def create_certificates(dirpath: str = DEFAULT_CONFIG_FOLDER, overwrite: bool = False) -> None:
+    """Create a certificate pair in the specified directory"""
+    logger = get_logger(__name__)
+    try:
+        os.makedirs(dirpath, exist_ok=True)
+        key_path = os.path.join(dirpath, "server.key")
+        cert_path = os.path.join(dirpath, "server.crt")
+        create_certificate_pair(key_path=key_path, cert_path=cert_path, overwrite=overwrite)
+        logger.info("👍 Success")
     except Exception as err:
         logger.error("⛈️  %s", str(err))
         typer.Exit(1)

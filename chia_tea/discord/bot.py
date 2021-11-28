@@ -1,6 +1,3 @@
-import os
-import sys
-
 from discord.ext import commands
 
 from chia_tea.discord.commands.plotters import plotters_cmd
@@ -14,15 +11,9 @@ from .commands.sql import sql_cmd
 from .commands.wallets import wallets_cmd
 from .notifications.run_notifiers import log_and_send_msg_if_any, run_notifiers
 
-# setup log handler
-module_name = os.path.splitext(os.path.basename(__file__))[0]
-
-# =========================
-#         DISCORD
-# =========================
 
 bot = commands.Bot(command_prefix="$")
-channel_id = ""
+channel_id = -1
 
 
 @bot.command(name="hi")
@@ -122,40 +113,12 @@ async def bot_sql(ctx, *cmds):
     )
 
 
-def get_discord_channel_id() -> int:
-    """Get the discord channel id from the config
-
-    Returns
-    -------
-    channel_id_cfg : int
-        discord channel id
-
-    Raises
-    ------
-    ValueError
-        In case that the channel id cannot be converte to a string
-    """
-    channel_id_cfg = get_config().discord.channel_id
-
-    # yaml sometimes returns a str depending on how
-    # the user put the value in, but we need an int
-    if not isinstance(channel_id_cfg, int):
-        try:
-            channel_id_cfg = int(channel_id_cfg)
-        except ValueError:
-            err_msg = "Cannot convert discord channel id '{0}' to number."
-            get_logger(module_name).error(err_msg, channel_id_cfg)
-            sys.exit(1)
-
-    return channel_id_cfg
-
-
 @bot.event
 async def on_ready():
     """Function run when the bot is ready"""
     db_filepath = get_config().monitoring.server.db_filepath
 
-    get_logger(module_name).info("Bot started.")
+    get_logger(__file__).info("Bot started.")
 
     # get discord channel
     channel = bot.get_channel(channel_id)
@@ -164,3 +127,12 @@ async def on_ready():
     is_testing = config.development.testing
 
     await run_notifiers(db_filepath, channel, is_testing)
+
+
+def run_discord_bot(discord_token: str, discord_channel_id: int) -> None:
+    """Run the discord bot"""
+    # pylint: disable=global-statement
+    global channel_id
+    channel_id = discord_channel_id
+
+    bot.run(discord_token)
