@@ -69,31 +69,46 @@ It will then copy plots between the `copy.source_folders` drives to the `copy.ta
 
 ## How to monitor my farm?
 
-First, you need ssl certificates to secure the connection. You can create certificates with:
+By default initializing the config file creates the respective certificates
+next to it.
+You can also generate a new pair with `chia-tea config create-certificates`
+or simply use your own.
 
-```
-task certs -- localhost
-```
-
-or replace `localhost` by your servers name such as `my.webserver.com` or an ip address. Register these certificates in the `config.yml` under `monitoring.auth`. Once this is done, you can launch the monitoring server. As a note, the client only requires the `.crt` file and not `.key` file. The server receives all monitoring data and stores it in a file called `monitoring.db`, but this can be changed in the config under `monitoring.server.db_filepath`. You can start the server with:
+As a note, the client only requires the `.crt` certificate file and not
+`.key` file.
+The server receives all monitoring data and stores it in a file called
+`monitoring.db`, but this can be changed in the config under
+`monitoring.server.db_filepath`.
+You can start the server with:
 
 ```
 chia-tea monitoring server
 ```
 
-After starting a server you can connect an arbitrary amount of clients to it. Clients are programs run on machines you want to monitor. A client collects data from the hardware, processes and chia and sends it to the server. You can control the the data collection frequency in the config under `monitoring.client` but the default should suffice for the beginning.
+After starting a server you can connect an arbitrary amount of clients to it.
+Clients are programs run on machines you want to monitor.
+A client collects data from the hardware, processes and chia and sends it to
+the server.
+You can control the the data collection frequency in the config under
+`monitoring.client` but the default should suffice for the beginning.
 
-Simply run the following command and Chia-Tea will collect and send all data automatically to the server:
+Simply run the following command and Chia-Tea will collect and send all data
+automatically to the server:
 
 ```
 chia-tea monitoring client
 ```
 
-We have a discord bot as a user interface to the database. It will notify you on any important events and provide commands to get further insights.
+We have a discord bot as a user interface to the database.
+It will notify you on any important events and provide commands to get further
+insights.
 
-Before you can run the bot you will need a [Discord Bot Token](https://www.writebots.com/discord-bot-token/) and also the id of your channel. Specify this once again in the `config.yml` under `discord`.
+Before you can run the bot you will need a
+[Discord Bot Token](https://www.writebots.com/discord-bot-token/) and also the
+id of your channel.
+Specify this once again in the `config.yml` under `discord`.
 
-You can run the bot then with:
+You can run the bot with:
 
 ```
 chia-tea discord
