@@ -2,13 +2,14 @@ import ntpath
 import os
 import time
 
+from ..protobuf.generated.config_pb2 import ChiaTeaConfig
 from ..utils.config import read_config
 from ..utils.logger import get_logger
 from .Disk import collect_files_from_folders, copy_file, find_disk_with_space
 from .Lockfile import create_lockfile
 
 
-def run_copy(filepath: str) -> None:
+def run_copy(config: ChiaTeaConfig) -> None:
     """Run an infinite copy loop copying files
 
     Parameters
@@ -17,11 +18,8 @@ def run_copy(filepath: str) -> None:
         The filepath to the config file
     """
 
-    # load config
-    config = read_config(filepath)
-
     # get logger
-    logger = get_logger("copy")
+    logger = get_logger(__file__)
 
     # little hack since "from" is a reserved keyword in python
     from_folders = config.copy.source_folders

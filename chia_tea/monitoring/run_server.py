@@ -131,7 +131,7 @@ async def _start_server(config: ChiaTeaConfig):
         await server.wait_for_termination()
 
 
-def run_server(config: ChiaTeaConfig) -> None:
+def run_monitoring_server(config: ChiaTeaConfig) -> None:
     """Runs the monitoring server
 
     Parameters

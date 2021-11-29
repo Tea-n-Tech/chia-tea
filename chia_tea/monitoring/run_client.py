@@ -8,7 +8,7 @@ from .common import get_credentials_cert
 from .MonitoringClient import MonitoringClient
 
 
-def run_client(config: ChiaTeaConfig) -> None:
+def run_monitoring_client(config: ChiaTeaConfig) -> None:
     """This function starts the chia tea client
 
     Parameters
