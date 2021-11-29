@@ -15,7 +15,7 @@ start_cmd = typer.Typer(
 
 
 @start_cmd.command(name="copy")
-def copy(config: str = DEFAULT_CONFIG_FILEPATH) -> None:
+def copy_cmd(config: str = DEFAULT_CONFIG_FILEPATH) -> None:
     """Copy files from one place to another.
 
     For source and target directories please see the config file.
@@ -26,17 +26,21 @@ def copy(config: str = DEFAULT_CONFIG_FILEPATH) -> None:
         config = read_config(filepath=config)
         run_copy(config=config)
     except KeyboardInterrupt:
-        typer.echo("Stopping copy")
+        # just stopping it, that is ok
+        pass
     except Exception as err:
         typer.echo(f"Error: {err}")
         raise typer.Exit(1)
+    finally:
+        typer.echo("Stopping copy")
 
 
 @start_cmd.command("monitoring-client")
-def client_cmd(config: str = DEFAULT_CONFIG_FILEPATH):
+def monitoring_client_cmd(config: str = DEFAULT_CONFIG_FILEPATH):
     """Starts the monitoring client observing chia and the machine"""
     logger = get_logger(__name__)
 
+    exit_code = 0
     try:
         config = read_config(config)
         run_monitoring_client(config)
@@ -45,15 +49,18 @@ def client_cmd(config: str = DEFAULT_CONFIG_FILEPATH):
         pass
     except Exception as err:
         logger.error("Error: %s", str(err))
+        exit_code = 1
     finally:
         logger.info("Shutting down monitoring client.")
+        raise typer.Exit(exit_code)
 
 
 @start_cmd.command("monitoring-server")
-def server_cmd(config: str = DEFAULT_CONFIG_FILEPATH):
+def monitoring_server_cmd(config: str = DEFAULT_CONFIG_FILEPATH):
     """Starts the server receiving and storing monitoring data"""
     logger = get_logger(__name__)
 
+    exit_code = 0
     try:
         config = read_config(config)
         run_monitoring_server(config)
@@ -62,20 +69,28 @@ def server_cmd(config: str = DEFAULT_CONFIG_FILEPATH):
         pass
     except Exception as err:
         logger.error("Error: %s", str(err))
+        exit_code = 1
     finally:
         logger.info("Shutting down monitoring server.")
+        raise typer.Exit(exit_code)
 
 
 @start_cmd.command("discord-bot")
-def start_discord_bot(config: str = DEFAULT_CONFIG_FILEPATH):
+def discord_bot_cmd(config: str = DEFAULT_CONFIG_FILEPATH):
     """
     Start the discord bot watching the monitoring database.
     """
+    logger = get_logger(__name__)
 
-    # load config
-    config = read_config(config)
-
-    discord_token = config.discord.token
-    channel_id = config.discord.channel_id
-
-    run_discord_bot(discord_token, channel_id)
+    try:
+        config = read_config(config)
+        run_discord_bot(config.discord.token, config.discord.channel_id)
+    except KeyboardInterrupt:
+        # just stopping it, that is ok
+        pass
+    except Exception as err:
+        logger.error("Error: %s", str(err))
+        exit_code = 1
+    finally:
+        logger.info("Shutting down discord-bot.")
+        raise typer.Exit(exit_code)
