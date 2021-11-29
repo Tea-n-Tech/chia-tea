@@ -3,7 +3,6 @@ import os
 import time
 
 from ..protobuf.generated.config_pb2 import ChiaTeaConfig
-from ..utils.config import read_config
 from ..utils.logger import get_logger
 from .Disk import collect_files_from_folders, copy_file, find_disk_with_space
 from .Lockfile import create_lockfile
