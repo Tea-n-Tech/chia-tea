@@ -23,7 +23,7 @@ def copy(config: str = DEFAULT_CONFIG_FILEPATH) -> None:
     `chia-tea config location`.
     """
     try:
-        config = read_config(config)
+        config = read_config(filepath=config)
         run_copy(config=config)
     except KeyboardInterrupt:
         typer.echo("Stopping copy")
