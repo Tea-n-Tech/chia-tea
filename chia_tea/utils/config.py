@@ -18,6 +18,113 @@ from ..protobuf.generated.config_pb2 import (
 DEFAULT_CONFIG_FOLDER = os.path.expanduser("~/.chia_tea/config")
 DEFAULT_CONFIG_FILEPATH = os.path.join(DEFAULT_CONFIG_FOLDER, "config.yml")
 
+DEFAULT_CONFIG_TEMPLATE = """
+version: 0
+
+machine:
+  # this name will be used for display
+  name: machine name to display
+
+logging:
+  # Allowed is: TRACE, DEBUG, INFO, WARNING, ERROR
+  loglevel: INFO
+  # Whether to print the statements in the console
+  log_to_console: True
+  # Uses the file logger
+  log_to_file: True
+  # These settings give control on the size of
+  # the logfiles.
+  max_logfiles: 10
+  max_logfile_size_mb: 15
+
+# This controls from where data is copied
+# with the CLI copy tool. The copy process
+# selects disks smartly. Also it can deal
+# with disconnects and other issues.
+copy:
+  source_folders:
+    - "/some/plotting/folder"
+    - "/another/plotting/folder"
+  target_folders:
+    - "/some/harvester/folder"
+    - "/another/harvester/folder"
+
+# General chia-related settings
+chia:
+  # Filepath at which the chia logfile resides.
+  logfile_filepath: ~/.chia/mainnet/log/debug.log
+  # Filepath to the logfile of the madmax plotter.
+  # This tracks the plotting progress. Leave empty
+  # if not used.
+  madmax_logfile: ""
+
+discord:
+  token: YOUR_DISCORD_TOKEN
+  channel_id: 123456789
+
+monitoring:
+  auth:
+    cert_filepath: {cert_filepath}
+    key_filepath: {key_filepath}
+
+  # settings for the monitoring server receiving
+  # and storing monitoring data
+  server:
+    port: 43200
+    # filepath where the monitoring database will
+    # be stored on disk.
+    db_filepath: ./monitoring.db
+
+  # settings for the monitoring client, collecting
+  # and sending data
+  client:
+    # Address of the server to send data to.
+    # On the very same machine this is 127.0.0.1.
+    address: 127.0.0.1
+    port: 43200
+
+    # Depending on the system the data collection
+    # can be quite fast and may use too much cpu.
+    # This option throttles the general data
+    # collection. If the data collection takes
+    # longer than specified here the waiting time
+    # is ignored.
+    collect_data_every: 1.5 # seconds
+
+    # To not spam the database with too much data
+    # we can set a limit here to send updates no
+    # faster than specified.
+    # Note that if nothing changed such as disk space
+    # then no update is sent at all to keep stay
+    # efficient.
+    send_update_every:
+      # For hardware it is recommended to choose
+      # 1-5 minutes
+      cpu: 60 # seconds
+      ram: 60 # seconds
+      disk: 60 # seconds
+      process: 60 # seconds
+
+      # Chia data is not limited by default since
+      # we want to know asap if something is up.
+      # Note though that 'collect_data_every'
+      # applies and automatically rate limits
+      # chia data.
+
+      # farmer: 2
+      # connected_harvester: 2
+      # harvester: 2
+      # wallet: 2
+      # plotting_plot: 2
+      # harvester_plot: 2
+
+# Enables development mode. This currently disables
+# encryption and also the discord bot does not send
+# send messages but they are printed to console.
+development:
+  testing: False
+"""
+
 
 def create_default_config(
     filepath: str = DEFAULT_CONFIG_FILEPATH, overwrite: bool = False
@@ -52,12 +159,31 @@ def create_default_config(
         os.makedirs(folder, exist_ok=True)
 
     if not os.path.exists(filepath) or overwrite:
-        config = get_default_config()
-        save_config(filepath, get_default_config())
+        with open(filepath, "w", encoding="utf-8") as fp:
+            fp.write(get_default_config_as_string())
     else:
         raise FileExistsError(f"Config file already exists: {filepath}")
 
-    return config
+    return get_default_config()
+
+
+def get_default_config_as_string() -> str:
+    """Get the default config for chia tea as a string
+
+    Returns
+    -------
+    config : str
+        default config as a string
+    """
+    config_directory = os.path.dirname(DEFAULT_CONFIG_FILEPATH)
+    key_filepath = os.path.join(config_directory, "server.key")
+    cert_filepath = os.path.join(config_directory, "server.cert")
+
+    config_as_yml = DEFAULT_CONFIG_TEMPLATE.format(
+        cert_filepath=cert_filepath, key_filepath=key_filepath
+    )
+
+    return config_as_yml
 
 
 def get_default_config() -> ChiaTeaConfig:
@@ -68,109 +194,14 @@ def get_default_config() -> ChiaTeaConfig:
     config : ChiaTeaConfig
         default config
     """
-    config_directory = os.path.dirname(DEFAULT_CONFIG_FILEPATH)
-    key_filepath = os.path.join(config_directory, "server.key")
-    cert_filepath = os.path.join(config_directory, "server.cert")
 
-    return ChiaTeaConfig(
-        version=0,
-        # configuration for machine-specific settings
-        machine=MachineConfig(
-            name="machine_name_to_display",
-        ),
-        logging=LoggingConfig(
-            # Allowed is: TRACE, DEBUG, INFO, WARNING, ERROR
-            loglevel=INFO,
-            log_to_console=True,
-            log_to_file=True,
-            max_logfiles=10,
-            max_logfile_size_mb=15,
-        ),
-        # This controls from where data is copied
-        # with the CLI copy tool. The copy process
-        # selects disks smartly. Also it can deal
-        # with disconnects and other issues.
-        copy=CopyConfig(
-            source_folders=[
-                "/some/plotting/folder",
-                "/another/plotting/folder",
-            ],
-            target_folders=[
-                "/some/harvester/folder",
-                "/another/harvester/folder",
-            ],
-        ),
-        # General chia-related settings
-        chia=ChiaConfig(
-            # Filepath at which the chia logfile resides.
-            logfile_filepath="~/.chia/mainnet/log/debug.log",
-            # Filepath to the logfile of the madmax plotter.
-            # Leave empty if unused
-            madmax_logfile="",
-        ),
-        # Settings to connect to the discord bot and channel
-        discord=DiscordConfig(
-            token="YOUR_DISCORD_TOKEN",
-            channel_id=123456789,
-        ),
-        # Specify monitoring settings
-        monitoring=MonitoringConfig(
-            # The communication is secured by certificates.
-            # These need to be generated beforehand (see Taskfile).
-            # One done you can register them here. The server needs
-            # both while the client just needs the cert-file.
-            auth=MonitoringConfig.AuthConfig(
-                cert_filepath=cert_filepath,
-                key_filepath=key_filepath,
-            ),
-            # Settings for the monitoring server
-            server=MonitoringConfig.ServerConfig(
-                port=43200,
-                # filepath where the monitoring database will
-                # be stored on disk.
-                db_filepath="./monitoring.db",
-            ),
-            # Settings for the client collecting data
-            client=MonitoringConfig.ClientConfig(
-                # Address of the server to send data to.
-                # On the very same machine this is 127.0.0.1.
-                address="127.0.0.1",
-                port=43200,
-                # Depending on the system the data collection
-                # can be quite fast and may use too much cpu.
-                # This option throttles the general data
-                # collection. If the data collection takes
-                # longer than specified here the waiting time
-                # is ignored.
-                collect_data_every=1.5,
-                # To not spam the database with too much data
-                # we can set a limit here to send updates no
-                # faster than specified.
-                # Note that if nothing changed such as disk space
-                # then no update is sent at all to keep stay
-                # efficient.
-                send_update_every=MonitoringConfig.ClientConfig.SendUpdateEvery(
-                    # For hardware it is recommended to choose
-                    # 1-5 minutes
-                    cpu=60,
-                    ram=60,
-                    disk=60,
-                    process=60,
-                    # Chia data is not limited by default since
-                    # we want to know asap if something is up.
-                    # Note though that 'collect_data_every'
-                    # applies and automatically rate limits
-                    # chia data.
-                ),
-            ),
-        ),
-        # Enables development mode. This currently disables
-        # encryption and also the discord bot does not send
-        # send messages but they are printed to console.
-        development=DevelopmentConfig(
-            testing=False,
-        ),
+    config_dict = yaml.safe_load(get_default_config_as_string())
+    config = ParseDict(
+        js_dict=config_dict,
+        message=ChiaTeaConfig(),
     )
+
+    return config
 
 
 def read_config(filepath: str) -> ChiaTeaConfig:
