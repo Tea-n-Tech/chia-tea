@@ -10,8 +10,7 @@ class TestConfig(unittest.TestCase):
 
     def test_default_config_is_valid(self):
         # pylint: disable=no-self-use
-        # pylint: disable=missing-function-docstring
 
         # Should simply not throw an exception since internally
         # it parses a string to a protobuf message.
-        get_default_config()
+        get_default_config(certificate_folder="some/folder")

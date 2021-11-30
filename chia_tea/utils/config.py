@@ -150,25 +150,30 @@ def create_default_config(
         os.makedirs(folder, exist_ok=True)
 
     if not os.path.exists(filepath) or overwrite:
+        certificate_directory = os.path.dirname(filepath)
         with open(filepath, "w", encoding="utf-8") as fp:
-            fp.write(get_default_config_as_string())
+            fp.write(get_default_config_as_string(certificate_folder=certificate_directory))
     else:
         raise FileExistsError(f"Config file already exists: {filepath}")
 
-    return get_default_config()
+    return get_default_config(certificate_folder=certificate_directory)
 
 
-def get_default_config_as_string() -> str:
+def get_default_config_as_string(certificate_folder: str) -> str:
     """Get the default config for chia tea as a string
+
+    Parameters
+    ----------
+    certificate_folder : str
+        directory of the certificates
 
     Returns
     -------
     config : str
         default config as a string
     """
-    config_directory = os.path.dirname(DEFAULT_CONFIG_FILEPATH)
-    key_filepath = os.path.join(config_directory, "server.key")
-    cert_filepath = os.path.join(config_directory, "server.cert")
+    key_filepath = os.path.join(certificate_folder, "server.key")
+    cert_filepath = os.path.join(certificate_folder, "server.crt")
 
     config_as_yml = DEFAULT_CONFIG_TEMPLATE.format(
         cert_filepath=cert_filepath, key_filepath=key_filepath
@@ -177,8 +182,13 @@ def get_default_config_as_string() -> str:
     return config_as_yml
 
 
-def get_default_config() -> ChiaTeaConfig:
+def get_default_config(certificate_folder: str) -> ChiaTeaConfig:
     """Get the default config for chia tea
+
+    Parameters
+    ----------
+    certificate_folder : str
+        directory of the certificates
 
     Returns
     -------
@@ -186,7 +196,7 @@ def get_default_config() -> ChiaTeaConfig:
         default config
     """
 
-    config_dict = yaml.safe_load(get_default_config_as_string())
+    config_dict = yaml.safe_load(get_default_config_as_string(certificate_folder))
     config = ParseDict(
         js_dict=config_dict,
         message=ChiaTeaConfig(),
@@ -268,7 +278,7 @@ def save_config(filepath: str, config: ChiaTeaConfig):
 
 
 # This is the global application config
-__GLOBAL_CONFIG = get_default_config()
+__GLOBAL_CONFIG = get_default_config(DEFAULT_CONFIG_FILEPATH)
 __IS_LOADED = False
 
 
