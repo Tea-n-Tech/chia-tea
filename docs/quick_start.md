@@ -40,21 +40,21 @@ python -m pip install dist/*.whl
 
 All configurations are stored in a `config.yml` file.
 All cli tools use this config and search by default for
-a file `config.yml` in the very same directory where they are started.
-Command line tools can also specify the path to the config by using the `--config` option.
-You can either take the [default config file](https://github.com/Tea-n-Tech/chia-tea/blob/develop/config_default.yml)
-or generate the default config file.
+a file `~/.chia_tea/config/config.yml`.
+Command line tools can also specify the path to the config by using the
+`--config` option.
+To create a config simply run:
+
+```
+chia-tea config init
+```
+
 The config file is created under `~/chia_tea/config/config.yml` if no
 filepath is specified.
-
-```
-chia-tea init
-```
-
 Then you can for example start the copy tool with:
 
 ```
-chia-tea copy
+chia-tea start copy
 ```
 
 ## How to start the copy tool?
@@ -62,7 +62,7 @@ chia-tea copy
 You can start the copy tool with:
 
 ```
-chia-tea copy
+chia-tea start copy
 ```
 
 It will then copy plots between the `copy.source_folders` drives to the `copy.target_folders` drives as specified in the `config.yml`.
@@ -82,7 +82,7 @@ The server receives all monitoring data and stores it in a file called
 You can start the server with:
 
 ```
-chia-tea monitoring server
+chia-tea start monitoring-server
 ```
 
 After starting a server you can connect an arbitrary amount of clients to it.
@@ -96,7 +96,7 @@ Simply run the following command and Chia-Tea will collect and send all data
 automatically to the server:
 
 ```
-chia-tea monitoring client
+chia-tea start monitoring-client
 ```
 
 We have a discord bot as a user interface to the database.
@@ -111,7 +111,7 @@ Specify this once again in the `config.yml` under `discord`.
 You can run the bot with:
 
 ```
-chia-tea discord
+chia-tea start discord-bot
 ```
 
 And here you go, you are all set up.
