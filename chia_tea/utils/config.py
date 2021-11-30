@@ -3,17 +3,8 @@ import os
 import yaml
 from google.protobuf.json_format import MessageToDict, ParseDict
 
-from ..protobuf.generated.config_pb2 import (
-    INFO,
-    ChiaConfig,
-    ChiaTeaConfig,
-    CopyConfig,
-    DevelopmentConfig,
-    DiscordConfig,
-    LoggingConfig,
-    MachineConfig,
-    MonitoringConfig,
-)
+from ..protobuf.generated.config_pb2 import ChiaTeaConfig
+
 
 DEFAULT_CONFIG_FOLDER = os.path.expanduser("~/.chia_tea/config")
 DEFAULT_CONFIG_FILEPATH = os.path.join(DEFAULT_CONFIG_FOLDER, "config.yml")

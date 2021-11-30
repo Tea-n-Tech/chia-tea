@@ -13,6 +13,7 @@ runner = CliRunner()
 def assert_certificate_generated(
     dirpath: str, overwrite: bool, create_certificate_pair_mock: MagicMock
 ):
+    """Asserts that the certificate generation fn was called correctly"""
     key_path = os.path.join(dirpath, "server.key")
     cert_path = os.path.join(dirpath, "server.crt")
     create_certificate_pair_mock.assert_called_once_with(

@@ -63,7 +63,7 @@ def create_certificates_cmd(dirpath: str = DEFAULT_CONFIG_FOLDER, overwrite: boo
         key_path = os.path.join(dirpath, "server.key")
         cert_path = os.path.join(dirpath, "server.crt")
         create_certificate_pair(key_path=key_path, cert_path=cert_path, overwrite=overwrite)
-        typer.info("👍 Success")
+        typer.echo("👍 Success")
     except Exception as err:
         typer.echo(f"⛈️  {err}")
         raise typer.Exit(1)
