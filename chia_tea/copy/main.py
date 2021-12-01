@@ -2,29 +2,23 @@ import ntpath
 import os
 import time
 
-from ..utils.cli import parse_args
-from ..utils.config import read_config
+from ..protobuf.generated.config_pb2 import ChiaTeaConfig
 from ..utils.logger import get_logger
 from .Disk import collect_files_from_folders, copy_file, find_disk_with_space
 from .Lockfile import create_lockfile
 
-module_name = "chia_tea.copy"
 
+def run_copy(config: ChiaTeaConfig) -> None:
+    """Run an infinite copy loop copying files
 
-def main():
-    """Main program for copying files"""
-
-    # get command line arguments
-    args = parse_args(
-        name="Chia Tea Copy",
-        description="Start a process copying files for your chia farm.",
-    )
-
-    # load config
-    config = read_config(args.config)
+    Parameters
+    ----------
+    filepath : str
+        The filepath to the config file
+    """
 
     # get logger
-    logger = get_logger(module_name)
+    logger = get_logger(__file__)
 
     # little hack since "from" is a reserved keyword in python
     from_folders = config.copy.source_folders
@@ -38,44 +32,37 @@ def main():
 
         files_to_copy = collect_files_from_folders(from_folders, "*.plot")
 
-        for filepath in files_to_copy:
+        for source_filepath in files_to_copy:
             # search for a space on the specified disks
-            target_dir = find_disk_with_space(target_folders, filepath)
+            target_dir = find_disk_with_space(target_folders, source_filepath)
             if target_dir is None:
-                logger.error("No disk space available for: %s", filepath)
+                logger.error("No disk space available for: %s", source_filepath)
                 continue
 
             # compose new filepath after move
-            filename = ntpath.basename(filepath)
+            filename = ntpath.basename(source_filepath)
             target_path = os.path.join(target_dir, filename)
 
             # move file (with measurement)
-            logger.info("moving file: %s -> %s", filepath, target_path)
+            logger.info("moving file: %s -> %s", source_filepath, target_path)
             start = time.time()
 
             # lockfile
             path_to_lockfile = os.path.join(target_dir, filename.replace(".plot", ".copying"))
 
             with create_lockfile(path_to_lockfile):
-                successful_copy = copy_file(filepath, target_path)
+                successful_copy = copy_file(source_filepath, target_path)
 
             duration_secs = time.time() - start
             if successful_copy:
                 logger.info("done in %.1fs", duration_secs)
                 try:
-                    os.remove(filepath)
+                    os.remove(source_filepath)
                 except FileNotFoundError:
-                    logger.error("Could not remove original file: %s", filepath)
+                    logger.error("Could not remove original file: %s", source_filepath)
 
             else:
-                logger.error("failed to copy %s in %.1fs", filepath, duration_secs)
+                logger.error("failed to copy %s in %.1fs", source_filepath, duration_secs)
 
         # rate limiter
         time.sleep(15)
-
-
-if __name__ == "__main__":
-    try:
-        main()
-    except KeyboardInterrupt:
-        get_logger(module_name).info("Shutting down.")

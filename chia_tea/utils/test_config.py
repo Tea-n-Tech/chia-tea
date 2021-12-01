@@ -1,10 +1,9 @@
-import json
 import os
 import unittest
 
-from google.protobuf.json_format import MessageToDict
-
-from .config import get_default_config, read_config
+import tempfile
+from .config import create_default_config, get_default_config
+from .testing import set_directory
 
 
 class TestConfig(unittest.TestCase):
@@ -12,13 +11,19 @@ class TestConfig(unittest.TestCase):
         # pylint: disable=invalid-name
         self.maxDiff = None
 
-    def test_default_config_matches_internal_default_config(self):
-        internal_default_config = get_default_config()
-        other_default_config = read_config(
-            os.path.join(os.path.dirname(__file__), "..", "..", "config_default.yml")
-        )
+    def test_default_config_is_valid(self):
+        # pylint: disable=no-self-use
 
-        self.assertEqual(
-            json.dumps(MessageToDict(internal_default_config), indent=2),
-            json.dumps(MessageToDict(other_default_config), indent=2),
-        )
+        # Should simply not throw an exception since internally
+        # it parses a string to a protobuf message.
+        get_default_config(certificate_folder="some/folder")
+
+    def test_fix_its_ok_if_no_folder_specified(self):
+        # pylint: disable=no-self-use
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            with set_directory(tmp_dir):
+                create_default_config(
+                    filepath=os.path.join("config.yaml"),
+                    overwrite=False,
+                )

@@ -130,9 +130,9 @@ def collect_files_from_folders(folder_list: List[str], pattern: str) -> List[str
 
         if not os.path.isdir(folder_path):
             if os.path.isfile(folder_path):
-                warn_msg = "Path '{0}' is a file and not a directory."
+                warn_msg = "Path '%s' is a file and not a directory."
             else:
-                warn_msg = "Folder '{0}' does not exist or is not a directory."
+                warn_msg = "Folder '%s' does not exist."
             logger.warning(warn_msg, folder_path)
             continue
 

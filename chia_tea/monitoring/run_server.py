@@ -1,13 +1,10 @@
 import asyncio
-
 import grpc
 
 from ..protobuf.generated.monitoring_service_pb2_grpc import (
     add_MonitoringServicer_to_server,
 )
 from ..protobuf.generated.config_pb2 import ChiaTeaConfig
-from ..utils.cli import parse_args
-from ..utils.config import read_config
 from ..utils.logger import get_logger
 from .common import get_credentials_cert, get_credentials_key
 from .MonitoringDatabase import MonitoringDatabase
@@ -112,7 +109,7 @@ async def build_server(config: ChiaTeaConfig, db: MonitoringDatabase):
     return server
 
 
-async def start_server(config: ChiaTeaConfig):
+async def _start_server(config: ChiaTeaConfig):
     """Builds and starts the server
 
     Parmeters
@@ -134,28 +131,15 @@ async def start_server(config: ChiaTeaConfig):
         await server.wait_for_termination()
 
 
-def main():
-    """Main function starting the monitoring server"""
+def run_monitoring_server(config: ChiaTeaConfig) -> None:
+    """Runs the monitoring server
 
-    try:
-        args = parse_args(
-            name="Chia Tea Monitoring Server",
-            description=("Start a server collecting data from" + "from monitoring clients."),
-        )
+    Parameters
+    ---------
+    config : ChiaTeaConfig
+        config used by the server
+    """
 
-        # load config
-        config = read_config(args.config)
-
-        # setup logger
-        logger = get_logger(__name__)
-
-        # start the server
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(start_server(config))
-
-    except KeyboardInterrupt:
-        logger.info("Stopped server.")
-
-
-if __name__ == "__main__":
-    main()
+    # start the server
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(_start_server(config))
