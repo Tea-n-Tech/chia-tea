@@ -29,7 +29,7 @@ def init(
         typer.echo(f"Created config file '{filepath}'")
 
         # write certificates
-        dirpath = os.path.dirname(filepath)
+        dirpath = os.path.dirname(os.path.abspath(filepath))
         key_path = os.path.join(dirpath, "server.key")
         cert_path = os.path.join(dirpath, "server.crt")
         if create_certificates:

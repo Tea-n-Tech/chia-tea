@@ -117,9 +117,7 @@ development:
 """
 
 
-def create_default_config(
-    filepath: str = DEFAULT_CONFIG_FILEPATH, overwrite: bool = False
-) -> ChiaTeaConfig:
+def create_default_config(filepath: str = DEFAULT_CONFIG_FILEPATH, overwrite: bool = False):
     """Creates a default config on the system
 
     Parameters
@@ -128,11 +126,6 @@ def create_default_config(
         path where to create the default config
     overwrite : bool
         overwrite an existing config file
-
-    Returns
-    -------
-    config : ChiaTeaConfig
-        created default config object
 
     Raises
     ------
@@ -145,6 +138,11 @@ def create_default_config(
         If no filepath is specified, the config is created by default
         in `~/.chia_tea/config/config.yml`.
     """
+    if not filepath:
+        raise ValueError("No filepath specified")
+
+    filepath = os.path.abspath(filepath)
+
     folder = os.path.dirname(filepath)
     if not os.path.exists(folder):
         os.makedirs(folder, exist_ok=True)
@@ -155,8 +153,6 @@ def create_default_config(
             fp.write(get_default_config_as_string(certificate_folder=certificate_directory))
     else:
         raise FileExistsError(f"Config file already exists: {filepath}")
-
-    return get_default_config(certificate_folder=certificate_directory)
 
 
 def get_default_config_as_string(certificate_folder: str) -> str:

@@ -1,6 +1,10 @@
+import os
 import unittest
+from unittest.mock import patch
 
-from .config import get_default_config
+import tempfile
+from .config import create_default_config, get_default_config
+from .testing import set_directory
 
 
 class TestConfig(unittest.TestCase):
@@ -14,3 +18,13 @@ class TestConfig(unittest.TestCase):
         # Should simply not throw an exception since internally
         # it parses a string to a protobuf message.
         get_default_config(certificate_folder="some/folder")
+
+    def test_fix_its_ok_if_no_folder_specified(self):
+        # pylint: disable=no-self-use
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            with set_directory(tmp_dir):
+                create_default_config(
+                    filepath=os.path.join("config.yaml"),
+                    overwrite=False,
+                )
