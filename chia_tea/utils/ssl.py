@@ -37,26 +37,26 @@ def write_ssl_cert_and_key(
 
     flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY
 
-    # First check before writing any data. Otherwise we might generate
-    # a new certificate but due to an error the old key stays.
-    for filepath in [cert_path, key_path]:
-        if os.path.exists(filepath) and not overwrite:
-            raise FileExistsError(f"Certificate file already exists: {filepath}")
-
     for filepath, data, mode in [
         (cert_path, cert_data, DEFAULT_PERMISSIONS_CERT_FILE),
         (key_path, key_data, DEFAULT_PERMISSIONS_KEY_FILE),
     ]:
         if os.path.exists(filepath):
-            os.unlink(filepath)
+            if not overwrite:
+                logger.warning("⚠️  Certificate %s already exists, skipping", filepath)
+                continue
+            else:
+                os.unlink(filepath)
 
         with open(os.open(filepath, flags, mode), "wb") as fp:
             fp.write(data)
 
-        logger.info("Created certificate file: %s", filepath)
+        logger.info("Created certificate: %s", filepath)
 
 
-def create_certificate_pair(key_path: str, cert_path: str, overwrite: bool = False) -> None:
+def create_certificate_pair(
+    key_path: str, cert_path: str, common_name: str = "localhost", overwrite: bool = False
+) -> None:
     """Creates a certificate pair
 
     Parameters
@@ -65,6 +65,8 @@ def create_certificate_pair(key_path: str, cert_path: str, overwrite: bool = Fal
         path to save the key
     cert_path : str
         path to save the certificate
+    common_name : str
+        common name for the certificate such as the hostname
     overwrite : bool
         overwrite existing files
 
@@ -80,7 +82,7 @@ def create_certificate_pair(key_path: str, cert_path: str, overwrite: bool = Fal
     subject = issuer = x509.Name(
         [
             x509.NameAttribute(NameOID.ORGANIZATION_NAME, "Chia-Tea"),
-            x509.NameAttribute(NameOID.COMMON_NAME, "Chia-Tea CA"),
+            x509.NameAttribute(NameOID.COMMON_NAME, common_name),
             x509.NameAttribute(NameOID.ORGANIZATIONAL_UNIT_NAME, "Tea Brewing Division"),
         ]
     )

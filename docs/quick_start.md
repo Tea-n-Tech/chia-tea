@@ -38,24 +38,26 @@ python -m pip install dist/*.whl
 
 ## How to configure Chia-Tea?
 
-All configurations are stored in a `config.yml` file.
-All cli tools use this config and search by default for
-a file `~/.chia_tea/config/config.yml`.
-Command line tools can also specify the path to the config by using the
-`--config` option.
 To create a config simply run:
 
 ```
 chia-tea config init
 ```
 
-The config file is created under `~/chia_tea/config/config.yml` if no
-filepath is specified.
-Then you can for example start the copy tool with:
+All configurations are stored in a `config.yml` file.
+Every cli tools uses this config and searches by default for
+a file `~/.chia_tea/config/config.yml`.
+You can get the path to the config by running
 
 ```
-chia-tea start copy
+chia-tea config location
 ```
+
+If you create the config in another location, you can also specify the path to
+the config by using the `--config` option for every start command.
+
+After creating the config and possibly adapting it, you can start processes as
+listed below.
 
 ## How to start the copy tool?
 
@@ -65,21 +67,33 @@ You can start the copy tool with:
 chia-tea start copy
 ```
 
-It will then copy plots between the `copy.source_folders` drives to the `copy.target_folders` drives as specified in the `config.yml`.
+It will then copy plots between the `copy.source_folders` drives to the
+`copy.target_folders` drives as specified in the `config.yml`.
 
 ## How to monitor my farm?
 
-By default initializing the config file creates the respective certificates
-next to it.
-You can also generate a new pair with `chia-tea config create-certificates`
-or simply use your own.
+You initialized already the config but also need certificates to secure the
+connection between server and client.
+To create the certificates simply run:
 
+```
+chia-tea config create-certificates
+```
+
+And they will be created next to the config.
+The certificates work by default only on your machine!
+If you have a setup over a network, you must specify the monitoring server name
+with the option `--common-name` or you will get a
+`No match found for server name` error on the server when clients try to connect
+to it.
+The server name can be the ip address or a url.
 As a note, the client only requires the `.crt` certificate file and not
-`.key` file.
-The server receives all monitoring data and stores it in a file called
-`monitoring.db`, but this can be changed in the config under
+the private `.key` file.
+
+The monitoring server receives all monitoring data and stores it in a file
+called `monitoring.db`, but this can be changed in the config under
 `monitoring.server.db_filepath`.
-You can start the server with:
+You can start the server now by running:
 
 ```
 chia-tea start monitoring-server

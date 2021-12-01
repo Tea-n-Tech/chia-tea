@@ -17,9 +17,6 @@ def run_monitoring_client(config: ChiaTeaConfig) -> None:
         the configuration used to run the client
     """
 
-    # load config
-    config = read_config(config)
-
     # create the watchdog
     watchdog = ChiaWatchdog(
         config.chia.logfile_filepath,
