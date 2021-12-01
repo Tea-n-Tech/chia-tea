@@ -45,8 +45,7 @@ def write_ssl_cert_and_key(
             if not overwrite:
                 logger.warning("⚠️  Certificate %s already exists, skipping", filepath)
                 continue
-            else:
-                os.unlink(filepath)
+            os.unlink(filepath)
 
         with open(os.open(filepath, flags, mode), "wb") as fp:
             fp.write(data)

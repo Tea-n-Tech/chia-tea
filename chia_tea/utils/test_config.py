@@ -1,6 +1,5 @@
 import os
 import unittest
-from unittest.mock import patch
 
 import tempfile
 from .config import create_default_config, get_default_config
