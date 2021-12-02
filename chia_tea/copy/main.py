@@ -1,6 +1,7 @@
 import ntpath
 import os
 import time
+from typing import Set
 
 from ..protobuf.generated.config_pb2 import ChiaTeaConfig
 from ..utils.logger import get_logger
@@ -17,32 +18,31 @@ def run_copy(config: ChiaTeaConfig) -> None:
 
     Parameters
     ----------
-    filepath : str
-        The filepath to the config file
+    config : ChiaTeaConfig
+        Config containing the copy settings
     """
 
     # get logger
     logger = get_logger(__file__)
 
-    # little hack since "from" is a reserved keyword in python
     from_folders = set(config.copy.source_folders)
     target_folders = set(config.copy.target_folders)
 
     logger.info("Copying from: %s", from_folders)
     logger.info("Copying to  : %s", target_folders)
 
+    files_copied_completely: Set[str] = set()
+
     # execute infinite copy loop
     while True:
-        print("collecting Plots")
         files_to_copy = collect_files_from_folders(from_folders, "*.plot")
 
-        print("Updating copiedFiles")
         files_copied_completely = update_completely_copied_files(
             target_folders, files_copied_completely
         )
 
         for source_filepath in files_to_copy:
-            print("copy process")
+
             # search for a space on the specified disks
             target_dir = find_disk_with_space(
                 target_folders, source_filepath, files_copied_completely

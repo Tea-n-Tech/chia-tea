@@ -1,9 +1,7 @@
 import os
 import glob
-import random
 import shutil
 import traceback
-from os.path import isfile, join
 from typing import Dict, Set, Union
 
 import psutil
@@ -26,12 +24,11 @@ def filter_least_used_disks(disk_to_copy_processes_count: Dict[str, int]) -> Set
         equal lockfile count then the disks are given randomly.
     """
     minimum_number_of_lockfiles = min(disk_to_copy_processes_count.values())
-    available_target_dirpaths = [
+    available_target_dirpaths = {
         dirpath
         for dirpath in disk_to_copy_processes_count
         if disk_to_copy_processes_count[dirpath] == minimum_number_of_lockfiles
-    ]
-    random.shuffle(available_target_dirpaths)
+    }
     return available_target_dirpaths
 
 
@@ -41,8 +38,10 @@ def update_completely_copied_files(
     """For each target dir, it will add the completly copied files
     Parameters
     ----------
-    target_dirs: Set[str]
+    target_dirs : Set[str]
         Directories in which the file can be copied
+    files_copied_completely : Set[str]
+        All the files which are not being copied anymore
 
     Returns
     -------
@@ -50,25 +49,29 @@ def update_completely_copied_files(
         All the files which are not being copied anymore
     """
     logger = get_logger(__file__)
+    logger.debug("Updating copied files")
+
     for folder_path in target_dirs:
-        print("Target:" + folder_path)
+
+        if not os.path.exists(folder_path):
+            logger.warning("Target directory '%s' does not exist.", folder_path)
+            continue
 
         if not os.path.isdir(folder_path):
-            if os.path.isfile(folder_path):
-                warn_msg = "Path '{0}' is a file and not a directory."
-            else:
-                warn_msg = "Folder '{0}' does not exist or is not a directory."
-            logger.warning(warn_msg, folder_path)
+            logger.warning("Target directory '%s' is not a directory.", folder_path)
             continue
+
         all_files = {
-            join(folder_path, f) for f in os.listdir(folder_path) if isfile(join(folder_path, f))
+            os.path.join(folder_path, f)
+            for f in os.listdir(folder_path)
+            if os.path.isfile(os.path.join(folder_path, f))
         }
 
-        print(all_files)
         for f in all_files:
             if f not in files_copied_completely:
                 if is_accessible(f):
                     files_copied_completely.add(f)
+
     return files_copied_completely
 
 
@@ -79,14 +82,16 @@ def find_disk_with_space(
 
     Parameters
     ----------
-    target_dirs: Set[str]
+    target_dirs : Set[str]
         Directories in which the file can be copied
-    filepath_file: str
+    filepath_file : str
         Path to the file to be copied
+    files_copied_completely : Set[str]
+        All the files which are not being copied anymore
 
     Returns
     -------
-    dirpath: Union[str, None]
+    dirpath : Union[str, None]
         A target dir with space or None if no space available
     """
     logger = get_logger(__file__)
@@ -125,14 +130,14 @@ def copy_file(source_path: str, target_path: str) -> bool:
 
     Parameters
     ----------
-    source_path: str
+    source_path : str
         Path to the existing source file
-    target_path: str
+    target_path : str
         Path where to copy the file
 
     Returns
     -------
-    success: bool
+    success : bool
         If the copy was a success.
     """
 
@@ -165,6 +170,7 @@ def collect_files_from_folders(folder_set: Set[str], pattern: str) -> Set[str]:
         paths to the files
     """
     logger = get_logger(__file__)
+    logger.debug("Collecting Plots")
 
     all_filepaths = set()
 
@@ -172,9 +178,9 @@ def collect_files_from_folders(folder_set: Set[str], pattern: str) -> Set[str]:
 
         if not os.path.isdir(folder):
             if os.path.isfile(folder):
-                warn_msg = "Path '{0}' is a file and not a directory."
+                warn_msg = "Path '%s' is a file and not a directory."
             else:
-                warn_msg = "Folder '{0}' does not exist."
+                warn_msg = "Folder '%s' does not exist."
             logger.warning(warn_msg, folder)
             continue
 
@@ -187,12 +193,12 @@ def is_accessible(fpath: str):
     """Looks if a file is being accessible
     Parameters
     ----------
-    fpath: str
-        full(!) path to the file
+    fpath : str
+        full path to the file
 
     Returns
     -------
-    accessible: boolean
+    accessible : boolean
         false if being used by another process
     """
 
@@ -223,16 +229,15 @@ def update_copy_processes_count(target_dirs: Set[str], files_copied_completely) 
 
     Parameters
     ----------
-    target_dirs: Set[str]
+    target_dirs : Set[str]
         Directories to get copy processes count for.
 
     Returns
     -------
-    number_of_copy_processes_per_disk: Dict[str, int]
+    number_of_copy_processes_per_disk : Dict[str, int]
         Dictionary containing as key the directory and as
         value den copy processes count.
     """
-    print("Updating Copy Process Counts")
     number_of_copy_processes_per_disk = {}
     for target_dir in target_dirs:
         files_beeing_copied_to_dir = get_files_being_copied([target_dir], files_copied_completely)
@@ -246,7 +251,7 @@ def get_files_being_copied(target_dirs: Set[str], files_copied_completely: Set[s
 
     Parameters
     ----------
-    target_dirs: Set[str]
+    target_dirs : Set[str]
         Directories where to search for files, which cannot be accessed (i.e. being copied)
 
     files_copied_completely : Set[str]
@@ -255,7 +260,7 @@ def get_files_being_copied(target_dirs: Set[str], files_copied_completely: Set[s
 
     Returns
     -------
-    files_in_progress: Set[str]
+    files_in_progress : Set[str]
         Set with all the files, which are being denied accesse (i.e. being copied)
     """
     files_in_progress = set()
@@ -264,14 +269,16 @@ def get_files_being_copied(target_dirs: Set[str], files_copied_completely: Set[s
 
         if not os.path.isdir(folder_path):
             if os.path.isfile(folder_path):
-                warn_msg = "Path '{0}' is a file and not a directory."
+                warn_msg = "Path '%s' is a file and not a directory."
             else:
-                warn_msg = "Folder '{0}' does not exist or is not a directory."
+                warn_msg = "Folder '%s' does not exist or is not a directory."
             logger.warning(warn_msg, folder_path)
             continue
 
         all_files_to_check = {
-            join(folder_path, f) for f in os.listdir(folder_path) if isfile(join(folder_path, f))
+            os.path.join(folder_path, f)
+            for f in os.listdir(folder_path)
+            if os.path.isfile(os.path.join(folder_path, f))
         }
 
         # remove all files which not have to be cheked
