@@ -19,13 +19,9 @@ from .custom import (
 )
 from .generic import ProtoType, get_create_table_cmds_for_enum
 
-insert_update_event_in_db = get_event_table_insertion_cmds_for_nested_messages(
-    _UPDATEEVENT
-)
+insert_update_event_in_db = get_event_table_insertion_cmds_for_nested_messages(_UPDATEEVENT)
 
-update_state_tables_in_db = get_state_table_modification_fun_for_nested_messages(
-    _UPDATEEVENT
-)
+update_state_tables_in_db = get_state_table_modification_fun_for_nested_messages(_UPDATEEVENT)
 
 get_computer_info_from_db = get_fun_to_collect_pb2_messages_for_nested_submessages(
     pb_class=ComputerInfo,

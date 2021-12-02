@@ -18,13 +18,10 @@ Second, we started the library from a single utility script to maintain our hobb
 
 ## What are important commands for Chia-Tea?
 
-In `Taskfile.yml` you can find commands how to use the library. [Task](https://taskfile.dev/#/installation) is a modern replacement for Makefiles and we use it to store commands. We recommend to try it yourself. After the installation simply go into the project root and run
-
-```bash
-task
-```
-
-to see all commands.
+We have a Command Line Interface (CLI) called chia-tea.
+It contains all important commands.
+For more information see the
+[Quick-Start Guide](https://github.com/Tea-n-Tech/chia-tea/blob/main/docs/quick_start.md).
 
 ## What can the discord bot do?
 
@@ -61,23 +58,40 @@ In both use scenarios, you in total need three programs to run:
 - server: receives all data from connected machines and stores it
 - discord bot: provides interaction with the database
 
-On a single machine setup you will run every task on this particular machine. If you are running a multiple machine setup you can run the monitoring and server task on one machine whereas on all other machines you will run the client task.
+On a single machine setup you will run every task on this particular machine.
+If you are running a multiple machine setup you can run the monitoring and
+server task on one machine whereas on all other machines you will run the
+client task.
 
 ## Client
 
-To collect data from a system simply run the client on the very same machine. It collects data from automatically and send it to the server. This is a lot of information ranging from down-to-earth ram usage to checks if e.g. a farmer is running to information about every plot of a harvester.
+To collect data from a system simply run the client on the very same machine.
+It collects data from automatically and send it to the server.
+This is a lot of information ranging from down-to-earth ram usage to checks if
+e.g. a farmer is running to information about every plot of a harvester.
 
 ## Server
 
-The server receives the client data and writes it into a database file. This database file stores all events which ever happened. You can use this database to build anything on top, such as a dashboard.
+The server receives the client data and writes it into a database file.
+This database file stores all events which ever happened.
+You can use this database to build anything on top, such as a dashboard.
 
 ## Discord Bot
 
-Our discord bot watches the database for changes and provides notifications in case something is up. For example if you loose a drive with plots on or if the wallet is not synced anymore. Also there are commands to check on the status of different things.
+Our discord bot watches the database for changes and provides notifications in
+case something is up.
+For example if you loose a drive with plots on or if the wallet is not synced
+anymore.
+Also there are commands to check on the status of different things.
 
 # What data is being collected?
 
-Briefly answered, everything relevant. Hardware information such as CPU, RAM, Disks but also system rsources such as chia specific processes. We don't monitor absolutely everything (we value a healthy privacy). If nothing specific to chia is present on the system the monitoring will simply omit this data.
+Briefly answered, everything relevant.
+Hardware information such as CPU, RAM, Disks but also system rsources such as
+chia specific processes.
+We don't monitor absolutely everything (we value a healthy privacy).
+If nothing specific to chia is present on the system the monitoring will simply
+omit this data.
 
 - Hardware
   - CPU
@@ -85,16 +99,16 @@ Briefly answered, everything relevant. Hardware information such as CPU, RAM, Di
     - [x] n_cores
     - [x] clock_speed
     - [x] usage
-    - [x] temperature
+    - [x] temperature (depends on machine)
   - RAM
     - [x] total/used ram
     - [x] total/used swap
   - Disks
-    - [ ] temperature
+    - [ ] temperature (cannot get without admin rights)
     - [x] total/used space
-    - [ ] read/write activity
-    - [ ] read/write speed
-    - [ ] read/write total tbw
+    - [ ] read/write activity (cannot get without admin rights)
+    - [ ] read/write speed (cannot get without admin rights)
+    - [ ] read/write total tbw (cannot get without admin rights)
     - [x] device name
     - [x] mountpoint
     - [x] fstype
@@ -140,4 +154,4 @@ Briefly answered, everything relevant. Hardware information such as CPU, RAM, Di
     - [x] cpu usage
     - [x] ram usage
     - [x] opened files
-    - [ ] network connections
+    - [ ] network connections (quite verbose data)

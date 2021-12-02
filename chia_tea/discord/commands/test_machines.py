@@ -53,10 +53,8 @@ class TestMachinesCmd(unittest.TestCase):
 
                 messages = await machines_cmd(db_filepath)
                 # no failure
-                self.assertEqual(len(messages), 2)
-                title_msg = messages[0]
-                msg = messages[1]
-                self.assertFalse(title_msg.startswith("No machines"))
-                self.assertFalse(title_msg.startswith("Traceback"))
+                self.assertEqual(len(messages), 1)
+                msg = messages[0]
+                self.assertFalse(msg.startswith("Traceback"))
                 # display online harvester
                 self.assertTrue("machine A" in msg)

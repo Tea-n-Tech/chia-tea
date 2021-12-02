@@ -73,9 +73,7 @@ def get_create_table_cmds_for_enum(enum_pb2_class: Any) -> List[str]:
 
     for name, value in enum_pb2_class.items():
         cmds.append(
-            f"INSERT OR REPLACE INTO {table_name} "
-            + "(name, value) "
-            + f"VALUES('{name}',{value})"
+            f"INSERT OR REPLACE INTO {table_name} " + "(name, value) " + f"VALUES('{name}',{value})"
         )
 
     return cmds
@@ -146,10 +144,7 @@ def sql_type_from_proto_type(
     if proto_type == ProtoType.BYTES.value:
         return SqliteType.BLOB
 
-    err_msg = (
-        f"{message_name}.{field_name} "
-        + f"has an unknown protobuf type enum: {proto_type}"
-    )
+    err_msg = f"{message_name}.{field_name} " + f"has an unknown protobuf type enum: {proto_type}"
     raise RuntimeError(err_msg)
 
 
@@ -172,9 +167,7 @@ def get_proto_fields_with_types(
         return [
             (
                 field.name,
-                sql_type_from_proto_type(
-                    field.type, pb_descriptor.full_name, field.name
-                ),
+                sql_type_from_proto_type(field.type, pb_descriptor.full_name, field.name),
             )
             for field in pb_descriptor.fields
         ]
@@ -272,9 +265,7 @@ def sqlite_create_tbl_cmd_from_pb2(
     set_pb2_names = set(name for name, _ in pb2_attributes)
     duplicate_names = set_meta_names.intersection(set_pb2_names)
     if duplicate_names:
-        err_msg = (
-            "The following meta names intersect " + "with protobuf message names: {0}"
-        )
+        err_msg = "The following meta names intersect " + "with protobuf message names: {0}"
         raise ValueError(err_msg.format(", ".join(duplicate_names)))
 
     set_primary_names = set(primary_key_attribute_names)

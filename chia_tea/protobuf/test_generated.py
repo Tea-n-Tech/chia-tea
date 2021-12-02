@@ -10,14 +10,11 @@ class TestGenerated(unittest.TestCase):
     def test_send_update_every_matches_update_event_names(self):
 
         update_event_fields = set(
-            field.name
-            for field in _UPDATEEVENT.fields
-            if field.type == ProtoType.MESSAGE.value
+            field.name for field in _UPDATEEVENT.fields if field.type == ProtoType.MESSAGE.value
         )
 
         send_update_every_fields = set(
-            field.name
-            for field in _MONITORINGCONFIG_CLIENTCONFIG_SENDUPDATEEVERY.fields
+            field.name for field in _MONITORINGCONFIG_CLIENTCONFIG_SENDUPDATEEVERY.fields
         )
 
         missing_fields = update_event_fields - send_update_every_fields

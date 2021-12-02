@@ -19,6 +19,9 @@ from ..common import open_database_read_only
 from .computer_info_notifications import get_computer_info_messages_if_any
 from .update_event_notifications import get_update_event_messages_if_any
 
+DISCORD_MSG_LIMIT = 2000
+MSG_TOO_LONG = "⚠️  Message too long for discord ({n_chars_too_long} > {discord_msg_limit} chars)"
+
 
 async def log_and_send_msg_if_any(
     messages: List[str],
@@ -40,17 +43,25 @@ async def log_and_send_msg_if_any(
         whether to run in testing mode and not
         send but log messages
     """
-    discord_msg_limit = 4000
 
     if messages:
-        total_message = "\n".join(messages)
-        n_chars_too_long = len(total_message) > discord_msg_limit
-        if n_chars_too_long > 0:
-            total_message = f"⚠️  Message too long for discord ({n_chars_too_long} chars)"
 
-        logger.info(total_message)
-        if not is_testing:
-            await channel.send(total_message)
+        # Send all messages as once piece if we don't hit
+        # discords API limit.
+        total_msg = "\n".join(messages)
+        if len(total_msg) < DISCORD_MSG_LIMIT:
+            messages = [total_msg]
+
+        for msg in messages:
+            n_chars_too_long = len(msg) - DISCORD_MSG_LIMIT
+            if n_chars_too_long > 0:
+                msg = MSG_TOO_LONG.format(
+                    n_chars_too_long=n_chars_too_long, discord_msg_limit=DISCORD_MSG_LIMIT
+                )
+
+            logger.info(msg)
+            if not is_testing:
+                await channel.send(msg)
 
 
 def get_current_computer_and_machine_infos_from_db(
@@ -149,10 +160,7 @@ async def run_notifiers(
                         machine_info,
                         new_computer_info,
                     ) in new_machine_computer_info_dict.items():
-                        _, old_computer_info = old_machine_computer_info_dict.get(
-                            machine_id,
-                            ComputerInfo(),
-                        )
+                        _, old_computer_info = old_machine_computer_info_dict.get(machine_id)
                         new_computer_info = get_computer_info_from_db(
                             cursor,
                             machine_id,

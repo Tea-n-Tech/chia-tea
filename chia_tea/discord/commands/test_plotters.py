@@ -56,14 +56,45 @@ class TestPlotterCmd(unittest.TestCase):
 
                 messages = await plotters_cmd(db_filepath)
                 # no failure
-                self.assertEqual(len(messages), 3)
-                title_msg = messages[0]
-                msg = messages[2]
-                self.assertFalse(title_msg.startswith("No Plotters"))
-                self.assertFalse(title_msg.startswith("Traceback"))
+                self.assertEqual(len(messages), 1)
+                msg = messages[0]
+                self.assertFalse(msg.startswith("Traceback"))
                 # display online harvester
-                self.assertIn("Plotters", title_msg)
                 self.assertIn("Plot id", msg)
                 self.assertIn("Since:", msg)
                 self.assertIn("State: Some Phase", msg)
                 self.assertIn("Progress: 10.0%", msg)
+
+    @async_test
+    async def test_fix_62_print_no_plotters_if_machines_are_present(self) -> None:
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_filepath = os.path.join(tmpdir, "temp.db")
+
+            with MonitoringDatabase(db_filepath) as db:
+                update_events = [
+                    ParseDict(
+                        js_dict=dict(
+                            event_type=ADD,
+                            # just add something so we have a machine
+                            wallet=dict(
+                                is_running=True,
+                                is_synced=True,
+                            ),
+                        ),
+                        message=UpdateEvent(),
+                    ),
+                ]
+                request = DataUpdateRequest(
+                    machine_id=1,
+                    machine_name="machine A",
+                    timestamp=1000,
+                    events=update_events,
+                )
+                db.store_data_update_request(request)
+
+            with MonitoringDatabase(db_filepath):
+                messages = await plotters_cmd(db_filepath)
+
+                self.assertEqual(len(messages), 1)
+                self.assertTrue(messages[0].startswith("No Plotters"))

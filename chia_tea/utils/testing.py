@@ -1,4 +1,7 @@
 import asyncio
+import os
+from contextlib import contextmanager
+from pathlib import Path
 from typing import Callable
 
 
@@ -16,3 +19,21 @@ def async_test(fun: Callable):
         loop.run_until_complete(fun(*args, **kwargs))
 
     return wrapper
+
+
+@contextmanager
+def set_directory(path: str):
+    """Sets the cwd within the context
+
+    Parameters
+    ----------
+    path : str
+        The path to the cwd
+    """
+
+    origin = Path().absolute()
+    try:
+        os.chdir(path)
+        yield
+    finally:
+        os.chdir(origin)

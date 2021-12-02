@@ -7,7 +7,6 @@ from rich.table import Table
 
 from ..common import catch_errors_as_message, open_database_read_only
 
-
 ROW_LIMIT = 5
 
 
