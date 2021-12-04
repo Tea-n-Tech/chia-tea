@@ -1,6 +1,5 @@
-import os
 import unittest
-from unittest.mock import patch, MagicMock, Mock, call
+from unittest.mock import patch, MagicMock, Mock
 
 from .Disk import (
     collect_files_from_folders,
@@ -51,6 +50,7 @@ class TestDisk(unittest.TestCase):
         def _listdir_mock(path):
             if path in files_in_folders:
                 return files_in_folders[path]
+            return []
 
         all_folders_and_files = existing_files_and_folders + not_existing_folders
 
@@ -161,6 +161,8 @@ class TestDisk(unittest.TestCase):
         filter_least_used_disks_mock,
         psutil_mock,
     ):
+        # pylint: disable=too-many-arguments
+
         file_to_copy = "path/to/file"
         target_folders = {
             "folder_a",
