@@ -33,23 +33,29 @@ def filter_least_used_disks(disk_to_copy_processes_count: Dict[str, int]) -> Set
 
 
 def update_completely_copied_files(
-    target_dirs: Set[str], files_copied_completely: Set[str]
+    target_dirs: Set[str], previously_copied_files: Set[str]
 ) -> Set[str]:
     """For each target dir, it will add the completly copied files
+
     Parameters
     ----------
     target_dirs : Set[str]
         Directories in which the file can be copied
-    files_copied_completely : Set[str]
-        All the files which are not being copied anymore
+    previously_copied_files : Set[str]
+        All the files which are not being copied anymore.
+        If specified these files will not be checked since
+        we assume they are done once copied.
 
     Returns
     -------
-    files_copied_completely: Set[str]
+    previously_copied_files: Set[str]
         All the files which are not being copied anymore
     """
     logger = get_logger(__file__)
     logger.debug("Updating copied files")
+
+    # make a copy to avoid manipulating the input set
+    copied_files = set(previously_copied_files)
 
     for folder_path in target_dirs:
 
@@ -68,15 +74,15 @@ def update_completely_copied_files(
         }
 
         for f in all_files:
-            if f not in files_copied_completely:
+            if f not in copied_files:
                 if is_accessible(f):
-                    files_copied_completely.add(f)
+                    copied_files.add(f)
 
-    return files_copied_completely
+    return copied_files
 
 
 def find_disk_with_space(
-    target_dirs: Set[str], filepath_file: str, files_copied_completely: Set[str]
+    target_dirs: Set[str], filepath_file: str, copied_files: Set[str]
 ) -> Union[str, None]:
     """Searches for space for a file to be moved
 
@@ -86,7 +92,7 @@ def find_disk_with_space(
         Directories in which the file can be copied
     filepath_file : str
         Path to the file to be copied
-    files_copied_completely : Set[str]
+    copied_files : Set[str]
         All the files which are not being copied anymore
 
     Returns
@@ -95,17 +101,18 @@ def find_disk_with_space(
         A target dir with space or None if no space available
     """
     logger = get_logger(__file__)
+
     fstat = os.stat(filepath_file)
-    disk_to_copy_processes_count = update_copy_processes_count(target_dirs, files_copied_completely)
+    disk_to_copy_processes_count = update_copy_processes_count(target_dirs, copied_files)
     available_target_dirpaths = filter_least_used_disks(disk_to_copy_processes_count)
 
     for dirpath in available_target_dirpaths:
         try:
-            if not os.path.isdir(dirpath):
+            if not os.path.exists(dirpath):
                 os.makedirs(dirpath, exist_ok=True)
             # size check
-            n_lockfiles = disk_to_copy_processes_count[dirpath]
-            space_after_copying = n_lockfiles * 1.08e11  # 108GB
+            n_processes = disk_to_copy_processes_count[dirpath]
+            space_after_copying = n_processes * 1.08e11  # 108GB
             space = psutil.disk_usage(dirpath)
             if space.free > (fstat.st_size + space_after_copying):
                 return dirpath
@@ -176,21 +183,31 @@ def collect_files_from_folders(folder_set: Set[str], pattern: str) -> Set[str]:
 
     for folder in folder_set:
 
-        if not os.path.isdir(folder):
-            if os.path.isfile(folder):
-                warn_msg = "Path '%s' is a file and not a directory."
-            else:
-                warn_msg = "Folder '%s' does not exist."
+        if not os.path.exists(folder):
+            warn_msg = "Folder '%s' does not exist."
             logger.warning(warn_msg, folder)
             continue
 
-        all_filepaths.update(glob.glob(os.path.join(folder, pattern)))
+        if os.path.isfile(folder):
+            warn_msg = "Path '%s' is a file and not a directory."
+            logger.warning(warn_msg, folder)
+            continue
+
+        if not os.path.isdir(folder):
+            warn_msg = "Path '%s' is not a directory."
+            logger.warning(warn_msg, folder)
+            continue
+
+        for filepath in glob.glob(os.path.join(folder, pattern)):
+            if os.path.isfile(filepath):
+                all_filepaths.add(filepath)
 
     return all_filepaths
 
 
-def is_accessible(fpath: str):
+def is_accessible(fpath: str) -> bool:
     """Looks if a file is being accessible
+
     Parameters
     ----------
     fpath : str
@@ -221,6 +238,8 @@ def is_accessible(fpath: str):
     except OSError:
         warn_msg = "File access check: Cannot reach file '%s'"
         logger.warning(warn_msg, os.path.abspath(fpath))
+        return False
+
     return True
 
 
@@ -239,10 +258,12 @@ def update_copy_processes_count(target_dirs: Set[str], files_copied_completely) 
         value den copy processes count.
     """
     number_of_copy_processes_per_disk = {}
+
     for target_dir in target_dirs:
         files_beeing_copied_to_dir = get_files_being_copied([target_dir], files_copied_completely)
         number_of_copy_processes = len(files_beeing_copied_to_dir)
         number_of_copy_processes_per_disk[target_dir] = number_of_copy_processes
+
     return number_of_copy_processes_per_disk
 
 
