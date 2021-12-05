@@ -185,3 +185,5 @@ class TestDisk(unittest.TestCase):
         update_copy_processes_count_mock.assert_called_once()
         path_mock.exists.assert_called_once()
         psutil_mock.disk_usage.assert_called_with("folder_a")
+
+        # TODO exceptions
