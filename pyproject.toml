@@ -7,7 +7,7 @@ license = "BSD-3"
 readme = "README.md"
 repository = "https://www.youtube.com/channel/UCba194Pls_bHSqWoWMGoyzA"
 classifiers=[
-              'Development Status :: 3 - Alpha',
+              'Development Status :: 4 - Beta',
               'Environment :: Console',
               'Topic :: Scientific/Engineering',
               'Intended Audience :: Developers',
