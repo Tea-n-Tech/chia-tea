@@ -153,9 +153,10 @@ def copy_file(source_path: str, target_path: str) -> bool:
         if is_accessible(source_path):
             shutil.copyfile(source_path, target_path)
             return True
-        else:
-            logger.error("Cannot copy file '%s' since it is being accessed.", source_path)
-            return False
+
+        logger.error("Cannot copy file '%s' since it is being accessed.", source_path)
+        return False
+
     except Exception:
         trace = traceback.format_stack()
         get_logger(__file__).error(trace)

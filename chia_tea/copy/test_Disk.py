@@ -1,5 +1,4 @@
 import unittest
-from unittest.case import expectedFailure
 from unittest.mock import call, patch, MagicMock, Mock
 
 from .Disk import (
