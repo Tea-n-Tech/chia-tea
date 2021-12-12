@@ -2,7 +2,7 @@ import os
 import glob
 import shutil
 import traceback
-from typing import Dict, Set, Union
+from typing import Dict, Set, Tuple, Union
 
 import psutil
 
@@ -147,18 +147,19 @@ def copy_file(source_path: str, target_path: str) -> bool:
     success : bool
         If the copy was a success.
     """
+    logger = get_logger(__file__)
 
-    with open(source_path, "rb") as fin:
-        with open(target_path, "wb") as fout:
-            try:
-                # important - only copy files which are not yet in a copy process
-                if is_accessible(source_path):
-                    shutil.copyfileobj(fin, fout, 128 * 1024)
-            except (Exception, ConnectionResetError):
-                trace = traceback.format_stack()
-                get_logger(__file__).error(trace)
-                return False
-    return True
+    try:
+        if is_accessible(source_path):
+            shutil.copyfile(source_path, target_path)
+            return True
+        else:
+            logger.error("Cannot copy file '%s' since it is being accessed.", source_path)
+            return False
+    except Exception:
+        trace = traceback.format_stack()
+        get_logger(__file__).error(trace)
+        return False
 
 
 def collect_files_from_folders(folder_set: Set[str], pattern: str) -> Set[str]:
@@ -206,7 +207,7 @@ def collect_files_from_folders(folder_set: Set[str], pattern: str) -> Set[str]:
 
 
 def is_accessible(fpath: str) -> bool:
-    """Looks if a file is being accessible
+    """Looks if a file is accessible
 
     Parameters
     ----------
@@ -267,15 +268,17 @@ def update_copy_processes_count(target_dirs: Set[str], files_copied_completely) 
     return number_of_copy_processes_per_disk
 
 
-def get_files_being_copied(target_dirs: Set[str], files_copied_completely: Set[str]) -> Set[str]:
+def get_files_being_copied(
+    directories: Set[str], previously_checked_files: Set[str]
+) -> Tuple[Set[str], Set[str]]:
     """Get all the files which are not accessible for write (i.e. being copied)
 
     Parameters
     ----------
-    target_dirs : Set[str]
+    directories : Set[str]
         Directories where to search for files, which cannot be accessed (i.e. being copied)
 
-    files_copied_completely : Set[str]
+    previously_checked_files : Set[str]
         Already known files which are accessed right now
         Those files are not checked. Update of that Set happens separately
 
@@ -283,10 +286,14 @@ def get_files_being_copied(target_dirs: Set[str], files_copied_completely: Set[s
     -------
     files_in_progress : Set[str]
         Set with all the files, which are being denied accesse (i.e. being copied)
+    files_not_being_copied : Set[str]
+        All files which are not being copied
     """
     files_in_progress = set()
+    files_not_being_copied = set(previously_checked_files)
+
     logger = get_logger(__file__)
-    for folder_path in target_dirs:
+    for folder_path in directories:
 
         if not os.path.isdir(folder_path):
             if os.path.isfile(folder_path):
@@ -302,16 +309,13 @@ def get_files_being_copied(target_dirs: Set[str], files_copied_completely: Set[s
             if os.path.isfile(os.path.join(folder_path, f))
         }
 
-        # remove all files which not have to be cheked
-        for f in files_copied_completely:
-            if f in all_files_to_check:
-                all_files_to_check.remove(f)
+        all_files_to_check.difference_update(files_not_being_copied)
 
         # check
         for f in all_files_to_check:
             if not is_accessible(f):
                 files_in_progress.add(f)
             else:
-                files_copied_completely.add(f)
+                files_not_being_copied.add(f)
 
-        return files_in_progress
+    return files_in_progress, files_not_being_copied

@@ -1,10 +1,13 @@
 import unittest
-from unittest.mock import patch, MagicMock, Mock
+from unittest.case import expectedFailure
+from unittest.mock import call, patch, MagicMock, Mock
 
 from .Disk import (
     collect_files_from_folders,
+    copy_file,
     filter_least_used_disks,
     find_disk_with_space,
+    get_files_being_copied,
     is_accessible,
     update_completely_copied_files,
 )
@@ -186,4 +189,210 @@ class TestDisk(unittest.TestCase):
         path_mock.exists.assert_called_once()
         psutil_mock.disk_usage.assert_called_with("folder_a")
 
-        # TODO exceptions
+        # different error handling
+        for err in (
+            PermissionError(),
+            FileNotFoundError(),
+            ConnectionResetError(),
+            OSError(),
+        ):
+            os_mock.reset_mock()
+            path_mock.reset_mock()
+            update_copy_processes_count_mock.reset_mock()
+            filter_least_used_disks_mock.reset_mock()
+            psutil_mock.reset_mock()
+
+            os_mock.stat.return_value = Mock(st_size=1.08e11)
+            update_copy_processes_count_mock.return_value = {folder: 1 for folder in target_folders}
+            filter_least_used_disks_mock.return_value = target_folders
+            os_mock.path.exists.side_effect = err
+
+            result = find_disk_with_space(
+                target_dirs=target_folders, filepath_file=file_to_copy, copied_files={}
+            )
+            self.assertIsNone(result)
+            os_mock.stat.assert_called_with(file_to_copy)
+            filter_least_used_disks_mock.assert_called_once()
+            update_copy_processes_count_mock.assert_called_once()
+            os_mock.path.exists.assert_called_with("folder_a")
+
+    @patch("chia_tea.copy.Disk.shutil.copyfile")
+    @patch("chia_tea.copy.Disk.is_accessible")
+    def test_copy_file(self, is_accessible_mock, copyfile_mock):
+
+        source_file = "source_file"
+        target_file = "target_file"
+
+        # success case
+        is_accessible_mock.return_value = True
+        success = copy_file(source_file, target_file)
+        self.assertTrue(success)
+        is_accessible_mock.assert_called_once_with(source_file)
+        copyfile_mock.assert_called_once_with(source_file, target_file)
+
+        is_accessible_mock.reset_mock()
+        copyfile_mock.reset_mock()
+
+        # not accessible case
+        is_accessible_mock.return_value = False
+        success = copy_file(source_file, target_file)
+        self.assertFalse(success)
+        is_accessible_mock.assert_called_once_with(source_file)
+        copyfile_mock.assert_not_called()
+
+        is_accessible_mock.reset_mock()
+        copyfile_mock.reset_mock()
+
+        # unexpected exception during anything
+        is_accessible_mock.side_effect = Exception()
+        success = copy_file(source_file, target_file)
+        self.assertFalse(success)
+        is_accessible_mock.assert_called_once_with(source_file)
+        copyfile_mock.assert_not_called()
+
+        is_accessible_mock.reset_mock()
+        copyfile_mock.reset_mock()
+
+    @patch("chia_tea.copy.Disk.is_accessible")
+    @patch("chia_tea.copy.Disk.os.path")
+    @patch("chia_tea.copy.Disk.os")
+    def test_get_files_being_copied_with_no_prev_checked_files(
+        self, os_mock, path_mock, is_accessible_mock
+    ):
+
+        target_dirs = {
+            "folder_a",
+            "folder_b",
+        }
+        expected_files_in_progress = set()
+        expected_files_not_being_copied = {
+            "folder_a/file_copied",
+            "folder_b/file_copied",
+        }
+
+        # mock stuff
+        os_mock.listdir.return_value = ["file_copied"]
+        path_mock.join = _path_join
+        path_mock.isdir.return_value = True
+        path_mock.isfile.return_value = True
+        is_accessible_mock.return_value = True
+
+        # do the thing
+        files_in_progress, files_not_being_copied = get_files_being_copied(
+            directories=target_dirs, previously_checked_files={}
+        )
+
+        # checks
+        self.assertSetEqual(
+            files_in_progress,
+            expected_files_in_progress,
+        )
+        self.assertSetEqual(
+            files_not_being_copied,
+            expected_files_not_being_copied,
+        )
+        is_accessible_mock.assert_has_calls(
+            [
+                *(call(path) for path in expected_files_in_progress),
+                *(call(path) for path in expected_files_not_being_copied),
+            ],
+            any_order=True,
+        )
+        os_mock.listdir.assert_has_calls(
+            [call(dirname) for dirname in target_dirs],
+            any_order=True,
+        )
+
+    @patch("chia_tea.copy.Disk.is_accessible")
+    @patch("chia_tea.copy.Disk.os.path")
+    @patch("chia_tea.copy.Disk.os")
+    def test_get_files_being_copied_with_copies_in_progress(
+        self, os_mock, path_mock, is_accessible_mock
+    ):
+
+        target_dirs = {
+            "folder_a",
+            "folder_b",
+        }
+        expected_files_in_progress = {
+            "folder_a/file_in_progress",
+            "folder_b/file_in_progress",
+        }
+        expected_files_not_being_copied = set()
+
+        # mock stuff
+        os_mock.listdir.return_value = ["file_in_progress"]
+        path_mock.join = _path_join
+        path_mock.isdir.return_value = True
+        path_mock.isfile.return_value = True
+        is_accessible_mock.return_value = False
+
+        # do the thing
+        files_in_progress, files_not_being_copied = get_files_being_copied(
+            directories=target_dirs, previously_checked_files={}
+        )
+
+        # checks
+        self.assertSetEqual(
+            files_in_progress,
+            expected_files_in_progress,
+        )
+        self.assertSetEqual(
+            files_not_being_copied,
+            expected_files_not_being_copied,
+        )
+        is_accessible_mock.assert_has_calls(
+            [
+                *(call(path) for path in expected_files_in_progress),
+                *(call(path) for path in expected_files_not_being_copied),
+            ],
+            any_order=True,
+        )
+        os_mock.listdir.assert_has_calls(
+            [call(dirname) for dirname in target_dirs],
+            any_order=True,
+        )
+
+    @patch("chia_tea.copy.Disk.is_accessible")
+    @patch("chia_tea.copy.Disk.os.path")
+    @patch("chia_tea.copy.Disk.os")
+    def test_get_files_being_copied_not_being_given_dirs(
+        self, os_mock, path_mock, is_accessible_mock
+    ):
+
+        target_dirs = {
+            "some_file",
+        }
+        expected_files_in_progress = set()
+        expected_files_not_being_copied = set()
+
+        # mock stuff
+        os_mock.listdir.return_value = []
+        path_mock.join = _path_join
+        path_mock.isdir.return_value = False
+        path_mock.isfile.return_value = True
+        is_accessible_mock.return_value = True
+
+        # do the thing
+        files_in_progress, files_not_being_copied = get_files_being_copied(
+            directories=target_dirs, previously_checked_files={}
+        )
+
+        # checks
+        self.assertSetEqual(
+            files_in_progress,
+            expected_files_in_progress,
+        )
+        self.assertSetEqual(
+            files_not_being_copied,
+            expected_files_not_being_copied,
+        )
+        is_accessible_mock.assert_has_calls(
+            [
+                *(call(path) for path in expected_files_in_progress),
+                *(call(path) for path in expected_files_not_being_copied),
+            ],
+            any_order=True,
+        )
+        os_mock.listdir.assert_not_called()
+        is_accessible_mock.assert_not_called()

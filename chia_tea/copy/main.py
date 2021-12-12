@@ -1,6 +1,7 @@
 import ntpath
 import os
 import time
+import traceback
 from typing import Set
 
 from ..protobuf.generated.config_pb2 import ChiaTeaConfig
@@ -35,42 +36,51 @@ def run_copy(config: ChiaTeaConfig) -> None:
 
     # execute infinite copy loop
     while True:
-        files_to_copy = collect_files_from_folders(from_folders, "*.plot")
+        iteration_start_time = time.time()
+        try:
+            files_to_copy = collect_files_from_folders(from_folders, "*.plot")
 
-        files_copied_completely = update_completely_copied_files(
-            target_folders, files_copied_completely
-        )
-
-        for source_filepath in files_to_copy:
-
-            # search for a space on the specified disks
-            target_dir = find_disk_with_space(
-                target_folders, source_filepath, files_copied_completely
+            files_copied_completely = update_completely_copied_files(
+                target_folders, files_copied_completely
             )
-            if target_dir is None:
-                logger.error("No disk space available for: %s", source_filepath)
-                continue
 
-            # compose new filepath after move
-            filename = ntpath.basename(source_filepath)
-            target_path = os.path.join(target_dir, filename)
+            for source_filepath in files_to_copy:
 
-            # move file (with measurement)
-            logger.info("moving file: %s -> %s", source_filepath, target_path)
-            start = time.time()
+                # search for a space on the specified disks
+                target_dir = find_disk_with_space(
+                    target_folders, source_filepath, files_copied_completely
+                )
+                if target_dir is None:
+                    raise RuntimeError("No disk space available for: %s" % source_filepath)
 
-            successful_copy = copy_file(source_filepath, target_path)
+                # compose new filepath after move
+                filename = ntpath.basename(source_filepath)
+                target_path = os.path.join(target_dir, filename)
 
-            duration_secs = time.time() - start
-            if successful_copy:
-                logger.info("done in %.1fs", duration_secs)
-                try:
-                    os.remove(source_filepath)
-                except FileNotFoundError:
-                    logger.error("Could not remove original file: %s", source_filepath)
+                # move file (with measurement)
+                logger.info("moving file: %s -> %s", source_filepath, target_path)
+                start = time.time()
 
-            else:
-                logger.error("failed to copy %s in %.1fs", source_filepath, duration_secs)
+                successful_copy = copy_file(source_filepath, target_path)
 
-        # rate limiter
-        time.sleep(15)
+                duration_secs = time.time() - start
+                if successful_copy:
+                    logger.info("done in %.1fs", duration_secs)
+                    try:
+                        os.remove(source_filepath)
+                    except FileNotFoundError:
+                        logger.error("Could not remove original file: %s", source_filepath)
+
+                else:
+                    logger.error("failed to copy %s in %.1fs", source_filepath, duration_secs)
+
+        except Exception as err:
+            trace = traceback.format_stack()
+            logger.error("%s", err)
+            logger.debug(trace)
+        finally:
+            # if the iteration took less than the specified interval, wait
+            # this is to prevent the loop from running too fast
+            duration_secs = time.time() - iteration_start_time
+            sleep_time_secs = 15 - min(duration_secs, 15)
+            time.sleep(sleep_time_secs)
