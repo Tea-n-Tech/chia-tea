@@ -252,6 +252,9 @@ def update_copy_processes_count(target_dirs: Set[str], files_copied_completely) 
     ----------
     target_dirs : Set[str]
         Directories to get copy processes count for.
+    files_copied_completely : Set[str]
+        Files of which we know they are not being copied anymore.
+        Speeds up the check.
 
     Returns
     -------
@@ -278,7 +281,6 @@ def get_files_being_copied(
     ----------
     directories : Set[str]
         Directories where to search for files, which cannot be accessed (i.e. being copied)
-
     previously_checked_files : Set[str]
         Already known files which are accessed right now
         Those files are not checked. Update of that Set happens separately
@@ -296,12 +298,12 @@ def get_files_being_copied(
     logger = get_logger(__file__)
     for folder_path in directories:
 
+        if not os.path.exists(folder_path):
+            logger.warning("Target directory '%s' does not exist.", folder_path)
+            continue
+
         if not os.path.isdir(folder_path):
-            if os.path.isfile(folder_path):
-                warn_msg = "Path '%s' is a file and not a directory."
-            else:
-                warn_msg = "Folder '%s' does not exist or is not a directory."
-            logger.warning(warn_msg, folder_path)
+            logger.warning("Target directory '%s' is not a directory.", folder_path)
             continue
 
         all_files_to_check = {
