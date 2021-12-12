@@ -32,55 +32,6 @@ def filter_least_used_disks(disk_to_copy_processes_count: Dict[str, int]) -> Set
     return available_target_dirpaths
 
 
-def update_completely_copied_files(
-    target_dirs: Set[str], previously_copied_files: Set[str]
-) -> Set[str]:
-    """For each target dir, it will add the completly copied files
-
-    Parameters
-    ----------
-    target_dirs : Set[str]
-        Directories in which the file can be copied
-    previously_copied_files : Set[str]
-        All the files which are not being copied anymore.
-        If specified these files will not be checked since
-        we assume they are done once copied.
-
-    Returns
-    -------
-    previously_copied_files: Set[str]
-        All the files which are not being copied anymore
-    """
-    logger = get_logger(__file__)
-    logger.debug("Updating copied files")
-
-    # make a copy to avoid manipulating the input set
-    copied_files = set(previously_copied_files)
-
-    for folder_path in target_dirs:
-
-        if not os.path.exists(folder_path):
-            logger.warning("Target directory '%s' does not exist.", folder_path)
-            continue
-
-        if not os.path.isdir(folder_path):
-            logger.warning("Target directory '%s' is not a directory.", folder_path)
-            continue
-
-        all_files = {
-            os.path.join(folder_path, f)
-            for f in os.listdir(folder_path)
-            if os.path.isfile(os.path.join(folder_path, f))
-        }
-
-        for f in all_files:
-            if f not in copied_files:
-                if is_accessible(f):
-                    copied_files.add(f)
-
-    return copied_files
-
-
 def find_disk_with_space(
     target_dirs: Set[str], filepath_file: str, copied_files: Set[str]
 ) -> Union[str, None]:

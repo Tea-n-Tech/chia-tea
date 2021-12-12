@@ -10,7 +10,7 @@ from .Disk import (
     collect_files_from_folders,
     copy_file,
     find_disk_with_space,
-    update_completely_copied_files,
+    get_files_being_copied,
 )
 
 
@@ -40,8 +40,8 @@ def run_copy(config: ChiaTeaConfig) -> None:
         try:
             files_to_copy = collect_files_from_folders(from_folders, "*.plot")
 
-            files_copied_completely = update_completely_copied_files(
-                target_folders, files_copied_completely
+            _, files_copied_completely = get_files_being_copied(
+                directories=target_folders, previously_checked_files=files_copied_completely
             )
 
             for source_filepath in files_to_copy:
