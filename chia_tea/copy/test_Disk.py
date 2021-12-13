@@ -8,6 +8,7 @@ from .Disk import (
     find_disk_with_space,
     get_files_being_copied,
     is_accessible,
+    update_copy_processes_count,
 )
 
 
@@ -406,3 +407,33 @@ class TestDisk(unittest.TestCase):
         path_mock.isdir.assert_not_called()
         os_mock.listdir.assert_not_called()
         is_accessible_mock.assert_not_called()
+
+    @patch("chia_tea.copy.Disk.get_files_being_copied")
+    def test_update_copy_processes_count(self, get_files_being_copied_mock):
+
+        # mock stuff
+        get_files_being_copied_mock.return_value = (
+            {
+                "folder_a/file_1",
+            },
+            {
+                "folder_a/file_2",
+            },
+        )
+
+        # do the thing
+        result = update_copy_processes_count(
+            directories={"folder_a"},
+            files_copied_completely={
+                "folder_a/file_1",
+            },
+        )
+
+        # checks
+        self.assertDictEqual(result, {"folder_a": 1})
+        get_files_being_copied_mock.assert_called_once_with(
+            {"folder_a"},
+            {
+                "folder_a/file_1",
+            },
+        )

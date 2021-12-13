@@ -196,7 +196,9 @@ def is_accessible(fpath: str) -> bool:
     return True
 
 
-def update_copy_processes_count(target_dirs: Set[str], files_copied_completely) -> Dict[str, int]:
+def update_copy_processes_count(
+    directories: Set[str], files_copied_completely: Set[str]
+) -> Dict[str, int]:
     """Get the copy processes count for the specified directories
 
     Parameters
@@ -213,12 +215,11 @@ def update_copy_processes_count(target_dirs: Set[str], files_copied_completely) 
         Dictionary containing as key the directory and as
         value den copy processes count.
     """
-    number_of_copy_processes_per_disk = {}
+    number_of_copy_processes_per_disk: Dict[str, int] = {}
 
-    for target_dir in target_dirs:
-        files_beeing_copied_to_dir = get_files_being_copied([target_dir], files_copied_completely)
-        number_of_copy_processes = len(files_beeing_copied_to_dir)
-        number_of_copy_processes_per_disk[target_dir] = number_of_copy_processes
+    for target_dir in directories:
+        files_in_progress, _ = get_files_being_copied({target_dir}, files_copied_completely)
+        number_of_copy_processes_per_disk[target_dir] = len(files_in_progress)
 
     return number_of_copy_processes_per_disk
 

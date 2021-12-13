@@ -40,7 +40,7 @@ def run_copy(config: ChiaTeaConfig) -> None:
         try:
             files_to_copy = collect_files_from_folders(from_folders, "*.plot")
 
-            _, files_copied_completely = get_files_being_copied(
+            files_in_progress, files_copied_completely = get_files_being_copied(
                 directories=target_folders, previously_checked_files=files_copied_completely
             )
 
