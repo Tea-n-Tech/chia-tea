@@ -70,7 +70,7 @@ def validate(filepath: str) -> None:
     """
     try:
         read_config(filepath)
-        typer.echo("👍 Config '%s' is valid", filepath)
+        typer.echo(f"👍 Config '{filepath}' is valid")
     except Exception as err:
-        typer.echo("😢 Config '%s' is not valid: %s", filepath, str(err))
+        typer.echo(f"😢 Config '{filepath}' is not valid: {err}")
         raise typer.Exit(1)
