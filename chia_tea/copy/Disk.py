@@ -1,8 +1,11 @@
-import os
+from dataclasses import dataclass
 import glob
+import ntpath
+import os
 import shutil
+import time
 import traceback
-from typing import Dict, Set, Tuple, Union
+from typing import Dict, Set, Union
 
 import psutil
 
@@ -33,18 +36,17 @@ def filter_least_used_disks(disk_to_copy_processes_count: Dict[str, int]) -> Set
 
 
 def find_disk_with_space(
-    target_dirs: Set[str], filepath_file: str, copied_files: Set[str]
+    filepath_file: str, target_dirs_process_count: Dict[str, int]
 ) -> Union[str, None]:
     """Searches for space for a file to be moved
 
     Parameters
     ----------
-    target_dirs : Set[str]
-        Directories in which the file can be copied
     filepath_file : str
         Path to the file to be copied
-    copied_files : Set[str]
-        All the files which are not being copied anymore
+    target_dirs_process_count : Dict[str, int]
+        Dictionary containing as key the directory and as value
+        the number of copy processes for that directory.
 
     Returns
     -------
@@ -54,19 +56,20 @@ def find_disk_with_space(
     logger = get_logger(__file__)
 
     fstat = os.stat(filepath_file)
-    disk_to_copy_processes_count = update_copy_processes_count(target_dirs, copied_files)
-    available_target_dirpaths = filter_least_used_disks(disk_to_copy_processes_count)
 
-    for dirpath in available_target_dirpaths:
+    # we collect multiple possible disks so that we can select one randomly
+    # in the end.
+    disks_with_space: Set[str] = set()
+
+    for dirpath, n_processes in target_dirs_process_count.items():
         try:
             if not os.path.exists(dirpath):
                 os.makedirs(dirpath, exist_ok=True)
             # size check
-            n_processes = disk_to_copy_processes_count[dirpath]
             space_after_copying = n_processes * 1.08e11  # 108GB
             space = psutil.disk_usage(dirpath)
             if space.free > (fstat.st_size + space_after_copying):
-                return dirpath
+                disks_with_space.add(dirpath)
         except PermissionError:
             warn_msg = "Permission denied to directory '%s'."
             logger.warning(warn_msg, dirpath)
@@ -80,7 +83,47 @@ def find_disk_with_space(
             warn_msg = "Cannot reach host for drive '%s'"
             logger.warning(warn_msg, dirpath)
 
+    if disks_with_space:
+        return disks_with_space.pop()
+
     return None
+
+
+def move_file(filepath, target_dir):
+    """Moves a file to a target directory
+
+    Parameters
+    ----------
+    filepath : str
+        Path to the file to be moved
+    target_dir : str
+        Path to the target directory
+    """
+    logger = get_logger(__file__)
+
+    if not os.path.isdir(target_dir):
+        logger.error("Target directory '%s' does not exist.", target_dir)
+        return
+
+    # compose new filepath after move
+    filename = ntpath.basename(filepath)
+    target_path = os.path.join(target_dir, filename)
+
+    # move file
+    logger.info("moving file: %s -> %s", filepath, target_path)
+    start = time.time()
+
+    successful_copy = copy_file(filepath, target_path)
+
+    duration_secs = time.time() - start
+    if successful_copy:
+        logger.info("copied '%s' in %.1fs", filepath, duration_secs)
+        try:
+            os.unlink(filepath)
+        except FileNotFoundError:
+            logger.error("Could not remove original file: %s", filepath)
+    else:
+        logger.error("failed to copy %s in %.1fs", filepath, duration_secs)
 
 
 def copy_file(source_path: str, target_path: str) -> bool:
@@ -196,59 +239,38 @@ def is_accessible(fpath: str) -> bool:
     return True
 
 
-def update_copy_processes_count(
-    directories: Set[str], files_copied_completely: Set[str]
-) -> Dict[str, int]:
-    """Get the copy processes count for the specified directories
+@dataclass
+class DiskCopyInfo:
+    """Information which files in the folder are being copied and which not"""
 
-    Parameters
-    ----------
-    target_dirs : Set[str]
-        Directories to get copy processes count for.
-    files_copied_completely : Set[str]
-        Files of which we know they are not being copied anymore.
-        Speeds up the check.
-
-    Returns
-    -------
-    number_of_copy_processes_per_disk : Dict[str, int]
-        Dictionary containing as key the directory and as
-        value den copy processes count.
-    """
-    number_of_copy_processes_per_disk: Dict[str, int] = {}
-
-    for target_dir in directories:
-        files_in_progress, _ = get_files_being_copied({target_dir}, files_copied_completely)
-        number_of_copy_processes_per_disk[target_dir] = len(files_in_progress)
-
-    return number_of_copy_processes_per_disk
+    files_in_progress: Set[str]
+    files_not_being_copied: Set[str]
 
 
-def get_files_being_copied(
-    directories: Set[str], previously_checked_files: Set[str]
-) -> Tuple[Set[str], Set[str]]:
+def get_files_being_copied(directories: Set[str]) -> Dict[str, DiskCopyInfo]:
     """Get all the files which are not accessible for write (i.e. being copied)
 
     Parameters
     ----------
     directories : Set[str]
         Directories where to search for files, which cannot be accessed (i.e. being copied)
-    previously_checked_files : Set[str]
-        Already known files which are accessed right now
-        Those files are not checked. Update of that Set happens separately
+    previous_check : Dict[str, DiskCopyInfo]
+        Dictionary containing as key the directory and as value the disk copy
+        info from the previous check to speed up the check. Previous files not
+        being copied are not checked again.
 
     Returns
     -------
-    files_in_progress : Set[str]
-        Set with all the files, which are being denied accesse (i.e. being copied)
-    files_not_being_copied : Set[str]
-        All files which are not being copied
+    disk_copy_data : Dict[str, DiskCopyInfo]
+        Dictionary containing as key the directory and as value the disk copy
+        info.
     """
-    files_in_progress = set()
-    files_not_being_copied = set(previously_checked_files)
+    disk_copy_data: Dict[str, DiskCopyInfo] = {}
 
     logger = get_logger(__file__)
     for folder_path in directories:
+
+        new_info = DiskCopyInfo(files_in_progress=set(), files_not_being_copied=set())
 
         if not os.path.exists(folder_path):
             logger.warning("Target directory '%s' does not exist.", folder_path)
@@ -258,19 +280,18 @@ def get_files_being_copied(
             logger.warning("Target directory '%s' is not a directory.", folder_path)
             continue
 
+        disk_copy_data[folder_path] = new_info
+
         all_files_to_check = {
             os.path.join(folder_path, f)
             for f in os.listdir(folder_path)
             if os.path.isfile(os.path.join(folder_path, f))
         }
 
-        all_files_to_check.difference_update(files_not_being_copied)
-
-        # check
         for f in all_files_to_check:
             if not is_accessible(f):
-                files_in_progress.add(f)
+                new_info.files_in_progress.add(f)
             else:
-                files_not_being_copied.add(f)
+                new_info.files_not_being_copied.add(f)
 
-    return files_in_progress, files_not_being_copied
+    return disk_copy_data

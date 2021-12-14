@@ -1,14 +1,16 @@
+import ntpath
 import unittest
 from unittest.mock import call, patch, MagicMock, Mock
 
 from .Disk import (
+    DiskCopyInfo,
     collect_files_from_folders,
     copy_file,
     filter_least_used_disks,
     find_disk_with_space,
     get_files_being_copied,
     is_accessible,
-    update_copy_processes_count,
+    move_file,
 )
 
 
@@ -45,7 +47,7 @@ class TestDisk(unittest.TestCase):
         files_and_not_folders = {"some_file"}
         some_symlink = {"some_symlink"}
         all_directory_items = (
-            *set(files_in_folders.keys()),
+            *files_in_folders.keys(),
             *not_existing_folders,
             *files_and_not_folders,
             *some_symlink,
@@ -111,42 +113,39 @@ class TestDisk(unittest.TestCase):
         open_mock.assert_called_with(filepath, "r+", encoding="utf8")
 
     @patch("chia_tea.copy.Disk.psutil")
-    @patch("chia_tea.copy.Disk.filter_least_used_disks")
-    @patch("chia_tea.copy.Disk.update_copy_processes_count")
     @patch("chia_tea.copy.Disk.os.path")
     @patch("chia_tea.copy.Disk.os")
     def test_find_disk_with_space(
         self,
-        os_mock,
-        path_mock,
-        update_copy_processes_count_mock,
-        filter_least_used_disks_mock,
-        psutil_mock,
+        os_mock: MagicMock,
+        path_mock: MagicMock,
+        psutil_mock: MagicMock,
     ):
-        # pylint: disable=too-many-arguments
-
         file_to_copy = "path/to/file"
-        target_folders = {
-            "folder_a",
+        target_dirs_process_count = {
+            "folder_a": 1,
+            "folder_b": 2,
         }
 
         os_mock.stat.return_value = Mock(st_size=1.08e11)
-        update_copy_processes_count_mock.return_value = {folder: 1 for folder in target_folders}
-        filter_least_used_disks_mock.return_value = target_folders
-        # path_mock.exists = lambda path: path != "folder_which_doesnt_exist_yet"
         path_mock.exists.return_value = True
         psutil_mock.disk_usage.return_value = Mock(free=3 * 1.08e11)
 
         result = find_disk_with_space(
-            target_dirs=target_folders, filepath_file=file_to_copy, copied_files={}
+            filepath_file=file_to_copy,
+            target_dirs_process_count=target_dirs_process_count,
         )
         self.assertEqual(result, "folder_a")
         os_mock.makedirs.assert_not_called()
         os_mock.stat.assert_called_with(file_to_copy)
-        filter_least_used_disks_mock.assert_called_once()
-        update_copy_processes_count_mock.assert_called_once()
-        path_mock.exists.assert_called_once()
-        psutil_mock.disk_usage.assert_called_with("folder_a")
+        path_mock.exists.assert_has_calls(
+            [call(folder) for folder in target_dirs_process_count],
+            any_order=True,
+        )
+        psutil_mock.disk_usage.assert_has_calls(
+            [call(folder) for folder in target_dirs_process_count],
+            any_order=True,
+        )
 
         # different error handling
         for err in (
@@ -157,23 +156,21 @@ class TestDisk(unittest.TestCase):
         ):
             os_mock.reset_mock()
             path_mock.reset_mock()
-            update_copy_processes_count_mock.reset_mock()
-            filter_least_used_disks_mock.reset_mock()
             psutil_mock.reset_mock()
 
             os_mock.stat.return_value = Mock(st_size=1.08e11)
-            update_copy_processes_count_mock.return_value = {folder: 1 for folder in target_folders}
-            filter_least_used_disks_mock.return_value = target_folders
             os_mock.path.exists.side_effect = err
 
             result = find_disk_with_space(
-                target_dirs=target_folders, filepath_file=file_to_copy, copied_files={}
+                filepath_file=file_to_copy,
+                target_dirs_process_count=target_dirs_process_count,
             )
             self.assertIsNone(result)
             os_mock.stat.assert_called_with(file_to_copy)
-            filter_least_used_disks_mock.assert_called_once()
-            update_copy_processes_count_mock.assert_called_once()
-            os_mock.path.exists.assert_called_with("folder_a")
+            path_mock.exists.assert_has_calls(
+                [call(folder) for folder in target_dirs_process_count],
+                any_order=True,
+            )
 
     @patch("chia_tea.copy.Disk.shutil.copyfile")
     @patch("chia_tea.copy.Disk.is_accessible")
@@ -212,6 +209,86 @@ class TestDisk(unittest.TestCase):
         is_accessible_mock.reset_mock()
         copyfile_mock.reset_mock()
 
+    @patch("chia_tea.copy.Disk.os.path")
+    def test_move_file_target_is_not_dir(self, path_mock):
+
+        # pylint: disable=no-self-use
+
+        source_file = "source_file"
+        target_folder = "folder"
+
+        path_mock.isdir.return_value = False
+
+        move_file(source_file, target_folder)
+        path_mock.isdir.assert_called_once_with(target_folder)
+
+    @patch("chia_tea.copy.Disk.os.path")
+    @patch("chia_tea.copy.Disk.copy_file")
+    @patch("chia_tea.copy.Disk.os")
+    def test_move_file_all_ok(self, os_mock, copy_file_mock, path_mock):
+
+        # pylint: disable=no-self-use
+
+        source_file = "source_file"
+        target_folder = "folder"
+        filename = ntpath.basename(source_file)
+        target_path = _path_join(target_folder, filename)
+
+        path_mock.join = _path_join
+        path_mock.isdir.return_value = True
+        copy_file_mock.return_value = True
+
+        move_file(source_file, target_folder)
+
+        path_mock.isdir.assert_called_once_with(target_folder)
+        copy_file_mock.assert_called_once_with(source_file, target_path)
+        os_mock.unlink.assert_called_once_with(source_file)
+
+    @patch("chia_tea.copy.Disk.os.path")
+    @patch("chia_tea.copy.Disk.copy_file")
+    @patch("chia_tea.copy.Disk.os")
+    def test_move_file_unsuccessful_copy(self, os_mock, copy_file_mock, path_mock):
+
+        # pylint: disable=no-self-use
+
+        source_file = "source_file"
+        target_folder = "folder"
+        filename = ntpath.basename(source_file)
+        target_path = _path_join(target_folder, filename)
+
+        path_mock.join = _path_join
+        path_mock.isdir.return_value = True
+        copy_file_mock.return_value = False
+
+        move_file(source_file, target_folder)
+
+        path_mock.isdir.assert_called_once_with(target_folder)
+        copy_file_mock.assert_called_once_with(source_file, target_path)
+        os_mock.unlink.assert_not_called()
+
+    @patch("chia_tea.copy.Disk.os.path")
+    @patch("chia_tea.copy.Disk.copy_file")
+    @patch("chia_tea.copy.Disk.os")
+    def test_move_file_cannot_unlink_original(self, os_mock, copy_file_mock, path_mock):
+
+        # pylint: disable=no-self-use
+
+        source_file = "source_file"
+        target_folder = "folder"
+        filename = ntpath.basename(source_file)
+        target_path = _path_join(target_folder, filename)
+
+        path_mock.join = _path_join
+        path_mock.isdir.return_value = True
+        copy_file_mock.return_value = True
+        os_mock.unlink.side_effect = FileNotFoundError()
+
+        move_file(source_file, target_folder)
+
+        path_mock.isdir.assert_called_once_with(target_folder)
+        copy_file_mock.assert_called_once_with(source_file, target_path)
+        os_mock.unlink.assert_called_once_with(source_file)
+
     @patch("chia_tea.copy.Disk.is_accessible")
     @patch("chia_tea.copy.Disk.os.path")
     @patch("chia_tea.copy.Disk.os")
@@ -221,12 +298,14 @@ class TestDisk(unittest.TestCase):
 
         target_dirs = {
             "folder_a",
-            "folder_b",
         }
-        expected_files_in_progress = set()
-        expected_files_not_being_copied = {
-            "folder_a/file_copied",
-            "folder_b/file_copied",
+        expected_result = {
+            "folder_a": DiskCopyInfo(
+                files_in_progress=set(),
+                files_not_being_copied={
+                    "folder_a/file_copied",
+                },
+            ),
         }
 
         # mock stuff
@@ -238,23 +317,31 @@ class TestDisk(unittest.TestCase):
         is_accessible_mock.return_value = True
 
         # do the thing
-        files_in_progress, files_not_being_copied = get_files_being_copied(
-            directories=target_dirs, previously_checked_files={}
-        )
+        result = get_files_being_copied(directories=target_dirs)
 
         # checks
-        self.assertSetEqual(
-            files_in_progress,
-            expected_files_in_progress,
-        )
-        self.assertSetEqual(
-            files_not_being_copied,
-            expected_files_not_being_copied,
-        )
+        for folder, info in result.items():
+            self.assertSetEqual(
+                info.files_in_progress,
+                expected_result[folder].files_in_progress,
+            )
+            self.assertSetEqual(
+                info.files_not_being_copied,
+                expected_result[folder].files_not_being_copied,
+            )
+
         is_accessible_mock.assert_has_calls(
             [
-                *(call(path) for path in expected_files_in_progress),
-                *(call(path) for path in expected_files_not_being_copied),
+                *(
+                    call(path)
+                    for info in expected_result.values()
+                    for path in info.files_not_being_copied
+                ),
+                *(
+                    call(path)
+                    for info in expected_result.values()
+                    for path in info.files_in_progress
+                ),
             ],
             any_order=True,
         )
@@ -274,11 +361,20 @@ class TestDisk(unittest.TestCase):
             "folder_a",
             "folder_b",
         }
-        expected_files_in_progress = {
-            "folder_a/file_in_progress",
-            "folder_b/file_in_progress",
+        expected_result = {
+            "folder_a": DiskCopyInfo(
+                files_in_progress={
+                    "folder_a/file_in_progress",
+                },
+                files_not_being_copied=set(),
+            ),
+            "folder_b": DiskCopyInfo(
+                files_in_progress={
+                    "folder_b/file_in_progress",
+                },
+                files_not_being_copied=set(),
+            ),
         }
-        expected_files_not_being_copied = set()
 
         # mock stuff
         os_mock.listdir.return_value = ["file_in_progress"]
@@ -289,23 +385,30 @@ class TestDisk(unittest.TestCase):
         is_accessible_mock.return_value = False
 
         # do the thing
-        files_in_progress, files_not_being_copied = get_files_being_copied(
-            directories=target_dirs, previously_checked_files={}
-        )
+        result = get_files_being_copied(directories=target_dirs)
 
         # checks
-        self.assertSetEqual(
-            files_in_progress,
-            expected_files_in_progress,
-        )
-        self.assertSetEqual(
-            files_not_being_copied,
-            expected_files_not_being_copied,
-        )
+        for folder, info in result.items():
+            self.assertSetEqual(
+                info.files_in_progress,
+                expected_result[folder].files_in_progress,
+            )
+            self.assertSetEqual(
+                info.files_not_being_copied,
+                expected_result[folder].files_not_being_copied,
+            )
         is_accessible_mock.assert_has_calls(
             [
-                *(call(path) for path in expected_files_in_progress),
-                *(call(path) for path in expected_files_not_being_copied),
+                *(
+                    call(path)
+                    for info in expected_result.values()
+                    for path in info.files_not_being_copied
+                ),
+                *(
+                    call(path)
+                    for info in expected_result.values()
+                    for path in info.files_in_progress
+                ),
             ],
             any_order=True,
         )
@@ -324,8 +427,6 @@ class TestDisk(unittest.TestCase):
         target_dirs = {
             "some_file",
         }
-        expected_files_in_progress = set()
-        expected_files_not_being_copied = set()
 
         # mock stuff
         os_mock.listdir.return_value = []
@@ -336,26 +437,10 @@ class TestDisk(unittest.TestCase):
         is_accessible_mock.return_value = True
 
         # do the thing
-        files_in_progress, files_not_being_copied = get_files_being_copied(
-            directories=target_dirs, previously_checked_files={}
-        )
+        result = get_files_being_copied(directories=target_dirs)
 
         # checks
-        self.assertSetEqual(
-            files_in_progress,
-            expected_files_in_progress,
-        )
-        self.assertSetEqual(
-            files_not_being_copied,
-            expected_files_not_being_copied,
-        )
-        is_accessible_mock.assert_has_calls(
-            [
-                *(call(path) for path in expected_files_in_progress),
-                *(call(path) for path in expected_files_not_being_copied),
-            ],
-            any_order=True,
-        )
+        self.assertDictEqual(result, {})
         path_mock.exists.assert_called_once_with(next(iter(target_dirs)))
         path_mock.isdir.assert_called_once_with(next(iter(target_dirs)))
         os_mock.listdir.assert_not_called()
@@ -371,8 +456,6 @@ class TestDisk(unittest.TestCase):
         target_dirs = {
             "does_not_exist",
         }
-        expected_files_in_progress = set()
-        expected_files_not_being_copied = set()
 
         # mock stuff
         os_mock.listdir.return_value = []
@@ -383,57 +466,11 @@ class TestDisk(unittest.TestCase):
         is_accessible_mock.return_value = True
 
         # do the thing
-        files_in_progress, files_not_being_copied = get_files_being_copied(
-            directories=target_dirs, previously_checked_files={}
-        )
+        result = get_files_being_copied(directories=target_dirs)
 
         # checks
-        self.assertSetEqual(
-            files_in_progress,
-            expected_files_in_progress,
-        )
-        self.assertSetEqual(
-            files_not_being_copied,
-            expected_files_not_being_copied,
-        )
-        is_accessible_mock.assert_has_calls(
-            [
-                *(call(path) for path in expected_files_in_progress),
-                *(call(path) for path in expected_files_not_being_copied),
-            ],
-            any_order=True,
-        )
+        self.assertDictEqual(result, {})
         path_mock.exists.assert_called_once_with(next(iter(target_dirs)))
         path_mock.isdir.assert_not_called()
         os_mock.listdir.assert_not_called()
         is_accessible_mock.assert_not_called()
-
-    @patch("chia_tea.copy.Disk.get_files_being_copied")
-    def test_update_copy_processes_count(self, get_files_being_copied_mock):
-
-        # mock stuff
-        get_files_being_copied_mock.return_value = (
-            {
-                "folder_a/file_1",
-            },
-            {
-                "folder_a/file_2",
-            },
-        )
-
-        # do the thing
-        result = update_copy_processes_count(
-            directories={"folder_a"},
-            files_copied_completely={
-                "folder_a/file_1",
-            },
-        )
-
-        # checks
-        self.assertDictEqual(result, {"folder_a": 1})
-        get_files_being_copied_mock.assert_called_once_with(
-            {"folder_a"},
-            {
-                "folder_a/file_1",
-            },
-        )
