@@ -222,7 +222,7 @@ def full_node_pb2_as_markdown(
     return """
   🏡 Full Node {machine}
      {sync_msg}
-     ⏳ progress: {node_progress}/{blockchain_progress} ({progress_percent:.2f} %) 
+     ⏳ progress: {node_progress}/{blockchain_progress} ({progress_percent:.2f} %)
 """.format(
         machine=get_machine_info_name(machine),
         sync_msg=sync_msg,
