@@ -56,8 +56,6 @@ async def update_from_full_node(chia_dog: ChiaWatchdog):
         chia_dog.full_node_service.is_synced = is_synced
         chia_dog.full_node_service.sync_blockchain_height = sync_blockchain_height
         chia_dog.full_node_service.sync_progress_height = sync_progress_height
-        if sync_blockchain_height != 0:
-            chia_dog.full_node_service.sync_progress = sync_progress_height / sync_blockchain_height
 
     # pylint: disable=catching-non-exception
     except API_EXCEPTIONS:

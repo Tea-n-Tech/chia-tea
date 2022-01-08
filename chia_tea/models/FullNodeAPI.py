@@ -16,4 +16,3 @@ class FullNodeAPI:
     is_synced: bool = False
     sync_progress_height: int = 0
     sync_blockchain_height: int = 0
-    sync_progress: float = 0.0
