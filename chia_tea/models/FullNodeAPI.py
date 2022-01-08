@@ -1,9 +1,11 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 
 @dataclass
 class FullNodeAPI:
-    """ """
+    """FullNodeAPI tracks data derived from the API if a full node
+    running on the system.
+    """
 
     # pylint: disable=too-few-public-methods
 

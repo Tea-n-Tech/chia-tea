@@ -1,7 +1,5 @@
-import asyncio
-import datetime
 import traceback
-from typing import List, Union
+from typing import Union
 
 import grpc
 from google.protobuf.json_format import MessageToDict
@@ -53,13 +51,8 @@ class MonitoringServer(MonitoringServicer):
         last_machine_info: Union[MachineInfo, None] = None
 
         # we endlessly process updates
-        from rich import inspect
-
-        inspect(context, all=True)
         while True:
             try:
-
-                # TODO add a timeout of read!!!!
 
                 # check for a response
                 data_update_request: Union[DataUpdateRequest, grpc.aio.EOF] = await context.read()
