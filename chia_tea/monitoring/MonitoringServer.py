@@ -48,8 +48,6 @@ class MonitoringServer(MonitoringServicer):
         logger = get_logger(__name__)
         logger.info("Connected to %s", context.peer())
 
-        last_machine_info: Union[MachineInfo, None] = None
-
         # we endlessly process updates
         while True:
             try:
@@ -69,13 +67,6 @@ class MonitoringServer(MonitoringServicer):
                 if not data_update_request.machine_id:
                     raise ValueError("DataUpdateRequest requires a machine id.")
 
-                last_machine_info = MachineInfo(
-                    machine_id=data_update_request.machine_id,
-                    name=data_update_request.machine_name,
-                    ip_address=context.peer(),
-                    time_last_msg=data_update_request.timestamp,
-                )
-
                 # store in database
                 self.db.store_data_update_request(
                     data_update_request=data_update_request, ip_address=context.peer()
@@ -84,8 +75,6 @@ class MonitoringServer(MonitoringServicer):
             except Exception:
                 trace = traceback.format_exc()
                 logger.error(trace)
-
-                self.db.set_machine_as_disconnected(last_machine_info)
 
                 await context.abort(
                     code=grpc.StatusCode.INTERNAL,
