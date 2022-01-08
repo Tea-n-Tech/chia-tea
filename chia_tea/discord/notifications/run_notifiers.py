@@ -3,7 +3,7 @@ import logging
 import sqlite3
 import traceback
 from datetime import datetime
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import discord
 
@@ -85,7 +85,7 @@ def get_current_computer_and_machine_infos_from_db(
     computer_and_machine_infos = {}
     for machine in machine_info_list:
 
-        if not machine.is_connected:
+        if datetime.now().timestamp() - machine.time_last_msg > 60:
             continue
 
         computer_and_machine_infos[machine.machine_id] = (

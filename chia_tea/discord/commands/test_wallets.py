@@ -1,6 +1,7 @@
 import os
 import tempfile
 import unittest
+from datetime import datetime
 
 from google.protobuf.json_format import ParseDict
 
@@ -29,6 +30,7 @@ class TestWalletsCmd(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as tmpdir:
             db_filepath = os.path.join(tmpdir, "temp.db")
+            now_timestamp = datetime.now().timestamp()
 
             with MonitoringDatabase(db_filepath) as db:
                 event = ParseDict(
@@ -44,7 +46,7 @@ class TestWalletsCmd(unittest.TestCase):
                 request = DataUpdateRequest(
                     machine_id=1,
                     machine_name="machine A",
-                    timestamp=1000,
+                    timestamp=now_timestamp,
                     events=[event],
                 )
                 db.store_data_update_request(request)
@@ -59,6 +61,7 @@ class TestWalletsCmd(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as tmpdir:
             db_filepath = os.path.join(tmpdir, "tmp.db")
+            now_timestamp = datetime.now().timestamp()
 
             with MonitoringDatabase(db_filepath) as db:
                 update_events = [
@@ -76,7 +79,7 @@ class TestWalletsCmd(unittest.TestCase):
                 request = DataUpdateRequest(
                     machine_id=1,
                     machine_name="machine A",
-                    timestamp=1000,
+                    timestamp=now_timestamp,
                     events=update_events,
                 )
                 db.store_data_update_request(request)
