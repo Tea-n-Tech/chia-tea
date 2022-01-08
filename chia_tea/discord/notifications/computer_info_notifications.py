@@ -184,6 +184,57 @@ def notify_on_wallet_sync_change(
     return messages
 
 
+def notify_on_full_node_sync_change(
+    machine: MachineInfo,
+    old_computer_info: ComputerInfo,
+    new_computer_info: ComputerInfo,
+) -> List[str]:
+    """notify when a wallet is not synced anymore
+
+    Parameters
+    ----------
+    machine : MachineInfo
+        latest information about the machine
+    old_computer_info : ComputerInfo
+        computer info before last update
+    new_computer_info : ComputerInfo
+        computer info after last update
+
+    Returns
+    -------
+    messages : List[str]
+        notification messages
+    """
+
+    messages = []
+
+    old_full_node = old_computer_info.full_node
+    new_full_node = new_computer_info.full_node
+
+    if not old_full_node.is_synced and new_full_node.is_synced:
+        messages.append(
+            "{machine_name}: ✔️ The full_node 🏡 has synced.".format(
+                machine_name=get_machine_info_name(machine),
+            )
+        )
+    elif old_full_node.is_synced and not new_full_node.is_synced:
+
+        progress = (
+            new_full_node.sync_blockchain_height / new_full_node.sync_node_height
+            if new_full_node.sync_blockchain_height != 0
+            else 0
+        )
+
+        messages.append(
+            "{machine_name}: ⚠ The full_node 🏡 is not synced anymore ({progress:.2f})".format(
+                machine_name=get_machine_info_name(machine),
+                progress=progress,
+            )
+        )
+
+    return messages
+
+
 def notify_on_wallet_connection_change(
     machine: MachineInfo,
     old_computer_info: ComputerInfo,
