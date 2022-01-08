@@ -4,7 +4,6 @@ from typing import Union
 import grpc
 from google.protobuf.json_format import MessageToDict
 
-from ..protobuf.generated.machine_info_pb2 import MachineInfo
 from ..protobuf.generated.monitoring_service_pb2 import DataUpdateRequest
 from ..protobuf.generated.monitoring_service_pb2_grpc import MonitoringServicer
 from ..utils.logger import get_logger
