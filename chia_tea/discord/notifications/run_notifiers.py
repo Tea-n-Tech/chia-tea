@@ -3,7 +3,7 @@ import logging
 import sqlite3
 import traceback
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 
 import discord
 
