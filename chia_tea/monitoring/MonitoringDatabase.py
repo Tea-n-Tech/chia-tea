@@ -1,5 +1,5 @@
 import sqlite3
-from typing import Optional, Union
+from typing import Union
 
 from google.protobuf.json_format import MessageToDict
 
