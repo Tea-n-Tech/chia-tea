@@ -1,5 +1,5 @@
 import sqlite3
-from typing import Union
+from typing import Optional, Union
 
 from google.protobuf.json_format import MessageToDict
 
@@ -83,6 +83,7 @@ class MonitoringDatabase:
         computer_info : ComputerInfo
             latest information about the machine
         """
+        self.__check_if_initialized()
 
         computer_info = get_computer_info_from_db(
             self.cursor,
@@ -90,6 +91,33 @@ class MonitoringDatabase:
         )
 
         return computer_info
+
+    def set_machine_as_disconnected(self, machine_info: Optional[MachineInfo]):
+        """Marks a machine in the database as disconnected
+
+        Parameters
+        ----------
+        machine_info : Optional[MachineInfo]
+            Machine to mark as disconnected.
+            If None is specified nothing is done.
+        """
+        self.__check_if_initialized()
+        logger = get_logger(__file__)
+
+        if machine_info is None:
+            return
+
+        logger.debug(
+            "Marking machine as disconnected: %s (%s)", machine_info.machine_id, machine_info.name
+        )
+
+        machine_info.is_connected = False
+
+        insert_machine_info_in_db(
+            self.cursor,
+            machine_info,
+            {},
+        )
 
     def store_data_update_request(
         self,
@@ -117,6 +145,7 @@ class MonitoringDatabase:
                 name=data_update_request.machine_name,
                 ip_address=ip_address,
                 time_last_msg=data_update_request.timestamp,
+                is_connected=True,
             ),
             {},
         )

@@ -4,6 +4,7 @@ from ....models.ChiaWatchdog import ChiaWatchdog
 from .update_from_farmer import update_from_farmer
 from .update_from_harvester import update_from_harvester
 from .update_from_wallet import update_from_wallet
+from .update_from_full_node import update_from_full_node
 
 
 async def update_directly_from_chia(chia_dog: ChiaWatchdog):
@@ -18,4 +19,5 @@ async def update_directly_from_chia(chia_dog: ChiaWatchdog):
         update_from_farmer(chia_dog=chia_dog),
         update_from_wallet(chia_dog=chia_dog),
         update_from_harvester(chia_dog=chia_dog),
+        update_from_full_node(chia_dog=chia_dog),
     )

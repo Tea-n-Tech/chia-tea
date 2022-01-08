@@ -35,6 +35,9 @@ message ComputerInfo {
     // wallet
     chia_pb2.Wallet wallet = 11;
 
+    // full node
+    chia_pb2.FullNode full_node = 13;
+
     // system processes relevant to chia
     repeated chia_pb2.Process processes = 12;
 }
@@ -86,5 +89,6 @@ message UpdateEvent {
         chia_pb2.Wallet wallet = 10;
         chia_pb2.Process process = 11;
         chia_pb2.PlotInProgress plotting_plot = 12;
+        chia_pb2.FullNode full_node = 14;
     }
 }

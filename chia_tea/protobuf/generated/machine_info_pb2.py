@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n.chia_tea/protobuf/generated/machine_info.proto\x12,chia_tea.protobuf.generated.machine_info_pb2\"Z\n\x0bMachineInfo\x12\x12\n\nmachine_id\x18\x01 \x01(\x03\x12\x12\n\nip_address\x18\x02 \x01(\t\x12\x15\n\rtime_last_msg\x18\x03 \x01(\x01\x12\x0c\n\x04name\x18\x04 \x01(\tb\x06proto3'
+  serialized_pb=b'\n.chia_tea/protobuf/generated/machine_info.proto\x12,chia_tea.protobuf.generated.machine_info_pb2\"p\n\x0bMachineInfo\x12\x12\n\nmachine_id\x18\x01 \x01(\x03\x12\x12\n\nip_address\x18\x02 \x01(\t\x12\x15\n\rtime_last_msg\x18\x03 \x01(\x01\x12\x0c\n\x04name\x18\x04 \x01(\t\x12\x14\n\x0cis_connected\x18\x05 \x01(\x08\x62\x06proto3'
 )
 
 
@@ -61,6 +61,13 @@ _MACHINEINFO = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='is_connected', full_name='chia_tea.protobuf.generated.machine_info_pb2.MachineInfo.is_connected', index=4,
+      number=5, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -74,7 +81,7 @@ _MACHINEINFO = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=96,
-  serialized_end=186,
+  serialized_end=208,
 )
 
 DESCRIPTOR.message_types_by_name['MachineInfo'] = _MACHINEINFO

@@ -69,6 +69,7 @@ message MonitoringConfig {
             double wallet = 8;
             double plotting_plot = 9;
             double harvester_plot = 10;
+            double full_node = 11;
         }
     }
 }

@@ -62,6 +62,13 @@ message Wallet {
     bool is_synced = 2;
 }
 
+message FullNode {
+    bool is_running = 1;
+    bool is_synced = 2;
+    int64 sync_blockchain_height = 3;
+    int64 sync_node_height = 4;
+}
+
 message PlotInProgress {
     // id = plot public key as hex string
     string id = 1;

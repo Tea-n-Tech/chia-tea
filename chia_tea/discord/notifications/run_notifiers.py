@@ -84,6 +84,10 @@ def get_current_computer_and_machine_infos_from_db(
 
     computer_and_machine_infos = {}
     for machine in machine_info_list:
+
+        if not machine.is_connected:
+            continue
+
         computer_and_machine_infos[machine.machine_id] = (
             machine,
             get_computer_info_from_db(

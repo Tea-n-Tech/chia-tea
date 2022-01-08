@@ -1,10 +1,12 @@
 import asyncio
+import datetime
 import traceback
-from typing import Union
+from typing import List, Union
 
 import grpc
 from google.protobuf.json_format import MessageToDict
 
+from ..protobuf.generated.machine_info_pb2 import MachineInfo
 from ..protobuf.generated.monitoring_service_pb2 import DataUpdateRequest
 from ..protobuf.generated.monitoring_service_pb2_grpc import MonitoringServicer
 from ..utils.logger import get_logger
@@ -48,9 +50,17 @@ class MonitoringServer(MonitoringServicer):
         logger = get_logger(__name__)
         logger.info("Connected to %s", context.peer())
 
+        last_machine_info: Union[MachineInfo, None] = None
+
         # we endlessly process updates
+        from rich import inspect
+
+        inspect(context, all=True)
         while True:
             try:
+
+                # TODO add a timeout of read!!!!
+
                 # check for a response
                 data_update_request: Union[DataUpdateRequest, grpc.aio.EOF] = await context.read()
 
@@ -66,15 +76,26 @@ class MonitoringServer(MonitoringServicer):
                 if not data_update_request.machine_id:
                     raise ValueError("DataUpdateRequest requires a machine id.")
 
+                last_machine_info = MachineInfo(
+                    machine_id=data_update_request.machine_id,
+                    name=data_update_request.machine_name,
+                    ip_address=context.peer(),
+                    time_last_msg=data_update_request.timestamp,
+                )
+
                 # store in database
                 self.db.store_data_update_request(
                     data_update_request=data_update_request, ip_address=context.peer()
                 )
 
-            except asyncio.TimeoutError:
-                # try again
-                pass
             except Exception:
                 trace = traceback.format_exc()
                 logger.error(trace)
-                await asyncio.sleep(5)
+
+                self.db.set_machine_as_disconnected(last_machine_info)
+
+                await context.abort(
+                    code=grpc.StatusCode.INTERNAL,
+                    details=trace,
+                )
+                break

@@ -108,6 +108,7 @@ monitoring:
       # wallet: 2
       # plotting_plot: 2
       # harvester_plot: 2
+      # full_node: 2
 
 # Enables development mode. This currently disables
 # encryption and also the discord bot does not send
