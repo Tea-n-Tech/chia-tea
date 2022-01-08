@@ -312,4 +312,5 @@ ALL_EVENT_OBSERVERS = (
     notify_on_wallet_connection_change,
     notify_on_wallet_sync_change,
     notify_when_harvester_times_out,
+    notify_on_full_node_sync_change,
 )
