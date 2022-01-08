@@ -45,6 +45,7 @@ Commands:
 - [x] `$farmers`: reports the status of all farmers
 - [x] `$sql`: execute an arbitrary sql cmd on the database (read only)
 - [x] `$plotters`: reports on running plotters and their progress
+- [x] `$fullnodes`: reports the status of all full nodes being monitored
 
 # How does the monitoring work?
 
@@ -139,6 +140,11 @@ omit this data.
   - Wallet
     - [x] is running
     - [x] is synced
+  - Full Node
+    - [x] is running
+    - [x] is synced
+    - [x] sync node height
+    - [x] sync blockchain height
   - Plotters (MadMax)
     - [x] plotting process
     - [x] plots in process

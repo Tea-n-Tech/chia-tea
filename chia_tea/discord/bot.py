@@ -9,6 +9,7 @@ from .commands.harvesters import harvesters_cmd
 from .commands.machines import machines_cmd
 from .commands.sql import sql_cmd
 from .commands.wallets import wallets_cmd
+from .commands.full_nodes import full_nodes_cmd
 from .notifications.run_notifiers import log_and_send_msg_if_any, run_notifiers
 
 
@@ -43,6 +44,21 @@ async def bot_machines(ctx):
     db_filepath = get_config().monitoring.server.db_filepath
 
     messages = await machines_cmd(db_filepath)
+
+    await log_and_send_msg_if_any(
+        messages=messages,
+        logger=get_logger(__file__),
+        channel=ctx.channel,
+        is_testing=get_config().development.testing,
+    )
+
+
+@bot.command(name="nodes")
+async def bot_full_nodes(ctx):
+    """Prints all full nodes"""
+    db_filepath = get_config().monitoring.server.db_filepath
+
+    messages = await full_nodes_cmd(db_filepath)
 
     await log_and_send_msg_if_any(
         messages=messages,

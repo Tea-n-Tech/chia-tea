@@ -231,8 +231,8 @@ async def collect_full_node_info(chia_dog: ChiaWatchdog) -> FullNode:
         info about the full node running on the system
     """
     return FullNode(
-        is_running=chia_dog.wallet_service.is_running,
-        is_synced=chia_dog.wallet_service.is_synced,
+        is_running=chia_dog.full_node_service.is_running,
+        is_synced=chia_dog.full_node_service.is_synced,
         sync_blockchain_height=chia_dog.full_node_service.sync_blockchain_height,
         sync_node_height=chia_dog.full_node_service.sync_progress_height,
     )

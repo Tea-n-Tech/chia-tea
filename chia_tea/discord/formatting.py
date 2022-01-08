@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import List
 
 from ..protobuf.generated.chia_pb2 import (
+    FullNode,
     Harvester,
     HarvesterPlot,
     HarvesterViewedFromFarmer,
@@ -189,6 +190,45 @@ def harvester_pb2_as_markdown(
         n_proofs=harvester.n_proofs,
         total_size=format_memory_size(total_size),
         disk_msgs="\n".join(disk_msgs),
+    )
+
+
+def full_node_pb2_as_markdown(
+    machine: MachineInfo,
+    full_node: FullNode,
+) -> str:
+    """Formats a protobuf Harvester as markdown
+
+    Parameters
+    ----------
+    machine : MachineInfo
+        info about the machine including name and ip
+    full_node : FullNode
+        full_node instance with data
+
+    Returns
+    -------
+    harvester_as_string : str
+        harvester info as markdown string
+    """
+
+    sync_msg = "⚠️  not synced" if not full_node.is_synced else "🟢 synchronized"
+    sync_progress_percent = (
+        full_node.sync_node_height / full_node.sync_blockchain_height
+        if full_node.sync_blockchain_height != 0
+        else 0
+    )
+
+    return """
+  🏡 Full Node {machine}
+     {sync_msg}
+     ⏳ progress: {node_progress}/{blockchain_progress} ({progress_percent:.2f} %) 
+""".format(
+        machine=get_machine_info_name(machine),
+        sync_msg=sync_msg,
+        node_progress=full_node.sync_node_height,
+        blockchain_progress=full_node.sync_blockchain_height,
+        progress_percent=sync_progress_percent,
     )
 
 
