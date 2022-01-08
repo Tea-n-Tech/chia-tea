@@ -23,5 +23,7 @@ class TestChiaWatchdog(unittest.TestCase):
         dog.harvester_service.is_ready = True
         await assert_not_ready()
         dog.wallet_service.is_ready = True
+        await assert_not_ready()
+        dog.full_node_service.is_ready = True
         # raising an exception is an error case here
         await asyncio.wait_for(dog.ready(), timeout=0.5)

@@ -83,6 +83,7 @@ class MonitoringDatabase:
         computer_info : ComputerInfo
             latest information about the machine
         """
+        self.__check_if_initialized()
 
         computer_info = get_computer_info_from_db(
             self.cursor,

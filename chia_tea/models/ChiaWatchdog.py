@@ -5,6 +5,7 @@ from typing import Dict, List
 from .FarmerAPI import FarmerAPI
 from .HarvesterAPI import HarvesterAPI
 from .WalletAPI import WalletAPI
+from .FullNodeAPI import FullNodeAPI
 from .FarmerHarvesterLogfile import FarmerHarvesterLogfile
 from .MadMaxPlotInProgress import MadMaxPlotInProgress
 
@@ -28,6 +29,7 @@ class ChiaWatchdog:
     farmer_service: FarmerAPI
     wallet_service: WalletAPI
     harvester_service: HarvesterAPI
+    full_node_service: FullNodeAPI
 
     def __init__(self, logfile_filepath: str, madmax_logfile: str):
         """initialize a chia watchdog
@@ -45,6 +47,7 @@ class ChiaWatchdog:
         self.farmer_service = FarmerAPI()
         self.wallet_service = WalletAPI()
         self.harvester_service = HarvesterAPI()
+        self.full_node_service = FullNodeAPI()
         self.farmed_blocks = []
         self.plots_in_progress = []
 
@@ -56,6 +59,7 @@ class ChiaWatchdog:
             and self.harvester_service.is_ready
             and self.farmer_service.is_ready
             and self.wallet_service.is_ready
+            and self.full_node_service.is_ready
         ):
             await asyncio.sleep(0.25)
 

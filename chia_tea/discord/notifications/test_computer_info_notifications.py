@@ -8,6 +8,7 @@ from ...protobuf.generated.machine_info_pb2 import MachineInfo
 from .computer_info_notifications import (
     HARVESTER_TIMOUT,
     get_msg_if_farmer_harvester_timed_out,
+    notify_on_full_node_sync_change,
     notify_on_harvester_reward_found,
     notify_on_wallet_connection_change,
     notify_on_wallet_sync_change,
@@ -92,6 +93,27 @@ class TestComputerInfoNotifications(unittest.TestCase):
         )
 
         messages = notify_on_wallet_sync_change(
+            machine=machine,
+            old_computer_info=old_computer_info,
+            new_computer_info=new_computer_info,
+        )
+
+        self.assertEqual(len(messages), 1)
+
+    def test_msg_if_full_node_not_synced_anymore(self):
+
+        machine = MachineInfo()
+
+        old_computer_info = ParseDict(
+            js_dict={"full_node": {"is_synced": True}},
+            message=ComputerInfo(),
+        )
+        new_computer_info = ParseDict(
+            js_dict={"full_node": {"is_synced": False}},
+            message=ComputerInfo(),
+        )
+
+        messages = notify_on_full_node_sync_change(
             machine=machine,
             old_computer_info=old_computer_info,
             new_computer_info=new_computer_info,

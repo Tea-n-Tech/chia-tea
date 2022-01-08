@@ -7,6 +7,7 @@ from ...utils.logger import log_runtime_async
 from .chia import (
     collect_connected_harvesters_to_farmer,
     collect_farmer_info,
+    collect_full_node_info,
     collect_harvester_info,
     collect_harvester_plots,
     collect_plots_in_progress,
@@ -44,6 +45,7 @@ async def collect_computer_info(machine_id: str, chia_dog: ChiaWatchdog) -> Comp
         chia_processes,
         connected_harvesters,
         plots_in_progress,
+        full_node_info,
     ) = await asyncio.gather(
         collect_cpu_info(),
         collect_disk_info(),
@@ -55,6 +57,7 @@ async def collect_computer_info(machine_id: str, chia_dog: ChiaWatchdog) -> Comp
         collect_process_info(),
         collect_connected_harvesters_to_farmer(chia_dog),
         collect_plots_in_progress(chia_dog),
+        collect_full_node_info(chia_dog),
     )
 
     computer_info = ComputerInfo(
@@ -70,6 +73,7 @@ async def collect_computer_info(machine_id: str, chia_dog: ChiaWatchdog) -> Comp
         wallet=wallet_info,
         processes=chia_processes,
         plotting_plots=plots_in_progress,
+        full_node=full_node_info,
     )
 
     return computer_info

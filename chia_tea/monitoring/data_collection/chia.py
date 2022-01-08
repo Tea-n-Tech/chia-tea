@@ -11,6 +11,7 @@ from ...protobuf.generated.chia_pb2 import (
     PlotInProgress,
     Process,
     Wallet,
+    FullNode,
 )
 from ...utils.logger import log_runtime_async
 
@@ -212,6 +213,28 @@ async def collect_wallet_info(chia_dog: ChiaWatchdog) -> Wallet:
     return Wallet(
         is_running=chia_dog.wallet_service.is_running,
         is_synced=chia_dog.wallet_service.is_synced,
+    )
+
+
+@log_runtime_async(__file__)
+async def collect_full_node_info(chia_dog: ChiaWatchdog) -> FullNode:
+    """Collects info about the full node
+
+    Parameters
+    ----------
+    chia_dog : ChiaWatchdog
+        chia watchdog to take data from
+
+    Returns
+    -------
+    full_node_info : FullNode
+        info about the full node running on the system
+    """
+    return FullNode(
+        is_running=chia_dog.full_node_service.is_running,
+        is_synced=chia_dog.full_node_service.is_synced,
+        sync_blockchain_height=chia_dog.full_node_service.sync_blockchain_height,
+        sync_node_height=chia_dog.full_node_service.sync_progress_height,
     )
 
 

@@ -1,4 +1,3 @@
-import asyncio
 import traceback
 from typing import Union
 
@@ -51,6 +50,7 @@ class MonitoringServer(MonitoringServicer):
         # we endlessly process updates
         while True:
             try:
+
                 # check for a response
                 data_update_request: Union[DataUpdateRequest, grpc.aio.EOF] = await context.read()
 
@@ -71,10 +71,12 @@ class MonitoringServer(MonitoringServicer):
                     data_update_request=data_update_request, ip_address=context.peer()
                 )
 
-            except asyncio.TimeoutError:
-                # try again
-                pass
             except Exception:
                 trace = traceback.format_exc()
                 logger.error(trace)
-                await asyncio.sleep(5)
+
+                await context.abort(
+                    code=grpc.StatusCode.INTERNAL,
+                    details=trace,
+                )
+                break

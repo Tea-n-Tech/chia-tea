@@ -1,6 +1,7 @@
 import os
 import tempfile
 import unittest
+from datetime import datetime
 
 from google.protobuf.json_format import ParseDict
 
@@ -58,6 +59,7 @@ class TestFarmersCmd(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as tmpdir:
             db_filepath = os.path.join(tmpdir, "tmp.db")
+            now_timestamp = datetime.now().timestamp()
 
             with MonitoringDatabase(db_filepath) as db:
                 # machine A has an online farmer with one harvester
@@ -75,9 +77,9 @@ class TestFarmersCmd(unittest.TestCase):
                         js_dict=dict(
                             event_type=ADD,
                             farmer_harvester=dict(
-                                connection_time=500,
-                                time_last_msg_received=999,
-                                time_last_msg_sent=998,
+                                connection_time=now_timestamp - 500,
+                                time_last_msg_received=now_timestamp - 1,
+                                time_last_msg_sent=now_timestamp - 2,
                                 ip_address="1.2.3.4",
                                 missed_challenges=1,
                                 n_plots=784,
@@ -89,7 +91,7 @@ class TestFarmersCmd(unittest.TestCase):
                 request = DataUpdateRequest(
                     machine_id=1,
                     machine_name="machine A",
-                    timestamp=1000,
+                    timestamp=now_timestamp,
                     events=update_events,
                 )
                 db.store_data_update_request(request)
