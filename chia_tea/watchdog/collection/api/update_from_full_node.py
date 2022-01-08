@@ -61,7 +61,7 @@ async def update_from_full_node(chia_dog: ChiaWatchdog):
     except API_EXCEPTIONS:
         chia_dog.full_node_service.is_running = False
     finally:
-        if "full_node_rpc_port" in locals():
-            full_node_rpc_port.close()
-            await full_node_rpc_port.await_closed()
+        if "full_node_client" in locals():
+            full_node_client.close()
+            await full_node_client.await_closed()
         chia_dog.full_node_service.is_ready = True
