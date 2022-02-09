@@ -151,7 +151,8 @@ class ActionHarvesterDisconnected(AbstractLineAction):
             # care of things.
             get_logger(__file__).warning(
                 "Harvester disconnected but found multiple harvesters"
-                f" with the same ip address: {ip_address}",
+                " with the same ip address: %s",
+                ip_address,
             )
 
 
