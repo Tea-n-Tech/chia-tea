@@ -26,11 +26,6 @@ class TestLineAction(unittest.TestCase):
         timestamp_str = "2021-05-26T09:37:13.872"
         timestamp = datetime.fromisoformat(timestamp_str)
 
-        # line = (
-        #     f"{timestamp_str} farmer farmer_server              : INFO"
-        #     + f"     Connection closed: {ip_address},"
-        #     + f" node id: {node_id}"
-        # )
         line = (
             f"{timestamp_str} farmer chia.farmer.farmer         : INFO     "
             + f"peer disconnected {{'host': '{ip_address}', 'port': 8448}}"

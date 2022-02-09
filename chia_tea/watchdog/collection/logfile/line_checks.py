@@ -42,7 +42,7 @@ class ActionMessageToHarvester(AbstractLineAction):
     """This action is triggered if a farmer sends a msg to a harvester"""
 
     def is_match(self, line: str) -> bool:
-        codewords = ("farmer", "->", "new_signage_point_harvester")
+        codewords = ("farmer", "new_signage_point_harvester")
         return all(word in line for word in codewords)
 
     def apply(
@@ -140,14 +140,19 @@ class ActionHarvesterDisconnected(AbstractLineAction):
         ip_address = fragments[-3].replace("'", "").replace(",", "")
 
         # update info of harvester
-        harvester_or_none = next(
-            (h for h in chia_dog.harvester_infos.values() if h.ip_address == ip_address), None
-        )
-        if harvester_or_none is not None:
-            harvester_info = harvester_or_none
+        harvesters = [h for h in chia_dog.harvester_infos.values() if h.ip_address == ip_address]
+        if len(harvesters) == 1:
+            harvester_info = harvesters[0]
             harvester_info.is_connected = False
             harvester_info.last_update = timestamp_dt
             chia_dog.harvester_infos[harvester_info.harvester_id] = harvester_info
+        elif len(harvesters) > 1:
+            # let's better not do anything and let the API check take
+            # care of things.
+            get_logger(__file__).warning(
+                "Harvester disconnected but found multiple harvesters"
+                f" with the same ip address: {ip_address}",
+            )
 
 
 class ActionHarvesterFoundProof(AbstractLineAction):
