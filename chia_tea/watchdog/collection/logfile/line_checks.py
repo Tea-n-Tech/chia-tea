@@ -10,10 +10,8 @@ class ActionMessageFromHarvester(AbstractLineAction):
     """This action is triggered if a farmer sends a msg to a harvester"""
 
     def is_match(self, line: str) -> bool:
-        codewords = ("farmer farmer_server", "<-", "farming_info from peer")
-        if all(word in line for word in codewords):
-            return True
-        return False
+        codewords = ("farmer", "farming_info from peer")
+        return all(word in line for word in codewords)
 
     def apply(
         self,
@@ -44,10 +42,8 @@ class ActionMessageToHarvester(AbstractLineAction):
     """This action is triggered if a farmer sends a msg to a harvester"""
 
     def is_match(self, line: str) -> bool:
-        codewords = ("farmer farmer_server", "->", "new_signage_point_harvester")
-        if all(word in line for word in codewords):
-            return True
-        return False
+        codewords = ("farmer", "->", "new_signage_point_harvester")
+        return all(word in line for word in codewords)
 
     def apply(
         self,
@@ -78,9 +74,7 @@ class ActionFinishedSignagePoint(AbstractLineAction):
 
     def is_match(self, line: str) -> bool:
         codewords = ("full_node", "Finished signage point")
-        if all(word in line for word in codewords):
-            return True
-        return False
+        return all(word in line for word in codewords)
 
     def apply(
         self,
@@ -103,10 +97,8 @@ class ActionHarvesterConnected(AbstractLineAction):
     """This action is triggered if a farmer connects to a harvester"""
 
     def is_match(self, line: str) -> bool:
-        codewords = ("farmer farmer_server", "harvester_handshake to peer")
-        if all(word in line for word in codewords):
-            return True
-        return False
+        codewords = ("farmer", "harvester_handshake to peer")
+        return all(word in line for word in codewords)
 
     def apply(
         self,
@@ -132,10 +124,8 @@ class ActionHarvesterDisconnected(AbstractLineAction):
     """This action is triggered if a farmer disconnects to a harvester"""
 
     def is_match(self, line: str) -> bool:
-        codewords = ("farmer farmer_server", "Connection closed")
-        if all(word in line for word in codewords):
-            return True
-        return False
+        codewords = ("farmer", "peer disconnected")
+        return all(word in line for word in codewords)
 
     def apply(
         self,
@@ -146,18 +136,18 @@ class ActionHarvesterDisconnected(AbstractLineAction):
 
         # extract data from line
         timestamp_dt = datetime.fromisoformat(fragments[0])
-        harvester_id = fragments[-1]
-        ip_address = fragments[-4]
-
-        # remove suffix
-        if ip_address.endswith(","):
-            ip_address = ip_address[:-1]
+        # harvester_id = fragments[-1]
+        ip_address = fragments[-3].replace("'", "").replace(",", "")
 
         # update info of harvester
-        harvester_info = chia_dog.get_or_create_harvester_info(harvester_id, ip_address)
-        harvester_info.is_connected = False
-        harvester_info.last_update = timestamp_dt
-        chia_dog.harvester_infos[harvester_id] = harvester_info
+        harvester_or_none = next(
+            (h for h in chia_dog.harvester_infos.values() if h.ip_address == ip_address), None
+        )
+        if harvester_or_none is not None:
+            harvester_info = harvester_or_none
+            harvester_info.is_connected = False
+            harvester_info.last_update = timestamp_dt
+            chia_dog.harvester_infos[harvester_info.harvester_id] = harvester_info
 
 
 class ActionHarvesterFoundProof(AbstractLineAction):

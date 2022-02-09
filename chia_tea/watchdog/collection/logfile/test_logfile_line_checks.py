@@ -26,26 +26,17 @@ class TestLineAction(unittest.TestCase):
         timestamp_str = "2021-05-26T09:37:13.872"
         timestamp = datetime.fromisoformat(timestamp_str)
 
+        # line = (
+        #     f"{timestamp_str} farmer farmer_server              : INFO"
+        #     + f"     Connection closed: {ip_address},"
+        #     + f" node id: {node_id}"
+        # )
         line = (
-            f"{timestamp_str} farmer farmer_server              : INFO"
-            + f"     Connection closed: {ip_address},"
-            + f" node id: {node_id}"
+            f"{timestamp_str} farmer chia.farmer.farmer         : INFO     "
+            + f"peer disconnected {{'host': '{ip_address}', 'port': 8448}}"
         )
 
-        self.assertTrue(action.is_match(line))
-
-        # check case that harvester does not exist yet
         chia_dog = ChiaWatchdog("", "")
-
-        action.apply(line, chia_dog)
-        self.assertTrue(len(chia_dog.harvester_infos) == 1)
-        harvester_info = list(chia_dog.harvester_infos.values())[0]
-        self.assertEqual(harvester_info.ip_address, ip_address)
-        self.assertEqual(harvester_info.harvester_id, node_id)
-        self.assertEqual(harvester_info.is_connected, False)
-        self.assertEqual(harvester_info.last_update, timestamp)
-
-        # check in case harvester exists
         chia_dog.harvester_infos = {
             node_id: FarmerHarvesterLogfile(
                 node_id,
@@ -387,9 +378,8 @@ def msg_signage_point(timestamp_str: str) -> str:
 def msg_disconnect(timestamp_str: str, ip_address: str, node_id: str) -> str:
     """Get a fake log msg for a disconnecting harvester to a farmer"""
     line = (
-        f"{timestamp_str} farmer farmer_server              : INFO"
-        + f"     Connection closed: {ip_address},"
-        + f" node id: {node_id}"
+        f"{timestamp_str} farmer chia.farmer.farmer         : INFO"
+        + f"     peer disconnected {{'host': '{ip_address}', 'port': 8448}}"
     )
     return line
 
