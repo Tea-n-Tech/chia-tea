@@ -1,5 +1,6 @@
 import asyncio
 import os
+import traceback
 from typing import AsyncGenerator, Awaitable, Callable, Coroutine, Optional, TextIO, Union
 
 from ..utils.logger import get_logger
@@ -122,7 +123,8 @@ async def watch_logfile_generator(
             if terminate:
                 break
         except:
-            logger.error("Error while watching logfile: %s", filepath, exc_info=True)
+            tb = traceback.format_exc()
+            logger.error("Error while watching logfile: %s", tb)
 
 
 def _end_of_file(fp: TextIO) -> bool:
