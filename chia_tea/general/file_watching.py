@@ -64,7 +64,7 @@ async def watch_lines_infinitely(
                 file_missing_was_run = True
 
 
-async def watch_logfile_generator(
+async def watch_logfile_generator(  # noqa: C901
     filepath: str, on_ready: Optional[Coroutine] = None, interval_seconds: float = 1
 ) -> AsyncGenerator[str, None]:
     """Watch a logfile for changes
@@ -83,6 +83,7 @@ async def watch_logfile_generator(
     line : str
         a newly added line to the file
     """
+
     logger = get_logger(__name__)
 
     if filepath.startswith("~"):
@@ -122,9 +123,10 @@ async def watch_logfile_generator(
 
             if terminate:
                 break
-        except:
+
+        except Exception:
             tb = traceback.format_exc()
-            logger.error("Error while watching logfile: %s", tb)
+            logger.error("Error while watching logfile:\n%s", tb)
 
 
 def _end_of_file(fp: TextIO) -> bool:
