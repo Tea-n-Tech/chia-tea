@@ -1,5 +1,6 @@
 import asyncio
 import os
+import traceback
 from typing import AsyncGenerator, Awaitable, Callable, Coroutine, Optional, TextIO, Union
 
 from ..utils.logger import get_logger
@@ -63,7 +64,7 @@ async def watch_lines_infinitely(
                 file_missing_was_run = True
 
 
-async def watch_logfile_generator(
+async def watch_logfile_generator(  # noqa: C901
     filepath: str, on_ready: Optional[Coroutine] = None, interval_seconds: float = 1
 ) -> AsyncGenerator[str, None]:
     """Watch a logfile for changes
@@ -82,6 +83,7 @@ async def watch_logfile_generator(
     line : str
         a newly added line to the file
     """
+
     logger = get_logger(__name__)
 
     if filepath.startswith("~"):
@@ -93,33 +95,38 @@ async def watch_logfile_generator(
     # and making a new one in-place.
     # To keep track we need to reopen the new file
     while True:
-        logger.debug("(Re)opening logfile: %s", filepath)
-        with open(filepath, "r", encoding="utf8") as fp:
-            while True:
+        try:
+            logger.debug("(Re)opening logfile: %s", filepath)
+            with open(filepath, "r", encoding="utf8") as fp:
+                while True:
 
-                # yield as many lines as there are
-                new_line = fp.readline()
-                while new_line:
-
-                    # must be placed here so when we yielded
-                    # the last line we caught up
-                    if _end_of_file(fp):
-                        await on_ready()
-
-                    terminate = yield new_line
-                    if terminate:
-                        raise StopAsyncIteration()
+                    # yield as many lines as there are
                     new_line = fp.readline()
+                    while new_line:
 
-                # sleep to give it a rest
-                await asyncio.sleep(interval_seconds)
+                        # must be placed here so when we yielded
+                        # the last line we caught up
+                        if _end_of_file(fp):
+                            await on_ready()
 
-                # check if file was replaced, then rewind
-                if _file_was_replaced_or_cleared(fp, filepath):
-                    break
+                        terminate = yield new_line
+                        if terminate:
+                            raise StopAsyncIteration()
+                        new_line = fp.readline()
 
-        if terminate:
-            break
+                    # sleep to give it a rest
+                    await asyncio.sleep(interval_seconds)
+
+                    # check if file was replaced, then rewind
+                    if _file_was_replaced_or_cleared(fp, filepath):
+                        break
+
+            if terminate:
+                break
+
+        except Exception:
+            tb = traceback.format_exc()
+            logger.error("Error while watching logfile:\n%s", tb)
 
 
 def _end_of_file(fp: TextIO) -> bool:
