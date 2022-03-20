@@ -41,6 +41,3 @@ jobs:
 
       - name: Test code
         run: ./bin/task test
-
-      - name: Deploy docs
-        run: poetry run mkdocs gh-deploy --force
