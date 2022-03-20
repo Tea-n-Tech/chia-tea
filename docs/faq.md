@@ -1,20 +1,15 @@
-# Table of Contents
-
-- [Table of Contents](#table-of-contents)
-- [Why Chia-Tea?](#why-chia-tea)
-  - [What are important commands for Chia-Tea?](#what-are-important-commands-for-chia-tea)
-  - [What can the discord bot do?](#what-can-the-discord-bot-do)
-- [How does the monitoring work?](#how-does-the-monitoring-work)
-  - [Client](#client)
-  - [Server](#server)
-  - [Discord Bot](#discord-bot)
-- [What data is being collected?](#what-data-is-being-collected)
-
 # Why Chia-Tea?
 
-First and most important we love tea 🍵 and we are not talking about that heartless, average stuff. We talk about tea with full-hearted passion and character in it. In this way we also love to craft software.
+First and most important we love tea 🍵 and we are not talking about that
+heartless, average stuff.
+We talk about tea with full-hearted passion and character in it.
+In this way we also love to craft software.
 
-Second, we started the library from a single utility script to maintain our hobby chia farm. The project grew over time into a fully fledged chia library. Since we found it especially hard to keep track of our infrastructure, we designed a monitoring solution for our farm.
+Second, we started the library from a single utility script to maintain our
+hobby chia farm.
+The project grew over time into a fully fledged chia library.
+Since we found it especially hard to keep track of our infrastructure, we
+designed a monitoring solution for our farm.
 
 ## What are important commands for Chia-Tea?
 
@@ -47,7 +42,7 @@ Commands:
 - [x] `$plotters`: reports on running plotters and their progress
 - [x] `$fullnodes`: reports the status of all full nodes being monitored
 
-# How does the monitoring work?
+## How does the monitoring work?
 
 Reconsider the structure of this repository
 
@@ -64,20 +59,20 @@ If you are running a multiple machine setup you can run the monitoring and
 server task on one machine whereas on all other machines you will run the
 client task.
 
-## Client
+### Client
 
 To collect data from a system simply run the client on the very same machine.
 It collects data from automatically and send it to the server.
 This is a lot of information ranging from down-to-earth ram usage to checks if
 e.g. a farmer is running to information about every plot of a harvester.
 
-## Server
+### Server
 
 The server receives the client data and writes it into a database file.
 This database file stores all events which ever happened.
 You can use this database to build anything on top, such as a dashboard.
 
-## Discord Bot
+### Discord Bot
 
 Our discord bot watches the database for changes and provides notifications in
 case something is up.
@@ -85,7 +80,7 @@ For example if you loose a drive with plots on or if the wallet is not synced
 anymore.
 Also there are commands to check on the status of different things.
 
-# What data is being collected?
+## What data is being collected?
 
 Briefly answered, everything relevant.
 Hardware information such as CPU, RAM, Disks but also system rsources such as

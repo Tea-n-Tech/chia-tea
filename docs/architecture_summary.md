@@ -1,18 +1,4 @@
-# Chia-Tea Architecture Guide
-
-## Table of Contents
-
-- [Disclaimer](#disclaimer)
-- [Copy-Plots](#copy-plots)
-- [Monitoring](#monitoring)
-  - [Chia Watchdog](#chia-watchdog)
-  - [Protobuf Protocol](#protobuf-protocol)
-  - [Data Storage](#data-storage)
-  - [Table Schema](#table-schema)
-  - [Sqlite Schema Generation](#sqlite-schema-generation)
-  - [Throttling](#Throttling)
-  - [Connection Security](#connection-security)
-  - [Database Version Compatability](#database-version-compatability)
+# Architecture Guide
 
 ## Disclaimer
 
