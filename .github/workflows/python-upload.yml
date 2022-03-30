@@ -14,8 +14,6 @@ defaults:
 jobs:
   upload:
     runs-on: ubuntu-latest
-    environment:
-      name: deployment
 
     steps:
       - name: Cancel previous runs on the same branch
