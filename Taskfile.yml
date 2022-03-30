@@ -83,3 +83,13 @@ tasks:
         if [ ! -z "{{.CLI_ARGS}}" ]; then export SERVER_NAME="{{.CLI_ARGS}}"; else echo "Missing server name or ip as argument. Please run 'task certs -- <server name>'. If you are on a single machine run 'task certs -- localhost'."; exit 1; fi
         echo Server name: $SERVER_NAME
         openssl req -x509 -nodes -newkey rsa:4096 -keyout server.key -out server.crt -days 1095 -subj "/C=DE/O=chia-tea/OU=chia/CN=$SERVER_NAME"
+
+  build-docs:
+    desc: Builds the documentation with mkdocs
+    cmds:
+      - poetry run mkdocs build
+
+  publish-docs:
+    desc: Builds the documentation with mkdocs
+    cmds:
+      - poetry run mkdocs gh-deploy
