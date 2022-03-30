@@ -87,7 +87,7 @@ with the option `--common-name` or you will get a
 `No match found for server name` error on the server when clients try to connect
 to it.
 The server name can be the ip address or a url.
-As a note, the client only requires the `.crt` certificate file and not
+As a note, the client only requires the `.cert` certificate file and not
 the private `.key` file.
 
 The monitoring server receives all monitoring data and stores it in a file

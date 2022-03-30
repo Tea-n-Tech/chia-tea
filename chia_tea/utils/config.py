@@ -70,8 +70,8 @@ monitoring:
   # and sending data
   client:
     # Address of the server to send data to.
-    # On the very same machine this is 127.0.0.1.
-    address: 127.0.0.1
+    # On the very same machine this is localhost.
+    address: localhost
     port: 43200
 
     # Depending on the system the data collection
@@ -170,7 +170,7 @@ def get_default_config_as_string(certificate_folder: str) -> str:
         default config as a string
     """
     key_filepath = os.path.join(certificate_folder, "server.key")
-    cert_filepath = os.path.join(certificate_folder, "server.crt")
+    cert_filepath = os.path.join(certificate_folder, "server.cert")
 
     config_as_yml = DEFAULT_CONFIG_TEMPLATE.format(
         cert_filepath=cert_filepath, key_filepath=key_filepath

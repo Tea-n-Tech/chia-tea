@@ -53,7 +53,7 @@ def create_certificates_cmd(
     try:
         os.makedirs(dirpath, exist_ok=True)
         key_path = os.path.join(dirpath, "server.key")
-        cert_path = os.path.join(dirpath, "server.crt")
+        cert_path = os.path.join(dirpath, "server.cert")
         create_certificate_pair(
             key_path=key_path, cert_path=cert_path, overwrite=overwrite, common_name=common_name
         )
