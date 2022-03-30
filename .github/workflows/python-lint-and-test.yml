@@ -51,6 +51,13 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
 
     steps:
+      # useful since we trigger on push and pr
+      - name: Cancel previous runs on the same branch
+        if: ${{ github.ref != 'refs/heads/main' }}
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
+
       - uses: actions/checkout@v2
 
       - name: Set up Python
