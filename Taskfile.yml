@@ -75,3 +75,13 @@ tasks:
     deps: [generate]
     cmds:
       - python3 -m poetry run chia-tea start monitoring-client
+
+  build-docs:
+    desc: Builds the documentation with mkdocs
+    cmds:
+      - poetry run mkdocs build
+
+  publish-docs:
+    desc: Builds the documentation with mkdocs
+    cmds:
+      - poetry run mkdocs gh-deploy
