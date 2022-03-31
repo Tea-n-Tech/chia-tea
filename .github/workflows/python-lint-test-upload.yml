@@ -45,8 +45,51 @@ jobs:
         run: |
           ./bin/task test
 
-  upload:
+  test-publish:
     needs: [tests]
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.10"
+
+      - name: Install Task
+        run: |
+          sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d
+
+      - name: Build packages for release
+        run: |
+          ./bin/task build
+
+      - name: Publish distribution to Test PyPI
+        env:
+          TWINE_REPOSITORY_URL: https://test.pypi.org/legacy/
+          TWINE_USERNAME: __token__
+          TWINE_NON_INTERACTIVE: 1
+          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        run: poetry run twine upload --skip-existing --verbose 'dist/*'
+
+  test-install:
+    needs: [test-publish]
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.10"
+
+      - name: Install package
+        run: python -m pip install --pre chia-tea
+
+  publish:
+    needs: [test-install]
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
 
@@ -73,30 +116,9 @@ jobs:
           path: dist
           if-no-files-found: error
 
-      - name: Publish distribution to Test PyPI
-        env:
-          TWINE_REPOSITORY_URL: https://test.pypi.org/legacy/
-          TWINE_USERNAME: __token__
-          TWINE_NON_INTERACTIVE: 1
-          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
-        run: poetry run twine upload --skip-existing --verbose 'dist/*'
-
       - name: Publish distribution to PyPI
         env:
           TWINE_USERNAME: __token__
           TWINE_NON_INTERACTIVE: 1
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
         run: poetry run twine upload --skip-existing --verbose 'dist/*'
-
-  test-install:
-    needs: [upload]
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.10"
-
-      - name: Install package
-        run: python -m pip install --pre chia-tea
