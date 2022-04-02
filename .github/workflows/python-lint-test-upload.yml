@@ -113,9 +113,8 @@ jobs:
       - name: Install package
         run: |
           python -m pip install \
-            --pre \
             --index-url https://test.pypi.org/simple/ \
-            --extra-index-url https://pypi.org/simple
+            --extra-index-url https://pypi.org/simple \
             chia-tea=="$VERSION"
 
   publish:
