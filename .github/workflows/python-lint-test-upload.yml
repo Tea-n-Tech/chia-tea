@@ -61,7 +61,7 @@ jobs:
         run: |
           VERSION=$(cat pyproject.toml | grep -oE -m 1 "version = \"(.*)\"" | cut -f2 -d '"')
           echo "Version: $VERSION"
-          echo '::set-output name=version::$VERSION'
+          echo "::set-output name=version::$VERSION"
 
       - name: Set up Python 3.10
         uses: actions/setup-python@v2
