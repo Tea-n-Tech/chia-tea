@@ -5,17 +5,13 @@ name: Python Linting, Test and Upload
 
 on: [push, pull_request]
 
-env:
-  LOWEST_PYTHON_VERSION: "3.9"
-  HIGHEST_PYTHON_VERSION: "3.10"
-
 jobs:
   tests:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
       matrix:
-        python-version: ["$LOWEST_PYTHON_VERSION", "3.10"]
+        python-version: ["3.7", "3.10"]
 
     steps:
       - uses: actions/checkout@v2
